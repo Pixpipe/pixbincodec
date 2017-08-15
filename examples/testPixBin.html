@@ -40,7 +40,7 @@
     // the decoder
     var pixBinDecoder = new pixbincodec.PixBinDecoder();
     // do we wish the decoder tp perform a checksum verif for each block?
-    //pixBinDecoder.enableBlockVerification( true ); // default: false
+    pixBinDecoder.enableBlockVerification( true ); // default: false
 
     // specify the ArrayBuffer to input
     pixBinDecoder.setInput( binBuff );
