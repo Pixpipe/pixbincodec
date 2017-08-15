@@ -1,0 +1,31 @@
+{
+  "name": "pixbincodec",
+  "version": "0.1.0",
+  "description": "An encoder-decoder for PixBin format",
+  "main": "src/pixbincodec.js",
+  "repository": "jonathanlurie/pixbincodec",
+  "moduleName": "pixbincodec",
+  "moduleFormat": "umd",
+  "moduleBuildDir": "dist",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "min": "npm run build && printf \"// Build date: $(date '+%Y-%m%-dT%H:%M:%S')\n\n\" > dist/pixbincodec.min.js && cat header.txt >> dist/pixbincodec.min.js && google-closure-compiler-js dist/pixbincodec.js >> dist/pixbincodec.min.js",
+    "doc": "documentation src/pixbincodec.js -o ./doc/ -f html",
+    "all": "npm run build && npm run min && npm run doc"
+  },
+  "author": "Jonathan Lurie",
+  "license": "MIT",
+  "devDependencies": {
+    "documentation": "^3.0.4",
+    "google-closure-compiler-js": "^20170218.0.0",
+    "rollup": "^0.36.4",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^2.0.0"
+  },
+  "dependencies": {
+    "codecutils": "github:Pixpipe/codecutils",
+    "js-md5": "^0.6.0",
+    "pako": "^1.0.5"
+  }
+}
