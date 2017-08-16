@@ -159,7 +159,7 @@ class PixBlockEncoder {
         byteStreamInfoSubset.compressedByteLength = null;
 
         if(this._compress){
-          var compressedDataSubset = pako.deflate( data[i] );
+          var compressedDataSubset = pako.deflate( data[i].buffer );
           byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
           compressedData.push( compressedDataSubset );
         }

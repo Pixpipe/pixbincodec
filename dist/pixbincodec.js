@@ -7297,7 +7297,7 @@ class PixBlockEncoder {
         byteStreamInfoSubset.compressedByteLength = null;
 
         if(this._compress){
-          var compressedDataSubset = index.deflate( data[i] );
+          var compressedDataSubset = index.deflate( data[i].buffer );
           byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
           compressedData.push( compressedDataSubset );
         }
@@ -7660,8 +7660,8 @@ var md5 = createCommonjsModule(function (module) {
   };
 
   var nodeWrap = function (method) {
-    //var crypto = eval("require('crypto')");
-    //var Buffer = eval("require('buffer').Buffer");
+    var crypto = eval("require('crypto')");
+    var Buffer = eval("require('buffer').Buffer");
     var nodeMethod = function (message) {
       if (typeof message === 'string') {
         return crypto.createHash('md5').update(message, 'utf8').digest('hex');
@@ -7734,7 +7734,7 @@ var md5 = createCommonjsModule(function (module) {
     var length = message.length;
     if (notString) {
       if (typeof length !== 'number' ||
-        !Array.isArray(message) &&
+        !Array.isArray(message) && 
         !(ARRAY_BUFFER && ArrayBuffer.isView(message))) {
         throw ERROR;
       }

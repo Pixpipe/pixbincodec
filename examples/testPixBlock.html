@@ -10,8 +10,10 @@
 
   <script>
 
+
+
     var simpleObject = {
-      _data: new Float32Array([12, 14, 16, 2000, 2010, 2011]),
+      _data: [getlargeTypedArray(100000), getlargeTypedArray(50000)],
       _metadata: {
         firstname: "john",
         lastname: "Doe",
@@ -26,7 +28,7 @@
 
     // this buffer is a binary-serialized version of simpleObject
     var simpleBuff = blockEncoder.getOutput();
-    console.log( simpleBuff.byteLength );
+    console.log("encoded buffer size: " + simpleBuff.byteLength );
 
     var blockDecoder = new pixbincodec.PixBlockDecoder();
     blockDecoder.setInput( simpleBuff )
@@ -38,6 +40,20 @@
     console.log(simpleObject);
     console.log("encoded/decoded:");
     console.log( simpleObjectDecoded );
+
+
+
+    // generating an array with values that are close to each other
+    // (like when using a weighted sine function) will give better compression result
+    function getlargeTypedArray( size ){
+      var arr = new Int32Array( size );
+      for(var i=0; i<size; i++){
+        //arr[i] = Math.random() * 100;
+        arr[i] = Math.sin( i/100 ) * 100;
+      }
+      
+      return arr;
+    }
 
   </script>
 
