@@ -90,6 +90,9 @@ class PixBlockDecoder {
       // act as a flag: if not null, it means data were compressed
       var compressedByteLength = metadataObj.byteStreamInfo[i].compressedByteLength
 
+      // create a typed array out of the inflated buffer
+      var typedArrayConstructor = this._getDataTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]);
+      
       // meaning, the stream is compresed
       if( compressedByteLength ){
         // fetch the compresed dataStream
@@ -98,22 +101,39 @@ class PixBlockDecoder {
         // inflate the dataStream
         var inflatedByteStream = pako.inflate( compressedByteStream );
 
-        // create a typed array out of the inflated buffer
-        var typedArrayConstructor = this._getArrayTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]);
-        var dataStream = new typedArrayConstructor( inflatedByteStream.buffer );
-
+        var dataStream = null;
+        if( typedArrayConstructor === Object){
+          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
+        }else{
+          dataStream = new typedArrayConstructor( inflatedByteStream.buffer );
+        }
+        
         dataStreams.push( dataStream )
         readingByteOffset += compressedByteLength;
 
       }
       // the stream were NOT compressed
       else{
-        var dataStream = CodecUtils.extractTypedArray(
-          input,
-          readingByteOffset,
-          this._getArrayTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]),
-          metadataObj.byteStreamInfo[i].length
-        )
+        var dataStream = null;
+        if( typedArrayConstructor === Object){
+
+          var objectBuffer = CodecUtils.extractTypedArray(
+           input,
+           readingByteOffset,
+           Uint8Array,
+           metadataObj.byteStreamInfo[i].length
+         )
+          
+         dataStream = CodecUtils.ArrayBufferToObject( objectBuffer.buffer );
+        }else{
+          dataStream = CodecUtils.extractTypedArray(
+            input,
+            readingByteOffset,
+            this._getDataTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]),
+            metadataObj.byteStreamInfo[i].length
+          )
+        }
+      
 
         dataStreams.push( dataStream )
         readingByteOffset += metadataObj.byteStreamInfo[i].byteLength;
@@ -139,18 +159,24 @@ class PixBlockDecoder {
   * The returned object can be used as a constructor
   * @return {Function} constructor of a typed array
   */
-  _getArrayTypeFromByteStreamInfo( bsi ){
-    var arrayType = null;
+  _getDataTypeFromByteStreamInfo( bsi ){
+    var dataType = null;
+    var globalObject = CodecUtils.getGlobalObject()
 
     if( bsi.type === "int" ){
-      arrayType = bsi.signed ? "Uint" : "Int"
-    }else{
-      arrayType = "Float"
+      dataType = bsi.signed ? "Uint" : "Int";
+      dataType += bsi.bytesPerElements*8 + "Array";
+      
+    }else if( bsi.type === "float" ){
+      dataType = "Float";
+      dataType += bsi.bytesPerElements*8 + "Array";
+      var globalObject = CodecUtils.getGlobalObject()
+      
+    }else if( bsi.type === "object" ){
+      dataType = "Object";
     }
 
-    arrayType += bsi.bytesPerElements*8 + "Array";
-    var globalObject = CodecUtils.getGlobalObject()
-    return ( globalObject[ arrayType ] )
+    return ( globalObject[ dataType ] )
   }
 
 

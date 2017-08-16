@@ -28,9 +28,9 @@
                 PixBlockDecoder
               </a>
                 <a
-                  href='#PixBlockDecoder._getArrayTypeFromByteStreamInfo'
+                  href='#PixBlockDecoder._getDataTypeFromByteStreamInfo'
                   class='regular block'>
-                  #_getArrayTypeFromByteStreamInfo
+                  #_getDataTypeFromByteStreamInfo
                 </a>
                 <a
                   href='#PixBlockDecoder.getOutput'
@@ -88,40 +88,15 @@
                   #setOption
                 </a>
               <a
-                href='#PixBinDecoder'
-                class='block bold'>
-                PixBinDecoder
-              </a>
-                <a
-                  href='#PixBinDecoder.enableBlockVerification'
-                  class='regular block'>
-                  #enableBlockVerification
-                </a>
-                <a
-                  href='#PixBinDecoder.getOutput'
-                  class='regular block'>
-                  #getOutput
-                </a>
-                <a
-                  href='#PixBinDecoder.reset'
-                  class='regular block'>
-                  #reset
-                </a>
-                <a
-                  href='#PixBinDecoder.run'
-                  class='regular block'>
-                  #run
-                </a>
-                <a
-                  href='#PixBinDecoder.setInput'
-                  class='regular block'>
-                  #setInput
-                </a>
-              <a
                 href='#PixBlockEncoder'
                 class='block bold'>
                 PixBlockEncoder
               </a>
+                <a
+                  href='#PixBlockEncoder.determineDataCase'
+                  class='regular block'>
+                  .determineDataCase
+                </a>
                 <a
                   href='#PixBlockEncoder.isGoodCandidate'
                   class='regular block'>
@@ -152,6 +127,36 @@
                   class='regular block'>
                   #setInput
                 </a>
+              <a
+                href='#PixBinDecoder'
+                class='block bold'>
+                PixBinDecoder
+              </a>
+                <a
+                  href='#PixBinDecoder.enableBlockVerification'
+                  class='regular block'>
+                  #enableBlockVerification
+                </a>
+                <a
+                  href='#PixBinDecoder.getOutput'
+                  class='regular block'>
+                  #getOutput
+                </a>
+                <a
+                  href='#PixBinDecoder.reset'
+                  class='regular block'>
+                  #reset
+                </a>
+                <a
+                  href='#PixBinDecoder.run'
+                  class='regular block'>
+                  #run
+                </a>
+                <a
+                  href='#PixBinDecoder.setInput'
+                  class='regular block'>
+                  #setInput
+                </a>
           </div>
         </div>
       </div>
@@ -174,10 +179,10 @@ retrieved in the same order as the where in the original data
 </ul>
 
       <h4>Instance members</h4>
-        <div class='collapsible' id='PixBlockDecoder._getArrayTypeFromByteStreamInfo'>
-          <a href='#PixBlockDecoder._getArrayTypeFromByteStreamInfo'>
+        <div class='collapsible' id='PixBlockDecoder._getDataTypeFromByteStreamInfo'>
+          <a href='#PixBlockDecoder._getDataTypeFromByteStreamInfo'>
             <code>
-              #_getArrayTypeFromByteStreamInfo<span class='gray'>(bsi)</span>
+              #_getDataTypeFromByteStreamInfo<span class='gray'>(bsi)</span>
             </code>
             <div class='force-inline'>
               <p>Get the array type based on byte stream info.
@@ -187,8 +192,8 @@ The returned object can be used as a constructor</p>
           </a>
           <div class='collapser border px2'>
             <section class='py2 clearfix'>
-              <h2 id='PixBlockDecoder._getArrayTypeFromByteStreamInfo' class='mt0'>
-                _getArrayTypeFromByteStreamInfo<span class='gray'>(bsi)</span>
+              <h2 id='PixBlockDecoder._getDataTypeFromByteStreamInfo' class='mt0'>
+                _getDataTypeFromByteStreamInfo<span class='gray'>(bsi)</span>
               </h2>
               <p>Get the array type based on byte stream info.
             The returned object can be used as a constructor</p>
@@ -497,149 +502,6 @@ reset inputs and inputs</p>
         </div>
 </section>
 </div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='PixBinDecoder' class='mt0'>
-    PixBinDecoder<span class='gray'></span>
-  </h2>
-  <p>A PixBinDecoder instance decodes a *.pixp file and output an Image2D or Image3D.
-The input, specified by <code>.addInput(...)</code> must be an ArrayBuffer
-(from an <code>UrlToArrayBufferFilter</code>, an <code>UrlToArrayBufferReader</code> or anothrer source ).</p>
-<p><strong>Usage</strong></p>
-<ul>
-<li><a href="../examples/pixpFileToImage2D.html">examples/pixpFileToImage2D.html</a></li>
-</ul>
-
-      <h4>Instance members</h4>
-        <div class='collapsible' id='PixBinDecoder.enableBlockVerification'>
-          <a href='#PixBinDecoder.enableBlockVerification'>
-            <code>
-              #enableBlockVerification<span class='gray'>(b)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Specify wether or not  the bin decoder must perform a checksum verification
-for each block to be decoded.</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-            <section class='py2 clearfix'>
-              <h2 id='PixBinDecoder.enableBlockVerification' class='mt0'>
-                enableBlockVerification<span class='gray'>(b)</span>
-              </h2>
-              <p>Specify wether or not  the bin decoder must perform a checksum verification
-            for each block to be decoded.</p>
-            
-                <h4>Parameters</h4>
-                <ul class='suppress-p-margin'>
-                    <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code> <strong>b</strong>
-                      :
-                      <div class='force-inline'>
-                        <p>true to perfom verification, false to skip it (default: false)</p>
-            
-                      </div>
-                    </li>
-                </ul>
-            </section>
-          </div>
-        </div>
-        <div class='collapsible' id='PixBinDecoder.getOutput'>
-          <a href='#PixBinDecoder.getOutput'>
-            <code>
-              #getOutput<span class='gray'></span>
-            </code>
-            <div class='force-inline'>
-              <p>Get the the decoded output</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-            <section class='py2 clearfix'>
-              <h2 id='PixBinDecoder.getOutput' class='mt0'>
-                getOutput<span class='gray'></span>
-              </h2>
-              <p>Get the the decoded output</p>
-            
-                  <h4>Returns</h4>
-                  <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
-                  :
-                  <div class='force-inline'>
-                    <p>a decoded object</p>
-            
-                  </div>
-            </section>
-          </div>
-        </div>
-        <div class='collapsible' id='PixBinDecoder.reset'>
-          <a href='#PixBinDecoder.reset'>
-            <code>
-              #reset<span class='gray'></span>
-            </code>
-            <div class='force-inline'>
-              <p>reset inputs and inputs</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-            <section class='py2 clearfix'>
-              <h2 id='PixBinDecoder.reset' class='mt0'>
-                reset<span class='gray'></span>
-              </h2>
-              <p>reset inputs and inputs</p>
-            
-            </section>
-          </div>
-        </div>
-        <div class='collapsible' id='PixBinDecoder.run'>
-          <a href='#PixBinDecoder.run'>
-            <code>
-              #run<span class='gray'></span>
-            </code>
-            <div class='force-inline'>
-              <p>Launch the decoding</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-            <section class='py2 clearfix'>
-              <h2 id='PixBinDecoder.run' class='mt0'>
-                run<span class='gray'></span>
-              </h2>
-              <p>Launch the decoding</p>
-            
-            </section>
-          </div>
-        </div>
-        <div class='collapsible' id='PixBinDecoder.setInput'>
-          <a href='#PixBinDecoder.setInput'>
-            <code>
-              #setInput<span class='gray'>(buff)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Specify an input</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-            <section class='py2 clearfix'>
-              <h2 id='PixBinDecoder.setInput' class='mt0'>
-                setInput<span class='gray'>(buff)</span>
-              </h2>
-              <p>Specify an input</p>
-            
-                <h4>Parameters</h4>
-                <ul class='suppress-p-margin'>
-                    <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></code> <strong>buff</strong>
-                      :
-                      <div class='force-inline'>
-                        <p>the input</p>
-            
-                      </div>
-                    </li>
-                </ul>
-            </section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
   <h2 id='PixBlockEncoder' class='mt0'>
     PixBlockEncoder<span class='gray'></span>
   </h2>
@@ -662,6 +524,47 @@ Also, compression has some side effects:</p>
 </ul>
 
       <h4>Static members</h4>
+        <div class='collapsible' id='PixBlockEncoder.determineDataCase'>
+          <a href='#PixBlockEncoder.determineDataCase'>
+            <code>
+              .determineDataCase<span class='gray'>(data)</span>
+            </code>
+            <div class='force-inline'>
+              <p>[STATIC]
+Give in what case we fall when we want to use this data.
+Cases are described at the top</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2 m2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBlockEncoder.determineDataCase' class='mt0'>
+                determineDataCase<span class='gray'>(data)</span>
+              </h2>
+              <p>[STATIC]
+            Give in what case we fall when we want to use this data.
+            Cases are described at the top</p>
+            
+                <h4>Parameters</h4>
+                <ul class='suppress-p-margin'>
+                    <li><code>Whatever</code> <strong>data</strong>
+                      :
+                      <div class='force-inline'>
+                        <p>a piec of data, object, array, typed array...</p>
+            
+                      </div>
+                    </li>
+                </ul>
+                  <h4>Returns</h4>
+                  <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code></code>
+                  :
+                  <div class='force-inline'>
+                    <p>the case</p>
+            
+                  </div>
+            </section>
+          </div>
+        </div>
         <div class='collapsible' id='PixBlockEncoder.isGoodCandidate'>
           <a href='#PixBlockEncoder.isGoodCandidate'>
             <code>
@@ -820,6 +723,149 @@ Also, compression has some side effects:</p>
                       :
                       <div class='force-inline'>
                         <p>an object candidate, containing a _data and _metadata attributes</p>
+            
+                      </div>
+                    </li>
+                </ul>
+            </section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='PixBinDecoder' class='mt0'>
+    PixBinDecoder<span class='gray'></span>
+  </h2>
+  <p>A PixBinDecoder instance decodes a *.pixp file and output an Image2D or Image3D.
+The input, specified by <code>.addInput(...)</code> must be an ArrayBuffer
+(from an <code>UrlToArrayBufferFilter</code>, an <code>UrlToArrayBufferReader</code> or anothrer source ).</p>
+<p><strong>Usage</strong></p>
+<ul>
+<li><a href="../examples/pixpFileToImage2D.html">examples/pixpFileToImage2D.html</a></li>
+</ul>
+
+      <h4>Instance members</h4>
+        <div class='collapsible' id='PixBinDecoder.enableBlockVerification'>
+          <a href='#PixBinDecoder.enableBlockVerification'>
+            <code>
+              #enableBlockVerification<span class='gray'>(b)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Specify wether or not  the bin decoder must perform a checksum verification
+for each block to be decoded.</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBinDecoder.enableBlockVerification' class='mt0'>
+                enableBlockVerification<span class='gray'>(b)</span>
+              </h2>
+              <p>Specify wether or not  the bin decoder must perform a checksum verification
+            for each block to be decoded.</p>
+            
+                <h4>Parameters</h4>
+                <ul class='suppress-p-margin'>
+                    <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code> <strong>b</strong>
+                      :
+                      <div class='force-inline'>
+                        <p>true to perfom verification, false to skip it (default: false)</p>
+            
+                      </div>
+                    </li>
+                </ul>
+            </section>
+          </div>
+        </div>
+        <div class='collapsible' id='PixBinDecoder.getOutput'>
+          <a href='#PixBinDecoder.getOutput'>
+            <code>
+              #getOutput<span class='gray'></span>
+            </code>
+            <div class='force-inline'>
+              <p>Get the the decoded output</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBinDecoder.getOutput' class='mt0'>
+                getOutput<span class='gray'></span>
+              </h2>
+              <p>Get the the decoded output</p>
+            
+                  <h4>Returns</h4>
+                  <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
+                  :
+                  <div class='force-inline'>
+                    <p>a decoded object</p>
+            
+                  </div>
+            </section>
+          </div>
+        </div>
+        <div class='collapsible' id='PixBinDecoder.reset'>
+          <a href='#PixBinDecoder.reset'>
+            <code>
+              #reset<span class='gray'></span>
+            </code>
+            <div class='force-inline'>
+              <p>reset inputs and inputs</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBinDecoder.reset' class='mt0'>
+                reset<span class='gray'></span>
+              </h2>
+              <p>reset inputs and inputs</p>
+            
+            </section>
+          </div>
+        </div>
+        <div class='collapsible' id='PixBinDecoder.run'>
+          <a href='#PixBinDecoder.run'>
+            <code>
+              #run<span class='gray'></span>
+            </code>
+            <div class='force-inline'>
+              <p>Launch the decoding</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBinDecoder.run' class='mt0'>
+                run<span class='gray'></span>
+              </h2>
+              <p>Launch the decoding</p>
+            
+            </section>
+          </div>
+        </div>
+        <div class='collapsible' id='PixBinDecoder.setInput'>
+          <a href='#PixBinDecoder.setInput'>
+            <code>
+              #setInput<span class='gray'>(buff)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Specify an input</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+            <section class='py2 clearfix'>
+              <h2 id='PixBinDecoder.setInput' class='mt0'>
+                setInput<span class='gray'>(buff)</span>
+              </h2>
+              <p>Specify an input</p>
+            
+                <h4>Parameters</h4>
+                <ul class='suppress-p-margin'>
+                    <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a></code> <strong>buff</strong>
+                      :
+                      <div class='force-inline'>
+                        <p>the input</p>
             
                       </div>
                     </li>

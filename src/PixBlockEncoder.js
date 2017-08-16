@@ -10,6 +10,14 @@
 import pako from 'pako';
 import { CodecUtils } from 'codecutils';
 
+// list of different kinds of data we accept as input
+const dataCases = {
+  invalid: null,  // the data is not compatible (Number, String)
+  typedArray: 1,  // the data is compatible, as a typed array
+  arrayOfYpedArrays: 2, // the data is compatible, as an array of typed array
+  complexObject: 3 // a complex object is also compatible (can be a untyped array)
+}
+
 /**
 * A PixBlockEncoder instance is a Filter that takes a PixpipeContainer as input,
 * which is the base type for Image2D/Image3D and any other data container used in Pixpipe.
@@ -40,6 +48,7 @@ class PixBlockEncoder {
   */
   reset(){
     this._input = null;
+    this._inputCase = null;
     this._output = null;
   }
 
@@ -58,7 +67,8 @@ class PixBlockEncoder {
   * @param {Object} obj - an object candidate, containing a _data and _metadata attributes
   */
   setInput( obj ){
-    if(PixBlockEncoder.isGoodCandidate( obj )){
+    this._inputCase = PixBlockEncoder.isGoodCandidate( obj );
+    if(this._inputCase){
       this._input = obj;
     }
   }
@@ -97,34 +107,22 @@ class PixBlockEncoder {
     var metadata = obj._metadata;
     var data = obj._data;
 
-    // check 1: metadata should not contain cyclic structures
+    // check: metadata should not contain cyclic structures
     try{
       JSON.stringify( metadata );
     }catch(e){
       console.warn("The metadata object contains cyclic structures. Cannot be used.");
-      return;
+      return false;
+    }
+    
+    var inputCase = PixBlockEncoder.determineDataCase( data );
+    
+    // testing the case based on the kinf of data we want to input
+    if( inputCase === dataCases.invalid ){
+      console.warn("The input is invalid.");
     }
 
-    // check 2: metadata should be an Object
-    if( !(metadata instanceof Object) ){
-      console.warn("The metadata object must be an instance of Object.");
-      return;
-    }
-
-    // check 3: data should be a typed array or an Array of typed arrays
-    if( data instanceof Array ){
-      for(var i=0; i<data.length; i++){
-        if( !CodecUtils.isTypedArray( data[i] ) ){
-          console.warn("The data object must be a typed array or an Array of typed arrays.");
-          return;
-        }
-      }
-    }else if( !CodecUtils.isTypedArray( data ) ){
-      console.warn("The data object must be a typed array or an Array of typed arrays.");
-      return;
-    }
-
-    return true;
+    return inputCase;
   }
 
 
@@ -134,11 +132,10 @@ class PixBlockEncoder {
   run(){
     var input = this._input;
 
-    if( !input ){
+    if( !input || !this._inputCase ){
       console.warn("An input must be given to the PixBlockEncoder.");
       return;
     }
-
 
     var compress = this._compress;
     var data = input._data;
@@ -147,40 +144,74 @@ class PixBlockEncoder {
     var byteStreamInfo = [];
     var usingDataSubsets = false;
 
-    // the _data object is an array containing multiple TypedArrays (eg. meshes)
-    if( Array.isArray(data) ){
-      usingDataSubsets = true;
-      compressedData = [];
+    switch (this._inputCase) {
+      
+      // The input is a typed array ********************************
+      case dataCases.typedArray:
+        {
+          var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data)
+          // additional compression flag
+          byteStreamInfoSubset.compressedByteLength = null;
 
-      // collect bytestream info for each subset of data
-      for(var i=0; i<data.length; i++){
-        var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data[i]);
-        // additional compression flag
-        byteStreamInfoSubset.compressedByteLength = null;
+          if(this._compress){
+            compressedData = pako.deflate( data.buffer );
+            byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
+          }
 
-        if(this._compress){
-          var compressedDataSubset = pako.deflate( data[i].buffer );
-          byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
-          compressedData.push( compressedDataSubset );
+          byteStreamInfo.push( byteStreamInfoSubset )
         }
+        break;
+        
+        
+      // The input is an Array of typed arrays *********************
+      case dataCases.arrayOfYpedArrays:
+        {
+          usingDataSubsets = true;
+          compressedData = [];
 
-        byteStreamInfo.push( byteStreamInfoSubset )
-      }
+          // collect bytestream info for each subset of data
+          for(var i=0; i<data.length; i++){
+            var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data[i]);
+            // additional compression flag
+            byteStreamInfoSubset.compressedByteLength = null;
+
+            if(this._compress){
+              var compressedDataSubset = pako.deflate( data[i].buffer );
+              byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
+              compressedData.push( compressedDataSubset );
+            }
+
+            byteStreamInfo.push( byteStreamInfoSubset )
+          }
+        }
+        break;
+        
+      // The input is an Array of typed arrays *********************
+      case dataCases.complexObject:
+        {
+          // replace the original data object with this uncompressed serialized version.
+          // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
+          data = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
+          
+          var byteStreamInfoSubset = { 
+            type: "object",
+            compressedByteLength: null,
+            length: data.byteLength
+          }
+          
+          if(this._compress){
+            compressedData = pako.deflate( data );
+            byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
+          }
+
+          byteStreamInfo.push( byteStreamInfoSubset );
+        }
+        break;
+        
+      default:
+        console.warn("A problem occured.");
+        return;
     }
-    // the _data object is a single TypedArray (eg. Image2D)
-    else{
-      var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data)
-      // additional compression flag
-      byteStreamInfoSubset.compressedByteLength = null;
-
-      if(this._compress){
-        compressedData = pako.deflate( data.buffer );
-        byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
-      }
-
-      byteStreamInfo.push( byteStreamInfoSubset )
-    }
-    // TODO: if it's not an array and not a TypedArray, it could be an object
 
     // from now, if compression is enabled, what we call data is compressed data
     if(this._compress){
@@ -213,6 +244,29 @@ class PixBlockEncoder {
     }
 
     this._output = CodecUtils.mergeBuffers( allBuffers );
+  }
+  
+  
+  /**
+  * [STATIC]
+  * Give in what case we fall when we want to use this data.
+  * Cases are described at the top
+  * @param {Whatever} data - a piec of data, object, array, typed array...
+  * @return {Number} the case
+  */
+  static determineDataCase( data ){
+    if( data instanceof Object ){
+      if( CodecUtils.isTypedArray( data ) )
+        return dataCases.typedArray;
+        
+      if( data instanceof Array )
+        if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
+          return dataCases.arrayOfYpedArrays;
+        
+      return dataCases.complexObject; 
+    }else{
+      return dataCases.invalid;
+    }
   }
 
 
