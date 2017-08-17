@@ -5,4 +5,6 @@ To encode data into an ArrayBuffer that uses the PixBin format.
 TODO
 
 # Examples
-See the `examples` directory.
+See the `examples` directory for the source, or:
+- [A short example of coding - decoding](https://pixpipe.github.io/pixbincodec/examples/testPixBin.html)
+- [A more extensive example of coding - creating a file - decoding](https://pixpipe.github.io/pixbincodec/examples/testPixBinDownload.html)

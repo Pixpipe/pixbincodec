@@ -18,23 +18,7 @@ const dataCases = {
   complexObject: 3 // a complex object is also compatible (can be a untyped array)
 }
 
-/**
-* A PixBlockEncoder instance is a Filter that takes a PixpipeContainer as input,
-* which is the base type for Image2D/Image3D and any other data container used in Pixpipe.
-* Then, the update function serializes the data structure (data + metadata) into
-* a binary buffer that can be send to a PixBinEncoder (or directly to write a file).
-*
-* Data can be compressed unsing Pako. To enable this feature, specify
-* `.setMetadata("compress", true)` on this filter.
-* Please note that metadata are not compressed, only data are.
-* Also, compression has some side effects:
-* - data from within a block is no longer streamable
-* - the datablock is smaller
-* - the metadata header is still accessible
-*
-* **Usage**
-* - [examples/Image2DToPixblock.html](../examples/Image2DToPixblock.html)
-*/
+
 class PixBlockEncoder {
 
   constructor(){

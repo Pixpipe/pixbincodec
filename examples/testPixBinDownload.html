@@ -2,15 +2,53 @@
 <head>
   <meta charset="utf-8">
   <title>Test</title>
+  
+  <style>
+  
+  body {
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 10px 20% 10px 20%;
+  }
+  
+  h1, h3 {
+    width: 100%;
+    text-align: center;
+  }
+  
+  ul {
+    margin-top: 50px;
+  }
+  
+  #logArea {
+    width: 100%;
+    height: 300px;
+    max-width: 100%;
+  }
+  </style>
 </head>
 <body>
   <!-- importing the automatically build module -->
   <script src="../dist/pixbincodec.js"></script>
+  <h1>PixBin Files</h1>
+  <h3>the easy  way</h3>
 
-  <p>Open Javascript console.</p>
-
-  <script>
+  <ul>
+    <li>Some data is encoded into a PixBin buffer</li>
+    <li>A Blob is created from this buffer</li>
+    <li>Download the Blob as a PixBin file <a id="downloadLink">here</a></li>
+    <li>Load this file to decode it <input type="file" id="fileInput"></li>
+  </ul>
   
+  <textarea id="logArea"></textarea>
+  Open you Javascript console for a better reading experience.
+  
+  <script>
+  var fileInput = document.getElementById('fileInput');
+  createPixBin();
+  
+  
+  
+  function createPixBin(){
     // declaring some datasets to be encoded
 
     var john = {
@@ -59,7 +97,7 @@
     var pixBinEncoder = new pixbincodec.PixBinEncoder();
     pixBinEncoder.enableDataCompression( true ); // default: false
 
-    // defining some options. The only availble are...
+    // defining some options. The options available are...
     
     // "description" takes a String
     // (default: null)
@@ -85,7 +123,7 @@
       "The PixBin example page"
     )
 
-    // let's add a block (aka. modality)
+    // let's add some blocks of data
     pixBinEncoder.addInput( john );
     pixBinEncoder.addInput( paul );
     pixBinEncoder.addInput( jack );
@@ -96,37 +134,88 @@
 
     // the ArrayBuffer that contains the encoded data
     var binBuff = pixBinEncoder.getOutput();
-    console.log("Encoded buffer length: " + binBuff.byteLength + " bytes");
+    log("Encoded buffer length: " + binBuff.byteLength + " bytes");
 
-    // ************** DECODING *************************************************
 
+    // ************** PREPARE DOWNLOAD LINK ************************************
+    var link = document.getElementById("downloadLink");
+    var blob = new Blob([binBuff], {type: "octet/stream"});
+    var url = window.URL.createObjectURL(blob);
+    link.href = url;
+    link.download = "testFile.pixb";
+  }
+    
+    
+  // event listener of the file dialog, it then triggers the file decoding
+  fileInput.addEventListener('change', function(e) {
+    var files = e.target.files;
+
+    if( !files.length ){
+      return;
+    }
+    
+    var reader = new FileReader();
+
+    reader.onloadend = function(event) {
+      var buffer = event.target.result;
+      readPixBinFile(buffer);  
+    }
+
+    reader.readAsArrayBuffer( files[0] );
+	});
+    
+  
+  // read a PixBin buffer
+  function readPixBinFile( buffer ){
+    log("The loaded file is " + buffer.byteLength + " bytes.");
+    
     // the decoder
     var pixBinDecoder = new pixbincodec.PixBinDecoder();
     // do we wish the decoder tp perform a checksum verif for each block?
     pixBinDecoder.enableBlockVerification( true ); // default: false
 
     // specify the ArrayBuffer to input
-    pixBinDecoder.setInput( binBuff );
+    pixBinDecoder.setInput( buffer );
+
+    if( !pixBinDecoder.isValid() ){
+      alert("This file is not a PixBin file.");
+      return;
+    }
 
     // perform the decoding
     var numberOfBlocks = pixBinDecoder.getNumberOfBlocks();
-    console.log("This PixBin dataset was created at this date: " + pixBinDecoder.getBinCreationDate());
-    console.log( "PixBin description: " + pixBinDecoder.getBinDescription() );
-    console.log( "PixBin userObject: ");
-    console.log( pixBinDecoder.getBinUserObject() );
-    console.log("Number of blocks: " + numberOfBlocks);
+    log("This PixBin dataset was created at this date: " + pixBinDecoder.getBinCreationDate());
+    log( "PixBin description: " + pixBinDecoder.getBinDescription() );
+    log( "PixBin userObject: ");
+    log( pixBinDecoder.getBinUserObject() );
+    log("Number of blocks: " + numberOfBlocks);
     
     for(var i=0; i<numberOfBlocks; i++){
       var blockType = pixBinDecoder.getBlockType( i );
       var block = pixBinDecoder.fetchBlock( i )
       
-      console.log( "#" + i + " ***************************" );
-      console.log( "Block type: " + blockType );
-      console.log( "block:" );
-      console.log( block );
+      log( "#" + i + " ***************************" );
+      log( "Block type: " + blockType );
+      log( "block:" );
+      log( block );
     }
     
-
+  }
+  
+  
+  function log( msg ){
+    var logArea = document.getElementById("logArea");
+    console.log(msg);
+    
+    if( msg instanceof Object ){
+      msg = "[Object]:\n" + JSON.stringify(msg)
+    }
+    
+    
+    logArea.innerHTML += msg;
+    logArea.innerHTML += "\n\n";
+  }
+    
   </script>
 
 </body>

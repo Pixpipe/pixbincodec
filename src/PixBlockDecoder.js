@@ -10,18 +10,6 @@ import pako from 'pako';
 import { CodecUtils } from 'codecutils';
 
 
-/**
-* A PixBlockDecoder instance is a Filter that takes an ArrayBuffer that is the result
-* of a PixBlock compression. This filter ouputs an object of a type inherited from
-* PixpipeContainer (Image2D/Image3D/etc.)
-* If the data within the block was compressed, it will automatically be decompressed.
-* If the data object was composed of several subset (eg. mesh), the subset will be
-* retrieved in the same order as the where in the original data
-* (no matter if compressed or not).
-*
-* **Usage**
-* - [examples/Image2DToPixblock.html](../examples/Image2DToPixblock.html)
-*/
 class PixBlockDecoder {
   constructor(){
     this.reset();

@@ -7150,29 +7150,13 @@ class CodecUtils {
 
 // list of different kinds of data we accept as input
 const dataCases = {
-  invalid: null,
-  typedArray: 1,
-  arrayOfYpedArrays: 2,
-  complexObject: 3
+  invalid: null,  // the data is not compatible (Number, String)
+  typedArray: 1,  // the data is compatible, as a typed array
+  arrayOfYpedArrays: 2, // the data is compatible, as an array of typed array
+  complexObject: 3 // a complex object is also compatible (can be a untyped array)
 };
 
-/**
-* A PixBlockEncoder instance is a Filter that takes a PixpipeContainer as input,
-* which is the base type for Image2D/Image3D and any other data container used in Pixpipe.
-* Then, the update function serializes the data structure (data + metadata) into
-* a binary buffer that can be send to a PixBinEncoder (or directly to write a file).
-*
-* Data can be compressed unsing Pako. To enable this feature, specify
-* `.setMetadata("compress", true)` on this filter.
-* Please note that metadata are not compressed, only data are.
-* Also, compression has some side effects:
-* - data from within a block is no longer streamable
-* - the datablock is smaller
-* - the metadata header is still accessible
-*
-* **Usage**
-* - [examples/Image2DToPixblock.html](../examples/Image2DToPixblock.html)
-*/
+
 class PixBlockEncoder {
 
   constructor(){
@@ -7282,10 +7266,6 @@ class PixBlockEncoder {
     var byteStreamInfo = [];
     var usingDataSubsets = false;
 
-
-
-
-
     switch (this._inputCase) {
       
       // The input is a typed array ********************************
@@ -7355,48 +7335,6 @@ class PixBlockEncoder {
         return;
     }
 
-
-
-
-
-
-    /*
-    // the _data object is an array containing multiple TypedArrays (eg. meshes)
-    if( Array.isArray(data) ){
-      usingDataSubsets = true;
-      compressedData = [];
-
-      // collect bytestream info for each subset of data
-      for(var i=0; i<data.length; i++){
-        
-        var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data[i]);
-        // additional compression flag
-        byteStreamInfoSubset.compressedByteLength = null;
-
-        if(this._compress){
-          var compressedDataSubset = pako.deflate( data[i].buffer );
-          byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
-          compressedData.push( compressedDataSubset );
-        }
-
-        byteStreamInfo.push( byteStreamInfoSubset )
-      }
-    }
-    // the _data object is a single TypedArray (eg. Image2D)
-    else if(  CodecUtils.isTypedArray(data) ){
-      var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data)
-      // additional compression flag
-      byteStreamInfoSubset.compressedByteLength = null;
-
-      if(this._compress){
-        compressedData = pako.deflate( data.buffer );
-        byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
-      }
-
-      byteStreamInfo.push( byteStreamInfoSubset )
-    }
-    */
-
     // from now, if compression is enabled, what we call data is compressed data
     if(this._compress){
       data = compressedData;
@@ -7432,19 +7370,13 @@ class PixBlockEncoder {
   
   
   /**
-  *
+  * [STATIC]
+  * Give in what case we fall when we want to use this data.
+  * Cases are described at the top
+  * @param {Whatever} data - a piec of data, object, array, typed array...
+  * @return {Number} the case
   */
   static determineDataCase( data ){
-    /*
-    dataCases = {
-      invalid: 0,
-      typedArray: 1,
-      arrayOfYpedArrays: 2,
-      complexObject: 3
-    }
-    */
-    
-    
     if( data instanceof Object ){
       if( CodecUtils.isTypedArray( data ) )
         return dataCases.typedArray;
@@ -7470,18 +7402,6 @@ class PixBlockEncoder {
 * Lab       MCIN - Montreal Neurological Institute
 */
 
-/**
-* A PixBlockDecoder instance is a Filter that takes an ArrayBuffer that is the result
-* of a PixBlock compression. This filter ouputs an object of a type inherited from
-* PixpipeContainer (Image2D/Image3D/etc.)
-* If the data within the block was compressed, it will automatically be decompressed.
-* If the data object was composed of several subset (eg. mesh), the subset will be
-* retrieved in the same order as the where in the original data
-* (no matter if compressed or not).
-*
-* **Usage**
-* - [examples/Image2DToPixblock.html](../examples/Image2DToPixblock.html)
-*/
 class PixBlockDecoder {
   constructor(){
     this.reset();
@@ -8511,6 +8431,16 @@ class PixBinEncoder {
 class PixBinDecoder {
   constructor(){
     this._verifyChecksum = false;
+    this._input = null;
+    this._output = null;
+    this._binMeta = null;
+    this._parsingInfo = {
+      offsetToReachFirstBlock: -1,
+      isLittleEndian: -1,
+    };
+    
+    this._decodedBlocks = {};
+    this._isValid = false;
     this.reset();
   }
 
@@ -8520,11 +8450,22 @@ class PixBinDecoder {
   * @param {ArrayBuffer} buff - the input
   */
   setInput( buff ){
+    this.reset();
+    
     if( buff instanceof ArrayBuffer ){
       this._input = buff;
+      this._isValid = this._parseIndex();
     }
   }
 
+
+  /**
+  * To be called after setInput. Tells if the buffer loaded is valid or not.
+  * @return {Boolean} true if valid, false if not.
+  */
+  isValid(){
+    return this._isValid;
+  }
 
   /**
   * Get the the decoded output
@@ -8533,14 +8474,87 @@ class PixBinDecoder {
   getOutput(){
     return this._output;
   }
+  
+  
+  /**
+  * Get the number of blocks encoded in this PixBin file
+  * @return {Number}
+  */
+  getNumberOfBlocks(){
+    return this._binMeta.pixblocksInfo.length;
+  }
 
 
   /**
-  * reset inputs and inputs
+  * Get the creation date of the file in the ISO8601 format
+  * @return {String} the data
+  */
+  getBinCreationDate(){
+    return this._binMeta.date;
+  }
+
+
+  /**
+  * Get the description of the PixBin file
+  * @return {String} the description
+  */
+  getBinDescription(){
+    return this._binMeta.description;
+  }
+  
+  
+  /**
+  * The userObject is a generic container added to the PixBin. It can carry all sorts of data.
+  * If not specified during encoding, it's null.
+  * @return {Object} the userObject
+  */
+  getBinUserObject(){
+    return this._binMeta.userObject;
+  }
+
+
+  /**
+  * Get the description of the block at the given index
+  * @param {Number} n - the index of the block
+  * @return {String} the description of this block
+  */
+  getBlockDescription( n ){
+    if( n<0 || n >= this.getNumberOfBlocks() ){
+      console.warn("The block index is out of range.");
+      return null;
+    }
+    return this._binMeta.pixblocksInfo[n].description;
+  }
+  
+  
+  /**
+  * Get the original type of the block. Convenient for knowing how to rebuild
+  * the object in its original form.
+  * @param {Number} n - the index of the block
+  * @return {String} the type ( comes from constructor.name )
+  */
+  getBlockType( n ){
+    if( n<0 || n >= this.getNumberOfBlocks() ){
+      console.warn("The block index is out of range.");
+      return null;
+    }
+    return this._binMeta.pixblocksInfo[n].type;
+  }
+
+
+  /**
+  * reset I/O and data to query 
   */
   reset(){
+    this._isValid = false;
     this._input = null;
     this._output = null;
+    this._binMeta = null;
+    this._parsingInfo = {
+      offsetToReachFirstBlock: -1,
+      isLittleEndian: -1,
+    };
+    this._decodedBlocks = {};
   }
 
 
@@ -8555,25 +8569,24 @@ class PixBinDecoder {
 
 
   /**
-  * Launch the decoding
+  * [PRIVATE]
+  * 
   */
-  run(){
-
+  _parseIndex(){
     var input = this._input;
 
     if( !input ){
       console.warn("Input cannot be null");
-      return;
+      return false;
     }
 
-    var verifyChecksum = this._verifyChecksum;
     var inputByteLength = input.byteLength;
     var magicNumberToExpect = PixBinEncoder.MAGIC_NUMBER();
 
     // control 1: the file must be large enough
     if( inputByteLength < (magicNumberToExpect.length + 5) ){
       console.warn("This buffer does not match a PixBin file.");
-      return;
+      return false;
     }
 
     var view = new DataView( input );
@@ -8583,7 +8596,7 @@ class PixBinDecoder {
     // control 2: the magic number
     if( magicNumber !== magicNumberToExpect){
       console.warn("This file is not of PixBin type. (wrong magic number)");
-      return;
+      return false;
     }
 
     movingByteOffset = magicNumberToExpect.length;
@@ -8592,7 +8605,7 @@ class PixBinDecoder {
     // control 3: the endianess must be 0 or 1
     if(isLittleEndian != 0 && isLittleEndian != 1){
       console.warn("This file is not of PixBin type. (wrong endianess code)");
-      return;
+      return false;
     }
 
     movingByteOffset += 1;
@@ -8600,41 +8613,61 @@ class PixBinDecoder {
     movingByteOffset += 4;
     var pixBinIndexObj = CodecUtils.ArrayBufferToObject( input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
     movingByteOffset += pixBinIndexBinaryStringByteLength;
-
-    // we will be reusing the same block decoder for all the blocks
-    var blockDecoder = new PixBlockDecoder();
-    var outputCounter = 0;
-
-
-    var binMeta = pixBinIndexObj;
-    var decodedBlocks = [];
-
-    // decoding each block
-    for(var i=0; i<pixBinIndexObj.pixblocksInfo.length; i++){
-      var blockInfo = pixBinIndexObj.pixblocksInfo[i];
-      var pixBlock = input.slice(movingByteOffset, movingByteOffset + blockInfo.byteLength);
-      movingByteOffset += blockInfo.byteLength;
-
-      if( verifyChecksum && md5( pixBlock ) !== blockInfo.checksum){
-        console.warn("Modality " + (i+1) + "/" + pixBinIndexObj.pixblocksInfo.length + " (" + blockInfo.type + ") could not comply to checksum validation." );
-        continue;
-      }
-
-      blockDecoder.setInput( pixBlock );
-      blockDecoder.run();
-      var decodedBlock = blockDecoder.getOutput();
-
-      if( decodedBlock ){
-        decodedBlocks.push( decodedBlock );
-        outputCounter ++;
-      }
+    
+    this._parsingInfo.offsetToReachFirstBlock = movingByteOffset;
+    this._parsingInfo.isLittleEndian = isLittleEndian;
+    this._binMeta = pixBinIndexObj;
+    
+    return true;
+  }
+  
+  
+  /**
+  * Fetch a block at the given index. The first time it called on a block,
+  * this block will be read from the stream and decoded.
+  * If a block is already decoded, it will be retrieved as is without trying to
+  * re-decode it, unless `forceDecoding` is `true`.
+  * @param {Number} n - the index of the block to fetch
+  * @param {Boolean} forceDecoding - force the decoding even though it was already decoded
+  * @return {Object} the decoded block, containing `_data_`, `_metadata` and `originalBlockType`
+  */
+  fetchBlock( n , forceDecoding=false ){
+    var nbBlocks = this.getNumberOfBlocks();
+    if( n<0 || n >= nbBlocks ){
+      console.warn("The block index is out of range.");
+      return null;
+    }
+    
+    if( n in this._decodedBlocks && !forceDecoding){
+      return this._decodedBlocks[ n ];
+    }
+    
+    var offset = this._parsingInfo.offsetToReachFirstBlock;
+    
+    for(var i=0; i<n; i++){
+      offset += this._binMeta.pixblocksInfo[i].byteLength;
+    }
+    
+    var blockInfo = this._binMeta.pixblocksInfo[n];
+    var pixBlockBuff = this._input.slice(offset, offset + blockInfo.byteLength);
+    
+    if( this._verifyChecksum && md5( pixBlockBuff ) !== blockInfo.checksum){
+      console.warn("The block #" + n + " is corrupted.");
+      return null;
     }
 
-    this._output = {
-      meta: pixBinIndexObj,
-      blocks: decodedBlocks
-    };
-
+    var blockDecoder = new PixBlockDecoder();
+    blockDecoder.setInput( pixBlockBuff );
+    blockDecoder.run();
+    var decodedBlock = blockDecoder.getOutput();
+    
+    if( !decodedBlock ){
+      console.warn("The block #" + n + " could not be decoded.");
+      return null;
+    }
+    
+    this._decodedBlocks[ n ] = decodedBlock;
+    return decodedBlock;
   }
 
 
