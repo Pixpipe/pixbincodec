@@ -58,28 +58,35 @@ class PixBlockDecoder {
     var isLtlt = view.getUint8( 0 );
     var readingByteOffset = 0;
 
+    // primer, part 1
     // get the endianess used to encode the file
     var isLittleEndian = view.getUint8(0)
     readingByteOffset += 1
 
+    // primer, part 2
     // get the length of the string buffer (unicode json) that follows
-    var metadataBufferByteLength = view.getUint32(1, readingByteOffset);
+    var pixBlockHeaderBufferByteLength = view.getUint32(1, readingByteOffset);
     readingByteOffset += 4;
 
     // get the string buffer
-    var strBuffer = input.slice( readingByteOffset, readingByteOffset + metadataBufferByteLength )
-    var metadataObj = CodecUtils.ArrayBufferToObject( strBuffer );
-    readingByteOffset += metadataBufferByteLength;
-
+    var pixBlockHeaderBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeaderBufferByteLength )
+    var pixBlockHeader = CodecUtils.ArrayBufferToObject( pixBlockHeaderBuffer );
+    readingByteOffset += pixBlockHeaderBufferByteLength;
+    
+    // fetching the metadata
+    var metadataBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeader.metadataByteLength );
+    var metadataObject = CodecUtils.ArrayBufferToObject( metadataBuffer );
+    readingByteOffset += pixBlockHeader.metadataByteLength;
+    
     // the data streams are the byte streams when they are converted back to actual typedArrays/Objects
     var dataStreams = []
 
-    for(var i=0; i<metadataObj.byteStreamInfo.length; i++){
+    for(var i=0; i<pixBlockHeader.byteStreamInfo.length; i++){
       // act as a flag: if not null, it means data were compressed
-      var compressedByteLength = metadataObj.byteStreamInfo[i].compressedByteLength
+      var compressedByteLength = pixBlockHeader.byteStreamInfo[i].compressedByteLength
 
       // create a typed array out of the inflated buffer
-      var typedArrayConstructor = this._getDataTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]);
+      var typedArrayConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
       
       // meaning, the stream is compresed
       if( compressedByteLength ){
@@ -109,7 +116,7 @@ class PixBlockDecoder {
            input,
            readingByteOffset,
            Uint8Array,
-           metadataObj.byteStreamInfo[i].length
+           pixBlockHeader.byteStreamInfo[i].length
          )
           
          dataStream = CodecUtils.ArrayBufferToObject( objectBuffer.buffer );
@@ -117,14 +124,14 @@ class PixBlockDecoder {
           dataStream = CodecUtils.extractTypedArray(
             input,
             readingByteOffset,
-            this._getDataTypeFromByteStreamInfo(metadataObj.byteStreamInfo[i]),
-            metadataObj.byteStreamInfo[i].length
+            this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]),
+            pixBlockHeader.byteStreamInfo[i].length
           )
         }
       
 
         dataStreams.push( dataStream )
-        readingByteOffset += metadataObj.byteStreamInfo[i].byteLength;
+        readingByteOffset += pixBlockHeader.byteStreamInfo[i].byteLength;
       }
     }
 
@@ -135,9 +142,9 @@ class PixBlockDecoder {
     }
 
     this._output = {
-      originalBlockType: metadataObj.originalBlockType,
+      originalBlockType: pixBlockHeader.originalBlockType,
       _data: dataStreams,
-      _metadata: metadataObj.containerMeta
+      _metadata: metadataObject
     };
   }
 

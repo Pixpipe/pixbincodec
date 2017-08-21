@@ -206,20 +206,30 @@ class PixBlockEncoder {
       data = compressedData;
     }
 
-    var pixBlockMeta = {
-      byteStreamInfo    : byteStreamInfo,
-      originalBlockType : input.constructor.name,
-      containerMeta     : input._metadata
+    // the metadata are converted into a buffer
+    var metadataBuffer = CodecUtils.objectToArrayBuffer( input._metadata );
+
+    var pixBlockHeader = {
+      byteStreamInfo     : byteStreamInfo,
+      originalBlockType  : input.constructor.name,
+      metadataByteLength : metadataBuffer.byteLength
     }
 
-    // converting the pixBlockMeta obj into a buffer
-    var pixBlockMetaBuff = CodecUtils.objectToArrayBuffer( pixBlockMeta );
+    // converting the pixBlockHeader obj into a buffer
+    var pixBlockHeaderBuff = CodecUtils.objectToArrayBuffer( pixBlockHeader );
 
     // this list will then be transformed into a single buffer
     var allBuffers = [
-      new Uint8Array( [ + CodecUtils.isPlatformLittleEndian() ] ).buffer, // endianess
-      new Uint32Array( [pixBlockMetaBuff.byteLength] ).buffer, // size of the following buff (pixBlockMetaBuff)
-      pixBlockMetaBuff, // the buff of metadada
+      // primer, part 1: endianess
+      new Uint8Array( [ + CodecUtils.isPlatformLittleEndian() ] ).buffer,
+      // primer, part 2: size of the header buff
+      new Uint32Array( [pixBlockHeaderBuff.byteLength] ).buffer, 
+      
+      // the header buff
+      pixBlockHeaderBuff, 
+      
+      // the metadata buffer
+      metadataBuffer
     ]
 
     // adding the actual data buffer to the list

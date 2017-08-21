@@ -4,7 +4,7 @@ To encode data into an ArrayBuffer that uses the PixBin format.
 # The PixBin format
 The PixBin format is a simple way to serialize Javascript object into a binary ArrayBuffer and, eventually, into a file you can save on your computer. Originally it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) can save a state of a piece of data and late, be injected agin into a pipeline for further processing. In the context of Pixpipejs, this piece of data could be an Image2D, an Image3D, a LineString, etc. In the end, it's just a Javascript Object!  
 
-To know more about the format, read this [in-depth description](pixbinformat.md).
+To learn more about the PixBin format, read this [in-depth description](pixbinformat.md).
 
 ## Advantages
 - Optimized for numerical data

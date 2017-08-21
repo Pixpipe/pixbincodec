@@ -38,6 +38,10 @@ In order to be serialize an object into the PixBin format, it must contain:
 The case **1** and **2** are the best for storing numerical information and the case **3** is good for storing object kind.  
 **Note:** if you decide to store numerical data in the case **3**, use `Array` rather than `typed arrays`, also, know that you would be limited to a maximum `_data` size of 65kBytes due to serialization limitation. If you have a big numerical dataset and a big object-based dataset it is beter to store it as two separate block.
   
+# Overview
+Here is what a PixBin file looks like in the end
+![](asset/pixbin_all.png)
+  
 # What is the goal?
 As a binary file format, the goal of the encoding is to transform every chunk of information into `ArrayBuffers`. Then, the concatenation of all these buffers into a bigger one can easily be written in a file.
 
@@ -149,10 +153,13 @@ The block header contains several valuable information for how to read the data 
     }
   ```
 - *originalBlockType*: the name of the object constructor (directly from `constructor.name`)
-- *containerMeta*: a deep copy of the `_metadata` object
+- *metadataByteLength*: the size in bytes of the serialized metadata buffer
 
 Once the *block header* contains the information we need, it is serialized so that it's tranformed into an `ArrayBuffer`.
 All the information contained in the *block header* are important to decode the *data structure*.
+
+## the metadata
+The metadata from the original object are serialized into an ArrayBuffer. Not much else to say about that, except that, for the sake of streaming, it's nevers compressed.
 
 ## The data structure
 As told earlier, the *data structure* is encoded as a buffer, in Javascript, this means a `ArrayBuffer`. This array buffer can come from a *typed array* (case 1), a concatenation of *typed array* (case 2), or an object serialization (case 3).  
@@ -162,8 +169,9 @@ This buffer can be as is or compressed using *zlib* (JS port [Pako](https://gith
 Now for each block we have:
 - an ArrayBuffer for the primer (uncompressed)
 - an ArrayBuffer for the header (uncompressed)
+- an ArrayBuffer for the metadata (uncompressed)
 - an ArrayBuffer for the data (optionaly compressed)
-Great! We can put these 3 ArrayBuffers into a single big one and have a nicely packed independant block!
+Great! We can put these 4 ArrayBuffers into a single big one and have a nicely packed independant block!
 
 # All that together!
 We have already covered the PixBlocks and seen that in the end, they are independant ArrayBuffers. So let's recap what happens:
