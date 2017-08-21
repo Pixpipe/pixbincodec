@@ -148,7 +148,7 @@ class PixBlockDecoder {
   * @return {Function} constructor of a typed array
   */
   _getDataTypeFromByteStreamInfo( bsi ){
-    var dataType = null;
+    var dataType = "Object";
     var globalObject = CodecUtils.getGlobalObject()
 
     if( bsi.type === "int" ){
@@ -160,8 +160,6 @@ class PixBlockDecoder {
       dataType += bsi.bytesPerElements*8 + "Array";
       var globalObject = CodecUtils.getGlobalObject()
       
-    }else if( bsi.type === "object" ){
-      dataType = "Object";
     }
 
     return ( globalObject[ dataType ] )

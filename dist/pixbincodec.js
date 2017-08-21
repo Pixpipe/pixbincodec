@@ -7311,12 +7311,16 @@ class PixBlockEncoder {
       // The input is an Array of typed arrays *********************
       case dataCases.complexObject:
         {
+          
+          //console.log("Type: " + data.constructor.name );
+          var dataType = data.constructor.name;
+          
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
           data = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
           
           var byteStreamInfoSubset = { 
-            type: "object",
+            type: dataType,
             compressedByteLength: null,
             length: data.byteLength
           };
@@ -7540,7 +7544,7 @@ class PixBlockDecoder {
   * @return {Function} constructor of a typed array
   */
   _getDataTypeFromByteStreamInfo( bsi ){
-    var dataType = null;
+    var dataType = "Object";
     var globalObject = CodecUtils.getGlobalObject();
 
     if( bsi.type === "int" ){
@@ -7552,8 +7556,6 @@ class PixBlockDecoder {
       dataType += bsi.bytesPerElements*8 + "Array";
       var globalObject = CodecUtils.getGlobalObject();
       
-    }else if( bsi.type === "object" ){
-      dataType = "Object";
     }
 
     return ( globalObject[ dataType ] )
@@ -8395,14 +8397,14 @@ class PixBinEncoder {
     var magicNumber = PixBinEncoder.MAGIC_NUMBER();
 
     // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
-    var fixedHeader = new ArrayBuffer( magicNumber.length + 5 );
-    var fixedHeaderView = new DataView( fixedHeader );
+    var binPrimer = new ArrayBuffer( magicNumber.length + 5 );
+    var binPrimerView = new DataView( binPrimer );
 
-    CodecUtils.setString8InBuffer( magicNumber, fixedHeader );
-    fixedHeaderView.setUint8( magicNumber.length, (+isLittleEndian));
-    fixedHeaderView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
+    CodecUtils.setString8InBuffer( magicNumber, binPrimer );
+    binPrimerView.setUint8( magicNumber.length, (+isLittleEndian));
+    binPrimerView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
 
-    var allBuffers = [fixedHeader, pixBinIndexBinaryString].concat( pixBlocks );
+    var allBuffers = [binPrimer, pixBinIndexBinaryString].concat( pixBlocks );
     this._output = CodecUtils.mergeBuffers( allBuffers );
 
   }

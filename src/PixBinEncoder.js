@@ -163,14 +163,14 @@ class PixBinEncoder {
     var magicNumber = PixBinEncoder.MAGIC_NUMBER();
 
     // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
-    var fixedHeader = new ArrayBuffer( magicNumber.length + 5 );
-    var fixedHeaderView = new DataView( fixedHeader );
+    var binPrimer = new ArrayBuffer( magicNumber.length + 5 );
+    var binPrimerView = new DataView( binPrimer );
 
-    CodecUtils.setString8InBuffer( magicNumber, fixedHeader );
-    fixedHeaderView.setUint8( magicNumber.length, (+isLittleEndian))
-    fixedHeaderView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
+    CodecUtils.setString8InBuffer( magicNumber, binPrimer );
+    binPrimerView.setUint8( magicNumber.length, (+isLittleEndian))
+    binPrimerView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
 
-    var allBuffers = [fixedHeader, pixBinIndexBinaryString].concat( pixBlocks )
+    var allBuffers = [binPrimer, pixBinIndexBinaryString].concat( pixBlocks )
     this._output = CodecUtils.mergeBuffers( allBuffers )
 
   }

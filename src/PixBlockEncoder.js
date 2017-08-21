@@ -173,12 +173,16 @@ class PixBlockEncoder {
       // The input is an Array of typed arrays *********************
       case dataCases.complexObject:
         {
+          
+          //console.log("Type: " + data.constructor.name );
+          var dataType = data.constructor.name;
+          
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
           data = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
           
           var byteStreamInfoSubset = { 
-            type: "object",
+            type: dataType,
             compressedByteLength: null,
             length: data.byteLength
           }
@@ -211,7 +215,7 @@ class PixBlockEncoder {
     // converting the pixBlockMeta obj into a buffer
     var pixBlockMetaBuff = CodecUtils.objectToArrayBuffer( pixBlockMeta );
 
-    // this list will then be trandformed into a single buffer
+    // this list will then be transformed into a single buffer
     var allBuffers = [
       new Uint8Array( [ + CodecUtils.isPlatformLittleEndian() ] ).buffer, // endianess
       new Uint32Array( [pixBlockMetaBuff.byteLength] ).buffer, // size of the following buff (pixBlockMetaBuff)
