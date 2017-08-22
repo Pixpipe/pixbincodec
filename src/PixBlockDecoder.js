@@ -86,7 +86,10 @@ class PixBlockDecoder {
       var compressedByteLength = pixBlockHeader.byteStreamInfo[i].compressedByteLength
 
       // create a typed array out of the inflated buffer
-      var typedArrayConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
+      var dataStreamConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
+      
+      // know if it's a typed array or a complex object
+      var isTypedArray = pixBlockHeader.byteStreamInfo[i].isTypedArray;
       
       // meaning, the stream is compresed
       if( compressedByteLength ){
@@ -97,10 +100,18 @@ class PixBlockDecoder {
         var inflatedByteStream = pako.inflate( compressedByteStream );
 
         var dataStream = null;
-        if( typedArrayConstructor === Object){
+        /*
+        if( dataStreamConstructor === Object){
           dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }else{
-          dataStream = new typedArrayConstructor( inflatedByteStream.buffer );
+          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
+        }
+        */
+        
+        if( isTypedArray ){
+          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
+        }else{
+          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }
         
         dataStreams.push( dataStream )
@@ -110,7 +121,7 @@ class PixBlockDecoder {
       // the stream were NOT compressed
       else{
         var dataStream = null;
-        if( typedArrayConstructor === Object){
+        if( dataStreamConstructor === Object){
 
           var objectBuffer = CodecUtils.extractTypedArray(
            input,

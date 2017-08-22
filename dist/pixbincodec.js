@@ -7568,7 +7568,7 @@ class CodecUtils {
 const dataCases = {
   invalid: null,  // the data is not compatible (Number, String)
   typedArray: 1,  // the data is compatible, as a typed array
-  arrayOfYpedArrays: 2, // the data is compatible, as an array of typed array
+  mixedArrays: 2, // the data is compatible, as an array of typed array
   complexObject: 3 // a complex object is also compatible (can be a untyped array)
 };
 
@@ -7687,7 +7687,9 @@ class PixBlockEncoder {
       // The input is a typed array ********************************
       case dataCases.typedArray:
         {
-          var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data);
+          //var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data);
+          var byteStreamInfoSubset = this._getDataSubsetInfo(data);
+          
           // additional compression flag
           byteStreamInfoSubset.compressedByteLength = null;
 
@@ -7702,19 +7704,24 @@ class PixBlockEncoder {
         
         
       // The input is an Array of typed arrays *********************
-      case dataCases.arrayOfYpedArrays:
+      case dataCases.mixedArrays:
         {
           usingDataSubsets = true;
           compressedData = [];
 
           // collect bytestream info for each subset of data
           for(var i=0; i<data.length; i++){
-            var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data[i]);
-            // additional compression flag
-            byteStreamInfoSubset.compressedByteLength = null;
+            var dataSubset = data[i];
+            var byteStreamInfoSubset = this._getDataSubsetInfo(dataSubset);
+
+            // if not a typed array, this subset nedds further modifications
+            if( !byteStreamInfoSubset.isTypedArray ){
+              dataSubset = new Uint8Array( CodecUtils.objectToArrayBuffer( dataSubset ) );
+              byteStreamInfoSubset.length = dataSubset.byteLength;
+            }
 
             if(this._compress){
-              var compressedDataSubset = index.deflate( data[i].buffer );
+              var compressedDataSubset = index.deflate( dataSubset.buffer );
               byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
               compressedData.push( compressedDataSubset );
             }
@@ -7727,23 +7734,12 @@ class PixBlockEncoder {
       // The input is an Array of typed arrays *********************
       case dataCases.complexObject:
         {
-          
-          //console.log("Type: " + data.constructor.name );
-          var dataType = data.constructor.name;
-          
-          // we want to avoid typed arrays to be attributes into data, so we are
-          // replacing all of them by regular Arrays
-          var dataWithNotTypedArrays = CodecUtils.replaceTypedArrayAttributesByArrays( data );
+          var byteStreamInfoSubset = this._getDataSubsetInfo( data );
           
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
           data = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
-          
-          var byteStreamInfoSubset = { 
-            type: dataType,
-            compressedByteLength: null,
-            length: data.byteLength
-          };
+          byteStreamInfoSubset.length = data.byteLength;
           
           if(this._compress){
             compressedData = index.deflate( data );
@@ -7815,9 +7811,15 @@ class PixBlockEncoder {
       if( CodecUtils.isTypedArray( data ) )
         return dataCases.typedArray;
         
+      /*
       if( data instanceof Array )
         if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
-          return dataCases.arrayOfYpedArrays;
+          return dataCases.mixedArrays;
+      */
+      
+      // TODO: change the name of this case, since we want to accept Arrays of whatever
+      if( data instanceof Array )
+        return dataCases.mixedArrays;
         
       return dataCases.complexObject; 
     }else{
@@ -7825,6 +7827,31 @@ class PixBlockEncoder {
     }
   }
 
+
+  /**
+  * [PRIVATE]
+  * Return some infomation about the data subset so that it's easier to parse later
+  * @param {Object} subset - can be a typedArray or a complex object
+  * @return {Object} reconstruction info about this subset
+  */
+  _getDataSubsetInfo( subset ){
+    var infoObj = null;
+    
+    if( CodecUtils.isTypedArray(subset) ){
+      infoObj = CodecUtils.getTypedArrayInfo( subset );
+      infoObj.isTypedArray = true;
+    }else{
+      infoObj = { 
+        type: subset.constructor.name,
+        compressedByteLength: null,
+        length: null,
+        isTypedArray: false
+      };
+    }
+    
+    return infoObj;
+  }
+  
 
 } /* END of class PixBlockEncoder */
 
@@ -7912,7 +7939,10 @@ class PixBlockDecoder {
       var compressedByteLength = pixBlockHeader.byteStreamInfo[i].compressedByteLength;
 
       // create a typed array out of the inflated buffer
-      var typedArrayConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
+      var dataStreamConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
+      
+      // know if it's a typed array or a complex object
+      var isTypedArray = pixBlockHeader.byteStreamInfo[i].isTypedArray;
       
       // meaning, the stream is compresed
       if( compressedByteLength ){
@@ -7923,10 +7953,18 @@ class PixBlockDecoder {
         var inflatedByteStream = index.inflate( compressedByteStream );
 
         var dataStream = null;
-        if( typedArrayConstructor === Object){
+        /*
+        if( dataStreamConstructor === Object){
           dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }else{
-          dataStream = new typedArrayConstructor( inflatedByteStream.buffer );
+          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
+        }
+        */
+        
+        if( isTypedArray ){
+          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
+        }else{
+          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }
         
         dataStreams.push( dataStream );
@@ -7936,7 +7974,7 @@ class PixBlockDecoder {
       // the stream were NOT compressed
       else{
         var dataStream = null;
-        if( typedArrayConstructor === Object){
+        if( dataStreamConstructor === Object){
 
           var objectBuffer = CodecUtils.extractTypedArray(
            input,

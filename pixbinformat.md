@@ -6,14 +6,14 @@ In order to be serialize an object into the PixBin format, it must contain:
 - a `_data` attribute, no matter what it contains
 - a `_metadata` attribute, no matter what it contains
 
-**Notice:** since this format is intended to encode numerical data like pixel arrays or position arrays, the encoding the `_data` object will be optimized in the following cases:
+**Notice:** since this format is intended to encode numerical data like pixel arrays or position arrays, the encoding of the `_data` object will be optimized in the following cases:
 1. `_data` is a [typed array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays). There is a **single stream** to encode (case 1).  
   Example:
   ```javascript
   // case 1, optimization OK
   var _data = new Float32Array(1000);
   ```
-2. `_data` is an `Array` of [typed arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays). There are **several streams** to encode (case 2).  
+2. `_data` is a mixed `Array`, containing [typed arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays) and possibly other things. There are **several streams** to encode (case 2).  
   Example:
   ```javascript
   // case 2, optimization OK
@@ -23,6 +23,7 @@ In order to be serialize an object into the PixBin format, it must contain:
     new Int8Array(8000)
   ];
   ```
+  Each element that is a typed array will be encoded natively and complex objects will be serialized.
 
 3. `_data` is an `Object` (or `{}`), then it will be serialized (see [Object serialization](#a-word-on-object-serialization)).  There is a **single stream** to encode (case 3).  
   Example:
