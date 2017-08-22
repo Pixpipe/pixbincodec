@@ -43,7 +43,7 @@ Here is what a PixBin file looks like in the end
 ![](asset/pixbin_all.png)
   
 # What is the goal?
-As a binary file format, the goal of the encoding is to transform every chunk of information into `ArrayBuffers`. Then, the concatenation of all these buffers into a bigger one can easily be written in a file.
+As a binary file format, the goal of the encoding is to transform every chunk of information into `ArrayBuffers`. The concatenation of all these buffers becomes one big `ArrayBuffer` that one can easily write to a file.
 
 # A word on object serialization
 The concept of serializing data is to transform an object or a complex data structure into a linear buffer that is easy to write or stream. Fortunately, Javascript provides a universal format for that: **JSON**. But remember: PixBin is a binary format, not a text-based format, this means a JSON string is not enough and need an additional step to be encapsulated into a *pixb* file. In order to store special characters (accentuated letter, non-latin alphabet charaters, symbols and emoji) in the binary representation of `_metadata` or `_data`, buffers have to support *unicode* (2 bytes per character, while ASCII is only 1 bytes per charater).  
