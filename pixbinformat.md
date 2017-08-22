@@ -36,8 +36,13 @@ In order to be serialize an object into the PixBin format, it must contain:
   ```
 
 The case **1** and **2** are the best for storing numerical information and the case **3** is good for storing object kind.  
-**Note:** if you decide to store numerical data in the case **3**, use `Array` rather than `typed arrays`, also, know that you would be limited to a maximum `_data` size of 65kBytes due to serialization limitation. If you have a big numerical dataset and a big object-based dataset it is beter to store it as two separate block.
+
+**Case3 notice:**  
+1. If you decide to store numerical data as some attribute of the `_data` object in case **3**, use `Array` rather than `typed arrays`. Using any of the typed arrays (`Uint8Array`, `Uint16Array`, `Float32Array`, etc. ) in **case 3** will be followed by an automatic convertion into regular `Arrays` anyway.  
+2. Know that you would be limited to a maximum `_data` size of 65kBytes due to serialization limitation. If you have a big numerical dataset and a big object-based dataset it is beter to store it as two separate block.
+3. If the `_data` object contains *circular reference*, they will be removed. (this is also true for `_metadata` in case 1, 2 and 3);
   
+
 # Overview
 Here is what a PixBin file looks like in the end
 ![](asset/pixbin_all.png)

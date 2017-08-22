@@ -14,7 +14,7 @@ import { CodecUtils } from 'codecutils';
 const dataCases = {
   invalid: null,  // the data is not compatible (Number, String)
   typedArray: 1,  // the data is compatible, as a typed array
-  arrayOfYpedArrays: 2, // the data is compatible, as an array of typed array
+  arrayOfTypedArrays: 2, // the data is compatible, as an array of typed array
   complexObject: 3 // a complex object is also compatible (can be a untyped array)
 }
 
@@ -148,7 +148,7 @@ class PixBlockEncoder {
         
         
       // The input is an Array of typed arrays *********************
-      case dataCases.arrayOfYpedArrays:
+      case dataCases.arrayOfTypedArrays:
         {
           usingDataSubsets = true;
           compressedData = [];
@@ -176,6 +176,10 @@ class PixBlockEncoder {
           
           //console.log("Type: " + data.constructor.name );
           var dataType = data.constructor.name;
+          
+          // we want to avoid typed arrays to be attributes into data, so we are
+          // replacing all of them by regular Arrays
+          var dataWithNotTypedArrays = CodecUtils.replaceTypedArrayAttributesByArrays( data )
           
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
@@ -259,7 +263,7 @@ class PixBlockEncoder {
         
       if( data instanceof Array )
         if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
-          return dataCases.arrayOfYpedArrays;
+          return dataCases.arrayOfTypedArrays;
         
       return dataCases.complexObject; 
     }else{

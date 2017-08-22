@@ -25,6 +25,7 @@
   "dependencies": {
     "codecutils": "github:Pixpipe/codecutils",
     "js-md5": "^0.6.0",
-    "pako": "^1.0.5"
+    "pako": "^1.0.5",
+    "traverse": "^0.6.6"
   }
 }

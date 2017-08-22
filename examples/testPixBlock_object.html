@@ -17,7 +17,7 @@
           name: "the sample a",
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus maximus laoreet lorem quis porttitor. Fusce vel dui vitae neque facilisis commodo sit amet in diam. Phasellus tincidunt ante sed eros feugiat iaculis. Sed fringilla turpis consequat dolor tincidunt, eu eleifend lacus tristique. Vivamus libero velit, hendrerit nec orci volutpat, feugiat bibendum nisi. Vestibulum nec nisl ornare, tincidunt odio vitae, eleifend elit. Vestibulum convallis dolor lorem, id dignissim tortor sodales in. Curabitur molestie nibh scelerisque lectus bibendum, vel vestibulum ex consectetur. Maecenas blandit nulla felis, id porttitor justo dapibus vel. Integer fermentum sapien at lacus lobortis fermentum. Curabitur ultrices ullamcorper tellus, ac consequat ligula viverra quis. Donec ex leo, fringilla at eleifend et, mollis in felis.",
           date: new Date(),
-          record: getlargeTypedArray(1000, false)
+          record: getlargeTypedArray(1000, true)
         },
         
         b: { 
@@ -34,6 +34,9 @@
         subdiv: ["a", "b", "c", "d", "e"]
       }
     }
+    
+    // messing up with circular reference, should be removed
+    data.d = data;
 
     var simpleObject = {
       _data: data,
