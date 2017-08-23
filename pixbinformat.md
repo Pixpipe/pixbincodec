@@ -124,7 +124,7 @@ As you can see, `pixblocksInfo` does not say where in the PixBin buffer start ea
 
 # Block structure
 The structure of a block is as follow:
-![](asset/pixblock_desc.png)
+![](asset/pixblock_desc_.png)
 
 ## The PixBlock primer
 - **1 byte, 1xUint8** to specify endianness. 0: big endian, 1: little endian
