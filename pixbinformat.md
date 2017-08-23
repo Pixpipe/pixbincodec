@@ -17,7 +17,7 @@ In order to be serialize an object into the PixBin format, it must contain:
   Example:
   ```javascript
   // case 2, optimization OK
-  var _data = [ 
+  var _data = [
     new Float32Array(1000),
     new Uint16Array(500),
     new Int8Array(8000)
@@ -39,26 +39,26 @@ In order to be serialize an object into the PixBin format, it must contain:
 The case **1** and **2** are the best for storing numerical information and the case **3** is good for storing object kind.  
 
 **Case3 notice:**  
-1. If you decide to store numerical data as some attribute of the `_data` object in case **3**, use `Array` rather than `typed arrays`. Using any of the typed arrays (`Uint8Array`, `Uint16Array`, `Float32Array`, etc. ) in **case 3** will be followed by an automatic convertion into regular `Arrays` anyway.  
-2. Know that you would be limited to a maximum `_data` size of 65kBytes due to serialization limitation. If you have a big numerical dataset and a big object-based dataset it is beter to store it as two separate block.
+1. If you decide to store numerical data in an attribute of `_data`, use `Array` rather than `typed arrays`. Using any of the typed arrays (`Uint8Array`, `Uint16Array`, `Float32Array`, etc. ) in **case 3** will be followed by an automatic conversion into regular `Arrays`. Even though the conversion is fast for small to medium length arrays, it's obviously longer than not having to convert.
+2. Know that you would be limited to a maximum `_data` size of 65kBytes due to serialization limitation. If you have a big numerical dataset and a big object-based dataset it is better to store it as two separate block as in **case 1** or use a mixed array as in **case 2**.
 3. If the `_data` object contains *circular reference*, they will be removed. (this is also true for `_metadata` in case 1, 2 and 3);
-  
+
 
 # Overview
 Here is what a PixBin file looks like in the end
 ![](asset/pixbin_all.png)
-  
+
 # What is the goal?
 As a binary file format, the goal of the encoding is to transform every chunk of information into `ArrayBuffers`. Then, the concatenation of all these buffers into a bigger one can easily be written in a file.
 
 # A word on object serialization
-The concept of serializing data is to transform an object or a complex data structure into a linear buffer that is easy to write or stream. Fortunately, Javascript provides a universal format for that: **JSON**. But remember: PixBin is a binary format, not a text-based format, this means a JSON string is not enough and need an additional step to be encapsulated into a *pixb* file. In order to store special characters (accentuated letter, non-latin alphabet charaters, symbols and emoji) in the binary representation of `_metadata` or `_data`, buffers have to support *unicode* (2 bytes per character, while ASCII is only 1 bytes per charater).  
+The concept of serializing data is to transform an object or a complex data structure into a linear buffer that is easy to write or stream. Fortunately, Javascript provides a universal format for that: **JSON**. But remember: PixBin is a binary format, not a text-based format, this means a JSON string is not enough and needs an additional step to be encapsulated into a *pixb* file. In order to store special characters (accentuated letter, non-latin characters, symbols and emoji) in the binary representation of `_metadata` or `_data`, buffers have to support *unicode* (2 bytes per character, while ASCII is only 1 bytes per character).  
 In this document, when we are mentioning "object serialization", it means:
 - converting an object to a JSON string
 - don't forget we'll have to allocate 2 bytes per character
 - write every unicode charcode of the JSON string into a `Uint16Array`
 
-**Info:** If you want to use such serialization ouside of PixBin codec, you can have a look at [CodecUtils](https://github.com/Pixpipe/codecutils), a small and handy toolbox for coding and decoding things. The method you may be interested in are `objectToArrayBuffer( obj )` and `ArrayBufferToObject( buff )`.
+**Info:** If you want to use such serialization outside of PixBin codec, you can have a look at [CodecUtils](https://github.com/Pixpipe/codecutils), a small and handy toolbox for coding and decoding things. The method you may be interested in are `objectToArrayBuffer( obj )` and `ArrayBufferToObject( buff )`.
 
 
 # The PixBin structure
@@ -83,16 +83,16 @@ Before being serialized, the header is a JS object with attributes and values:
 {
   // The date of creation
   date: [Date],
-  
+
   // The app that created it. Default: "pixbincodec_js" but can be changed
   createdWith: [String],
-  
+
   // A description the user can add (optional, default: null)
   description: [String],
-  
+
   // A JS object with further information (optional, default: null)
   userObject: this._options.userObject,
-  
+
   // Array of block information. One element per block in the bin
   pixblocksInfo: []
 }
@@ -106,13 +106,13 @@ Before being serialized, the header is a JS object with attributes and values:
   // This is not used for reconstruction since the same info is present in the block metadata,
   // but this can be useful in a index to know what kind of data is here without having to decode it
   type: [String],
-  
+
   // If a block _metadata object has an attribute "description", then is copied here. (default: null)
   description: [String]
-  
+
   // The length of the block in number of bytes
   byteLength: [Number],
-  
+
   // The md5 checksum generated at encoding. Handy to check if file is corrupted
   checksum: [String],
 }
@@ -141,19 +141,19 @@ The block header contains several valuable information for how to read the data 
       // type is a string representing the name of the constructor of the stream
       // (ie. "Uint8Array", "Float32Array", "Object", etc. )
       type: [String],
-      
+
       // relevant only if this stream is a typed array. True if signed, false if unsigned
       signed: [Boolean],
-      
+
       // relevant only if this stream is a typed array. Number of byte per number in the array.
       bytesPerElements: [Number],
-      
+
       // length of the stream in byte
       byteLength: [Number],
-      
+
       // relevant only if this stream is a typed array. Size of the typed array
       length: [Number]
-      
+
       // Lengthen in number of byte of the stream when/if compressed. Remain null if uncompressed
       compressedByteLength: [Number],
     }
@@ -176,9 +176,16 @@ Now for each block we have:
 - an ArrayBuffer for the primer (uncompressed)
 - an ArrayBuffer for the header (uncompressed)
 - an ArrayBuffer for the metadata (uncompressed)
-- an ArrayBuffer for the data (optionaly compressed)
+- an ArrayBuffer for the data (optionally compressed)
 Great! We can put these 4 ArrayBuffers into a single big one and have a nicely packed independant block!
 
 # All that together!
 We have already covered the PixBlocks and seen that in the end, they are independant ArrayBuffers. So let's recap what happens:
 ![](asset/pixbin_all.png)
+
+
+# "I don't know what case to chose!"
+If you are still in the design phase and wondering what form should your `_data` object, then **case 2: mixed Array** definitely provides the most flexibility:
+- You can have a mixed Array of size one: only a single typed array or a single object.
+- You can decide later if you want to add more
+- You can use both large numerical arrays and complex objects
