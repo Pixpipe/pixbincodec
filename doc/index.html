@@ -23,6 +23,46 @@
             type='text' />
           <div id='toc'>
               <a
+                href='#_getDataSubsetInfo'
+                class='block bold'>
+                _getDataSubsetInfo
+              </a>
+              <a
+                href='#enableDataCompression'
+                class='block bold'>
+                enableDataCompression
+              </a>
+              <a
+                href='#getOutput'
+                class='block bold'>
+                getOutput
+              </a>
+              <a
+                href='#reset'
+                class='block bold'>
+                reset
+              </a>
+              <a
+                href='#run'
+                class='block bold'>
+                run
+              </a>
+              <a
+                href='#setInput'
+                class='block bold'>
+                setInput
+              </a>
+              <a
+                href='#determineDataCase'
+                class='block bold'>
+                determineDataCase
+              </a>
+              <a
+                href='#isGoodCandidate'
+                class='block bold'>
+                isGoodCandidate
+              </a>
+              <a
                 href='#_getDataTypeFromByteStreamInfo'
                 class='block bold'>
                 _getDataTypeFromByteStreamInfo
@@ -152,47 +192,149 @@
                   class='regular block'>
                   #setOption
                 </a>
-              <a
-                href='#enableDataCompression'
-                class='block bold'>
-                enableDataCompression
-              </a>
-              <a
-                href='#getOutput'
-                class='block bold'>
-                getOutput
-              </a>
-              <a
-                href='#reset'
-                class='block bold'>
-                reset
-              </a>
-              <a
-                href='#run'
-                class='block bold'>
-                run
-              </a>
-              <a
-                href='#setInput'
-                class='block bold'>
-                setInput
-              </a>
-              <a
-                href='#determineDataCase'
-                class='block bold'>
-                determineDataCase
-              </a>
-              <a
-                href='#isGoodCandidate'
-                class='block bold'>
-                isGoodCandidate
-              </a>
           </div>
         </div>
       </div>
       <div class='fix-margin-3'>
         <div class='px2'>
 <div class='py1'><section class='py2 clearfix'>
+  <h2 id='_getDataSubsetInfo' class='mt0'>
+    _getDataSubsetInfo<span class='gray'>(subset)</span>
+  </h2>
+  <p>[PRIVATE]
+Return some infomation about the data subset so that it&apos;s easier to parse later</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code> <strong>subset</strong>
+          :
+          <div class='force-inline'>
+            <p>can be a typedArray or a complex object</p>
+
+          </div>
+        </li>
+    </ul>
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
+      :
+      <div class='force-inline'>
+        <p>reconstruction info about this subset</p>
+
+      </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='enableDataCompression' class='mt0'>
+    enableDataCompression<span class='gray'>(b)</span>
+  </h2>
+  <p>Set a boolean to secify if data should be compressed or not</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code> <strong>b</strong>
+          :
+          <div class='force-inline'>
+            <p>true to compress, false to not compress</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='getOutput' class='mt0'>
+    getOutput<span class='gray'></span>
+  </h2>
+  <p>Get the output</p>
+
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
+      :
+      <div class='force-inline'>
+        <p>the output, or null</p>
+
+      </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='reset' class='mt0'>
+    reset<span class='gray'></span>
+  </h2>
+  <p>reset inputs and inputs</p>
+
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='run' class='mt0'>
+    run<span class='gray'></span>
+  </h2>
+  <p>Launch the encoding of the block</p>
+
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='setInput' class='mt0'>
+    setInput<span class='gray'>(obj)</span>
+  </h2>
+  <p>Specify an input to the encoder</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code> <strong>obj</strong>
+          :
+          <div class='force-inline'>
+            <p>an object candidate, containing a _data and _metadata attributes</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='determineDataCase' class='mt0'>
+    determineDataCase<span class='gray'>(data)</span>
+  </h2>
+  <p>[STATIC]
+Give in what case we fall when we want to use this data.
+Cases are described at the top</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><code>Whatever</code> <strong>data</strong>
+          :
+          <div class='force-inline'>
+            <p>a piec of data, object, array, typed array...</p>
+
+          </div>
+        </li>
+    </ul>
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code></code>
+      :
+      <div class='force-inline'>
+        <p>the case</p>
+
+      </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='isGoodCandidate' class='mt0'>
+    isGoodCandidate<span class='gray'>(obj)</span>
+  </h2>
+  <p>Check if the given object is a good intput candidate</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code> <strong>obj</strong>
+          :
+          <div class='force-inline'>
+            <p>an object candidate, containing a _data and _metadata attributes</p>
+
+          </div>
+        </li>
+    </ul>
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code></code>
+      :
+      <div class='force-inline'>
+        <p>true if good candidate, false if not</p>
+
+      </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
   <h2 id='_getDataTypeFromByteStreamInfo' class='mt0'>
     _getDataTypeFromByteStreamInfo<span class='gray'>(bsi)</span>
   </h2>
@@ -864,118 +1006,6 @@ reset inputs and inputs</p>
             </section>
           </div>
         </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='enableDataCompression' class='mt0'>
-    enableDataCompression<span class='gray'>(b)</span>
-  </h2>
-  <p>Set a boolean to secify if data should be compressed or not</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code> <strong>b</strong>
-          :
-          <div class='force-inline'>
-            <p>true to compress, false to not compress</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='getOutput' class='mt0'>
-    getOutput<span class='gray'></span>
-  </h2>
-  <p>Get the output</p>
-
-      <h4>Returns</h4>
-      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
-      :
-      <div class='force-inline'>
-        <p>the output, or null</p>
-
-      </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='reset' class='mt0'>
-    reset<span class='gray'></span>
-  </h2>
-  <p>reset inputs and inputs</p>
-
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='run' class='mt0'>
-    run<span class='gray'></span>
-  </h2>
-  <p>Launch the encoding of the block</p>
-
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='setInput' class='mt0'>
-    setInput<span class='gray'>(obj)</span>
-  </h2>
-  <p>Specify an input to the encoder</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code> <strong>obj</strong>
-          :
-          <div class='force-inline'>
-            <p>an object candidate, containing a _data and _metadata attributes</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='determineDataCase' class='mt0'>
-    determineDataCase<span class='gray'>(data)</span>
-  </h2>
-  <p>[STATIC]
-Give in what case we fall when we want to use this data.
-Cases are described at the top</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><code>Whatever</code> <strong>data</strong>
-          :
-          <div class='force-inline'>
-            <p>a piec of data, object, array, typed array...</p>
-
-          </div>
-        </li>
-    </ul>
-      <h4>Returns</h4>
-      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code></code>
-      :
-      <div class='force-inline'>
-        <p>the case</p>
-
-      </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='isGoodCandidate' class='mt0'>
-    isGoodCandidate<span class='gray'>(obj)</span>
-  </h2>
-  <p>Check if the given object is a good intput candidate</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code> <strong>obj</strong>
-          :
-          <div class='force-inline'>
-            <p>an object candidate, containing a _data and _metadata attributes</p>
-
-          </div>
-        </li>
-    </ul>
-      <h4>Returns</h4>
-      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code></code>
-      :
-      <div class='force-inline'>
-        <p>true if good candidate, false if not</p>
-
-      </div>
 </section>
 </div>
         </div>
