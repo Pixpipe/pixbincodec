@@ -7150,10 +7150,10 @@ class CodecUtils {
   * @param {ArrayBuffer} buf - input ArrayBuffer
   * @return {String} a string compatible with Unicode characters
   */
-  static arrayBufferToString16( buf ) {
+  static arrayBufferToUnicode( buff ) {
     var buffUint8 = new Uint8Array(buff);
-    // TODO(user): Use native implementations if/when available
     var out = [], pos = 0, c = 0;
+    
     while (pos < buffUint8.length) {
       var c1 = buffUint8[pos++];
       if (c1 < 128) {
@@ -7190,7 +7190,7 @@ class CodecUtils {
   * @param {String} str - string to encode
   * @return {ArrayBuffer} the output ArrayBuffer
   */
-  static string16ToArrayBuffer( str ) {
+  static unicodeToArrayBuffer( str ) {
     var out = [], p = 0;
     for (var i = 0; i < str.length; i++) {
       var c = str.charCodeAt(i);
@@ -7315,7 +7315,7 @@ class CodecUtils {
 
     try{
       var strObj = JSON.stringify( objCleanClone );
-      buff = CodecUtils.string16ToArrayBuffer(strObj);
+      buff = CodecUtils.unicodeToArrayBuffer(strObj);
     }catch(e){
       console.warn(e);
     }
@@ -7334,7 +7334,7 @@ class CodecUtils {
     var obj = null;
 
     try{
-      var strObj = CodecUtils.arrayBufferToString16( buff );
+      var strObj = CodecUtils.arrayBufferToUnicode( buff );
       obj = JSON.parse( strObj );
     }catch(e){
       console.warn(e);
@@ -7890,6 +7890,7 @@ class PixBlockEncoder {
     if( CodecUtils.isTypedArray(subset) ){
       infoObj = CodecUtils.getTypedArrayInfo( subset );
       infoObj.isTypedArray = true;
+      infoObj.compressedByteLength = null;
     }else{
       infoObj = {
         type: subset.constructor.name,

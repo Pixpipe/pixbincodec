@@ -286,6 +286,7 @@ class PixBlockEncoder {
     if( CodecUtils.isTypedArray(subset) ){
       infoObj = CodecUtils.getTypedArrayInfo( subset );
       infoObj.isTypedArray = true;
+      infoObj.compressedByteLength = null;
     }else{
       infoObj = {
         type: subset.constructor.name,
