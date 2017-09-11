@@ -146,7 +146,7 @@ class PixBlockDecoder {
 
     // If data is a single typed array (= not composed of a subset)
     // we get rid of the useless wrapping array
-    if( dataStreams.length == 1){
+    if( !pixBlockHeader.useMultipleDataStreams ){
       dataStreams = dataStreams[0]
     }
 

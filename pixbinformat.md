@@ -160,6 +160,8 @@ The block header contains several valuable information for how to read the data 
   ```
 - *originalBlockType*: the name of the object constructor (directly from `constructor.name`)
 - *metadataByteLength*: the size in bytes of the serialized metadata buffer
+- *useMultipleDataStreams*: Boolean. If `true`, the block's data is an Array of buffers/objects. If `false`, the block's data is a single buffer.  
+ **Notice:** *useMultipleDataStreams* will be *true* even when the wrapping array has only a single component.
 
 Once the *block header* contains the information we need, it is serialized so that it's tranformed into an `ArrayBuffer`.
 All the information contained in the *block header* are important to decode the *data structure*.

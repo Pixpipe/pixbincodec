@@ -123,25 +123,27 @@ class PixBlockEncoder {
 
     var compress = this._compress;
     var data = input._data;
+    var encodedData = null;
     var compressedData = null;
 
     var byteStreamInfo = [];
-    var usingDataSubsets = false;
+    var useMultipleDataStreams = false;
 
     switch (this._inputCase) {
 
       // The input is a typed array ********************************
       case dataCases.typedArray:
         {
-          //var byteStreamInfoSubset = CodecUtils.getTypedArrayInfo(data);
+          // no real need to compress the data here
+          encodedData = data;
           var byteStreamInfoSubset = this._getDataSubsetInfo(data);
 
           // additional compression flag
           byteStreamInfoSubset.compressedByteLength = null;
 
           if(this._compress){
-            compressedData = pako.deflate( data.buffer );
-            byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
+            encodedData = pako.deflate( encodedData.buffer );
+            byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
           }
 
           byteStreamInfo.push( byteStreamInfoSubset )
@@ -152,10 +154,10 @@ class PixBlockEncoder {
       // The input is an Array of typed arrays *********************
       case dataCases.mixedArrays:
         {
-          usingDataSubsets = true;
+          useMultipleDataStreams = true;
           compressedData = [];
 
-          var encodedData = new Array(data.length)
+          encodedData = new Array( data.length )
 
           // collect bytestream info for each subset of data
           for(var i=0; i<data.length; i++){
@@ -179,7 +181,9 @@ class PixBlockEncoder {
             encodedData[i] = currentDataStream;
           }
           
-          data = encodedData;
+          if(this._compress){
+            encodedData = compressedData
+          }
         }
         break;
 
@@ -190,12 +194,12 @@ class PixBlockEncoder {
 
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
-          data = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
-          byteStreamInfoSubset.byteLength = data.byteLength;
+          encodedData = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
+          byteStreamInfoSubset.byteLength = encodedData.byteLength;
 
           if(this._compress){
-            compressedData = pako.deflate( data );
-            byteStreamInfoSubset.compressedByteLength = compressedData.byteLength;
+            encodedData = pako.deflate( encodedData );
+            byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
           }
 
           byteStreamInfo.push( byteStreamInfoSubset );
@@ -207,18 +211,14 @@ class PixBlockEncoder {
         return;
     }
 
-    // from now, if compression is enabled, what we call data is compressed data
-    if(this._compress){
-      data = compressedData;
-    }
-
     // the metadata are converted into a buffer
     var metadataBuffer = CodecUtils.objectToArrayBuffer( input._metadata );
 
     var pixBlockHeader = {
-      byteStreamInfo     : byteStreamInfo,
-      originalBlockType  : input.constructor.name,
-      metadataByteLength : metadataBuffer.byteLength
+      byteStreamInfo         : byteStreamInfo,
+      useMultipleDataStreams : useMultipleDataStreams,
+      originalBlockType      : input.constructor.name,
+      metadataByteLength     : metadataBuffer.byteLength
     }
 
     // converting the pixBlockHeader obj into a buffer
@@ -238,13 +238,13 @@ class PixBlockEncoder {
       metadataBuffer
     ]
 
-    // adding the actual data buffer to the list
-    if( usingDataSubsets ){
-      for(var i=0; i<data.length; i++){
-          allBuffers.push( data[i].buffer )
+    // adding the actual encodedData buffer to the list
+    if( useMultipleDataStreams ){
+      for(var i=0; i<encodedData.length; i++){
+          allBuffers.push( encodedData[i].buffer )
       }
     }else{
-      allBuffers.push( data.buffer )
+      allBuffers.push( encodedData.buffer )
     }
 
     this._output = CodecUtils.mergeBuffers( allBuffers );
