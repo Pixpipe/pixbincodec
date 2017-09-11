@@ -13,7 +13,7 @@
 
 
     var simpleObject = {
-      _data: [getlargeTypedArray(100000), getlargeTypedArray(50000)],
+      _data: [getlargeTypedArray(100000), {val1: "val1", val2: "val2"}, getlargeTypedArray(50000)],
       _metadata: {
         firstname: "john",
         lastname: "Doe",
@@ -22,7 +22,7 @@
     }
 
     var blockEncoder = new pixbincodec.PixBlockEncoder();
-    blockEncoder.enableDataCompression( true );
+    blockEncoder.enableDataCompression( false );
     blockEncoder.setInput(simpleObject)
     blockEncoder.run();
 

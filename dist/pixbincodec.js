@@ -7759,25 +7759,31 @@ class PixBlockEncoder {
           usingDataSubsets = true;
           compressedData = [];
 
+          var encodedData = new Array(data.length);
+
           // collect bytestream info for each subset of data
           for(var i=0; i<data.length; i++){
-
-            var byteStreamInfoSubset = this._getDataSubsetInfo( data[i] );
+            var currentDataStream = data[i];
+            var byteStreamInfoSubset = this._getDataSubsetInfo( currentDataStream );
 
             // if not a typed array, this subset needs further modifications
             if( !byteStreamInfoSubset.isTypedArray ){
-              data[i] = new Uint8Array( CodecUtils.objectToArrayBuffer( data[i] ) );
-              byteStreamInfoSubset.byteLength = data[i].byteLength;
+              currentDataStream = new Uint8Array( CodecUtils.objectToArrayBuffer( currentDataStream ) );
+              byteStreamInfoSubset.byteLength = currentDataStream.byteLength;
             }
 
             if(this._compress){
-              var compressedDataSubset = index.deflate( data[i].buffer );
+              var compressedDataSubset = index.deflate( currentDataStream.buffer );
               byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
               compressedData.push( compressedDataSubset );
             }
 
             byteStreamInfo.push( byteStreamInfoSubset );
+            
+            encodedData[i] = currentDataStream;
           }
+          
+          data = encodedData;
         }
         break;
 
