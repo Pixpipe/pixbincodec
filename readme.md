@@ -1,8 +1,10 @@
-# PixBin codec
-To encode data into an ArrayBuffer that uses the PixBin format.
-
 # The PixBin format
-The PixBin format is a simple way to serialize Javascript object into a binary ArrayBuffer and, eventually, into a file you can save on your computer. Originally it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) can save a state of a piece of data and late, be injected agin into a pipeline for further processing. In the context of Pixpipejs, this piece of data could be an Image2D, an Image3D, a LineString, etc. In the end, it's just a Javascript Object!  
+The PixBin format is a simple way to serialize Javascript/JSON objects as well as low-level buffers into a single binary buffer file you can save on your computer. Originally it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) can savea piece of data and that could later be reinjected into another pipeline for further processing. In the context of Pixpipejs, this piece of data could be an `Image2D`, an `Image3D`, a `LineString`, etc. In the end, it's just Javascript/JSON Objects and a low level buffers!  
+
+The first use-case is in Pixpipejs/Javascript but the PixBin format can be created and decoded with other languages. As an examplem we also have [Python codec](https://github.com/Pixpipe/pyxbincodec).
+
+# Again a new file format??
+That's right. At first, we wanted to use the *NIfTI* format to encode Pixpipe outputs but the browser-side Javascript context implyed to write a NIfTI encoder from scratch, which can be cumbersome. In addition, NIfTI is not multimodality, cannot store extensive metadata and cannot deal with internal buffer compression.
 
 To learn more about the PixBin format, read this [in-depth description](pixbinformat.md).
 
