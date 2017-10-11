@@ -1,9 +1,3 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.pixbincodec = global.pixbincodec || {})));
-}(this, (function (exports) { 'use strict';
-
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 
@@ -22,6 +16,9 @@ var TYPED_OK =  (typeof Uint8Array !== 'undefined') &&
                 (typeof Uint16Array !== 'undefined') &&
                 (typeof Int32Array !== 'undefined');
 
+function _has(obj, key) {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
 
 exports.assign = function (obj /*from1, from2, from3, ...*/) {
   var sources = Array.prototype.slice.call(arguments, 1);
@@ -34,7 +31,7 @@ exports.assign = function (obj /*from1, from2, from3, ...*/) {
     }
 
     for (var p in source) {
-      if (source.hasOwnProperty(p)) {
+      if (_has(source, p)) {
         obj[p] = source[p];
       }
     }
@@ -118,6 +115,8 @@ exports.setTyped = function (on) {
 
 exports.setTyped(TYPED_OK);
 });
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -247,7 +246,7 @@ var bl_order =
 
 var DIST_CODE_LEN = 512; /* see definition of array dist_code below */
 
-// !!!! Use flat array insdead of structure, Freq = i*2, Len = i*2+1
+// !!!! Use flat array instead of structure, Freq = i*2, Len = i*2+1
 var static_ltree  = new Array((L_CODES$1 + 2) * 2);
 zero$1(static_ltree);
 /* The static literal tree. Since the bit lengths are imposed, there is no
@@ -1302,7 +1301,7 @@ function _tr_tally(s, dist, lc)
     s.dyn_dtree[d_code(dist) * 2]/*.Freq*/++;
   }
 
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 
 //#ifdef TRUNCATE_BLOCK
@@ -1346,8 +1345,10 @@ var trees = {
 	_tr_align: _tr_align_1
 };
 
+'use strict';
+
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
-// It doesn't worth to make additional optimizationa as in original.
+// It isn't worth it to make additional optimizations as in original.
 // Small size is preferable.
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -1395,6 +1396,8 @@ function adler32(adler, buf, len, pos) {
 
 
 var adler32_1 = adler32;
+
+'use strict';
 
 // Note: we can't get significant speed boost here.
 // So write code to minimize size - no pregenerated tables
@@ -1454,6 +1457,8 @@ function crc32(crc, buf, len, pos) {
 
 var crc32_1 = crc32;
 
+'use strict';
+
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -1484,6 +1489,8 @@ var messages = {
   '-5':   'buffer error',        /* Z_BUF_ERROR     (-5) */
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -3370,10 +3377,17 @@ var deflate_1$2 = {
 	deflateInfo: deflateInfo
 };
 
+// String encode/decode helpers
+'use strict';
+
+
+
+
+
 // Quick check if we can use fast array to bin string conversion
 //
 // - apply(Array) can fail on Android 2.2
-// - apply(Uint8Array) can fail on iOS 5.1 Safary
+// - apply(Uint8Array) can fail on iOS 5.1 Safari
 //
 var STR_APPLY_OK = true;
 var STR_APPLY_UIA_OK = true;
@@ -3538,11 +3552,11 @@ var utf8border = function (buf, max) {
   pos = max - 1;
   while (pos >= 0 && (buf[pos] & 0xC0) === 0x80) { pos--; }
 
-  // Fuckup - very small and broken sequence,
+  // Very small and broken sequence,
   // return max, because we should return something anyway.
   if (pos < 0) { return max; }
 
-  // If we came to start of buffer - that means vuffer is too small,
+  // If we came to start of buffer - that means buffer is too small,
   // return max too.
   if (pos === 0) { return max; }
 
@@ -3556,6 +3570,8 @@ var strings = {
 	buf2string: buf2string,
 	utf8border: utf8border
 };
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -3603,6 +3619,15 @@ function ZStream() {
 
 var zstream = ZStream;
 
+'use strict';
+
+
+
+
+
+
+
+
 var toString = Object.prototype.toString;
 
 /* Public constants ==========================================================*/
@@ -3635,7 +3660,7 @@ var Z_DEFLATED  = 8;
 /* internal
  * Deflate.chunks -> Array
  *
- * Chunks of output data, if [[Deflate#onData]] not overriden.
+ * Chunks of output data, if [[Deflate#onData]] not overridden.
  **/
 
 /**
@@ -3788,7 +3813,7 @@ function Deflate(options) {
  * - data (Uint8Array|Array|ArrayBuffer|String): input data. Strings will be
  *   converted to utf8 byte sequence.
  * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
- *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
  *
  * Sends input data to deflate pipe, generating [[Deflate#onData]] calls with
  * new compressed chunks. Returns `true` on success. The last data block must have
@@ -3877,7 +3902,7 @@ Deflate.prototype.push = function (data, mode) {
 
 /**
  * Deflate#onData(chunk) -> Void
- * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
  *   on js engine support. When string output requested, each chunk
  *   will be string.
  *
@@ -4001,6 +4026,8 @@ var deflate_1 = {
 	deflateRaw: deflateRaw_1,
 	gzip: gzip_1
 };
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -4203,7 +4230,7 @@ var inffast = function inflate_fast(strm, start) {
                   break top;
                 }
 
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 //#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
 //                if (len <= op - whave) {
@@ -4345,6 +4372,8 @@ var inffast = function inflate_fast(strm, start) {
   state.bits = bits;
   return;
 };
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -4687,6 +4716,8 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
   opts.bits = root;
   return 0;
 };
+
+'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -5121,162 +5152,72 @@ function inflate$1(strm, flush) {
   inf_leave: // goto emulation
   for (;;) {
     switch (state.mode) {
-    case HEAD:
-      if (state.wrap === 0) {
-        state.mode = TYPEDO;
-        break;
-      }
-      //=== NEEDBITS(16);
-      while (bits < 16) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      if ((state.wrap & 2) && hold === 0x8b1f) {  /* gzip header */
-        state.check = 0/*crc32(0L, Z_NULL, 0)*/;
-        //=== CRC2(state.check, hold);
-        hbuf[0] = hold & 0xff;
-        hbuf[1] = (hold >>> 8) & 0xff;
-        state.check = crc32_1(state.check, hbuf, 2, 0);
+      case HEAD:
+        if (state.wrap === 0) {
+          state.mode = TYPEDO;
+          break;
+        }
+        //=== NEEDBITS(16);
+        while (bits < 16) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
         //===//
+        if ((state.wrap & 2) && hold === 0x8b1f) {  /* gzip header */
+          state.check = 0/*crc32(0L, Z_NULL, 0)*/;
+          //=== CRC2(state.check, hold);
+          hbuf[0] = hold & 0xff;
+          hbuf[1] = (hold >>> 8) & 0xff;
+          state.check = crc32_1(state.check, hbuf, 2, 0);
+          //===//
 
+          //=== INITBITS();
+          hold = 0;
+          bits = 0;
+          //===//
+          state.mode = FLAGS;
+          break;
+        }
+        state.flags = 0;           /* expect zlib header */
+        if (state.head) {
+          state.head.done = false;
+        }
+        if (!(state.wrap & 1) ||   /* check if zlib header allowed */
+          (((hold & 0xff)/*BITS(8)*/ << 8) + (hold >> 8)) % 31) {
+          strm.msg = 'incorrect header check';
+          state.mode = BAD;
+          break;
+        }
+        if ((hold & 0x0f)/*BITS(4)*/ !== Z_DEFLATED$2) {
+          strm.msg = 'unknown compression method';
+          state.mode = BAD;
+          break;
+        }
+        //--- DROPBITS(4) ---//
+        hold >>>= 4;
+        bits -= 4;
+        //---//
+        len = (hold & 0x0f)/*BITS(4)*/ + 8;
+        if (state.wbits === 0) {
+          state.wbits = len;
+        }
+        else if (len > state.wbits) {
+          strm.msg = 'invalid window size';
+          state.mode = BAD;
+          break;
+        }
+        state.dmax = 1 << len;
+        //Tracev((stderr, "inflate:   zlib header ok\n"));
+        strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
+        state.mode = hold & 0x200 ? DICTID : TYPE;
         //=== INITBITS();
         hold = 0;
         bits = 0;
         //===//
-        state.mode = FLAGS;
         break;
-      }
-      state.flags = 0;           /* expect zlib header */
-      if (state.head) {
-        state.head.done = false;
-      }
-      if (!(state.wrap & 1) ||   /* check if zlib header allowed */
-        (((hold & 0xff)/*BITS(8)*/ << 8) + (hold >> 8)) % 31) {
-        strm.msg = 'incorrect header check';
-        state.mode = BAD;
-        break;
-      }
-      if ((hold & 0x0f)/*BITS(4)*/ !== Z_DEFLATED$2) {
-        strm.msg = 'unknown compression method';
-        state.mode = BAD;
-        break;
-      }
-      //--- DROPBITS(4) ---//
-      hold >>>= 4;
-      bits -= 4;
-      //---//
-      len = (hold & 0x0f)/*BITS(4)*/ + 8;
-      if (state.wbits === 0) {
-        state.wbits = len;
-      }
-      else if (len > state.wbits) {
-        strm.msg = 'invalid window size';
-        state.mode = BAD;
-        break;
-      }
-      state.dmax = 1 << len;
-      //Tracev((stderr, "inflate:   zlib header ok\n"));
-      strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
-      state.mode = hold & 0x200 ? DICTID : TYPE;
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      break;
-    case FLAGS:
-      //=== NEEDBITS(16); */
-      while (bits < 16) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      state.flags = hold;
-      if ((state.flags & 0xff) !== Z_DEFLATED$2) {
-        strm.msg = 'unknown compression method';
-        state.mode = BAD;
-        break;
-      }
-      if (state.flags & 0xe000) {
-        strm.msg = 'unknown header flags set';
-        state.mode = BAD;
-        break;
-      }
-      if (state.head) {
-        state.head.text = ((hold >> 8) & 1);
-      }
-      if (state.flags & 0x0200) {
-        //=== CRC2(state.check, hold);
-        hbuf[0] = hold & 0xff;
-        hbuf[1] = (hold >>> 8) & 0xff;
-        state.check = crc32_1(state.check, hbuf, 2, 0);
-        //===//
-      }
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      state.mode = TIME;
-      /* falls through */
-    case TIME:
-      //=== NEEDBITS(32); */
-      while (bits < 32) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      if (state.head) {
-        state.head.time = hold;
-      }
-      if (state.flags & 0x0200) {
-        //=== CRC4(state.check, hold)
-        hbuf[0] = hold & 0xff;
-        hbuf[1] = (hold >>> 8) & 0xff;
-        hbuf[2] = (hold >>> 16) & 0xff;
-        hbuf[3] = (hold >>> 24) & 0xff;
-        state.check = crc32_1(state.check, hbuf, 4, 0);
-        //===
-      }
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      state.mode = OS;
-      /* falls through */
-    case OS:
-      //=== NEEDBITS(16); */
-      while (bits < 16) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      if (state.head) {
-        state.head.xflags = (hold & 0xff);
-        state.head.os = (hold >> 8);
-      }
-      if (state.flags & 0x0200) {
-        //=== CRC2(state.check, hold);
-        hbuf[0] = hold & 0xff;
-        hbuf[1] = (hold >>> 8) & 0xff;
-        state.check = crc32_1(state.check, hbuf, 2, 0);
-        //===//
-      }
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      state.mode = EXLEN;
-      /* falls through */
-    case EXLEN:
-      if (state.flags & 0x0400) {
+      case FLAGS:
         //=== NEEDBITS(16); */
         while (bits < 16) {
           if (have === 0) { break inf_leave; }
@@ -5285,9 +5226,19 @@ function inflate$1(strm, flush) {
           bits += 8;
         }
         //===//
-        state.length = hold;
+        state.flags = hold;
+        if ((state.flags & 0xff) !== Z_DEFLATED$2) {
+          strm.msg = 'unknown compression method';
+          state.mode = BAD;
+          break;
+        }
+        if (state.flags & 0xe000) {
+          strm.msg = 'unknown header flags set';
+          state.mode = BAD;
+          break;
+        }
         if (state.head) {
-          state.head.extra_len = hold;
+          state.head.text = ((hold >> 8) & 1);
         }
         if (state.flags & 0x0200) {
           //=== CRC2(state.check, hold);
@@ -5300,102 +5251,36 @@ function inflate$1(strm, flush) {
         hold = 0;
         bits = 0;
         //===//
-      }
-      else if (state.head) {
-        state.head.extra = null/*Z_NULL*/;
-      }
-      state.mode = EXTRA;
-      /* falls through */
-    case EXTRA:
-      if (state.flags & 0x0400) {
-        copy = state.length;
-        if (copy > have) { copy = have; }
-        if (copy) {
-          if (state.head) {
-            len = state.head.extra_len - state.length;
-            if (!state.head.extra) {
-              // Use untyped array for more conveniend processing later
-              state.head.extra = new Array(state.head.extra_len);
-            }
-            common.arraySet(
-              state.head.extra,
-              input,
-              next,
-              // extra field is limited to 65536 bytes
-              // - no need for additional size check
-              copy,
-              /*len + copy > state.head.extra_max - len ? state.head.extra_max : copy,*/
-              len
-            );
-            //zmemcpy(state.head.extra + len, next,
-            //        len + copy > state.head.extra_max ?
-            //        state.head.extra_max - len : copy);
-          }
-          if (state.flags & 0x0200) {
-            state.check = crc32_1(state.check, input, copy, next);
-          }
-          have -= copy;
-          next += copy;
-          state.length -= copy;
+        state.mode = TIME;
+        /* falls through */
+      case TIME:
+        //=== NEEDBITS(32); */
+        while (bits < 32) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
         }
-        if (state.length) { break inf_leave; }
-      }
-      state.length = 0;
-      state.mode = NAME;
-      /* falls through */
-    case NAME:
-      if (state.flags & 0x0800) {
-        if (have === 0) { break inf_leave; }
-        copy = 0;
-        do {
-          // TODO: 2 or 1 bytes?
-          len = input[next + copy++];
-          /* use constant limit because in js we should not preallocate memory */
-          if (state.head && len &&
-              (state.length < 65536 /*state.head.name_max*/)) {
-            state.head.name += String.fromCharCode(len);
-          }
-        } while (len && copy < have);
-
+        //===//
+        if (state.head) {
+          state.head.time = hold;
+        }
         if (state.flags & 0x0200) {
-          state.check = crc32_1(state.check, input, copy, next);
+          //=== CRC4(state.check, hold)
+          hbuf[0] = hold & 0xff;
+          hbuf[1] = (hold >>> 8) & 0xff;
+          hbuf[2] = (hold >>> 16) & 0xff;
+          hbuf[3] = (hold >>> 24) & 0xff;
+          state.check = crc32_1(state.check, hbuf, 4, 0);
+          //===
         }
-        have -= copy;
-        next += copy;
-        if (len) { break inf_leave; }
-      }
-      else if (state.head) {
-        state.head.name = null;
-      }
-      state.length = 0;
-      state.mode = COMMENT;
-      /* falls through */
-    case COMMENT:
-      if (state.flags & 0x1000) {
-        if (have === 0) { break inf_leave; }
-        copy = 0;
-        do {
-          len = input[next + copy++];
-          /* use constant limit because in js we should not preallocate memory */
-          if (state.head && len &&
-              (state.length < 65536 /*state.head.comm_max*/)) {
-            state.head.comment += String.fromCharCode(len);
-          }
-        } while (len && copy < have);
-        if (state.flags & 0x0200) {
-          state.check = crc32_1(state.check, input, copy, next);
-        }
-        have -= copy;
-        next += copy;
-        if (len) { break inf_leave; }
-      }
-      else if (state.head) {
-        state.head.comment = null;
-      }
-      state.mode = HCRC;
-      /* falls through */
-    case HCRC:
-      if (state.flags & 0x0200) {
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        state.mode = OS;
+        /* falls through */
+      case OS:
         //=== NEEDBITS(16); */
         while (bits < 16) {
           if (have === 0) { break inf_leave; }
@@ -5404,201 +5289,213 @@ function inflate$1(strm, flush) {
           bits += 8;
         }
         //===//
-        if (hold !== (state.check & 0xffff)) {
-          strm.msg = 'header crc mismatch';
-          state.mode = BAD;
-          break;
+        if (state.head) {
+          state.head.xflags = (hold & 0xff);
+          state.head.os = (hold >> 8);
+        }
+        if (state.flags & 0x0200) {
+          //=== CRC2(state.check, hold);
+          hbuf[0] = hold & 0xff;
+          hbuf[1] = (hold >>> 8) & 0xff;
+          state.check = crc32_1(state.check, hbuf, 2, 0);
+          //===//
         }
         //=== INITBITS();
         hold = 0;
         bits = 0;
         //===//
-      }
-      if (state.head) {
-        state.head.hcrc = ((state.flags >> 9) & 1);
-        state.head.done = true;
-      }
-      strm.adler = state.check = 0;
-      state.mode = TYPE;
-      break;
-    case DICTID:
-      //=== NEEDBITS(32); */
-      while (bits < 32) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      strm.adler = state.check = zswap32(hold);
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      state.mode = DICT;
-      /* falls through */
-    case DICT:
-      if (state.havedict === 0) {
-        //--- RESTORE() ---
-        strm.next_out = put;
-        strm.avail_out = left;
-        strm.next_in = next;
-        strm.avail_in = have;
-        state.hold = hold;
-        state.bits = bits;
-        //---
-        return Z_NEED_DICT;
-      }
-      strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
-      state.mode = TYPE;
-      /* falls through */
-    case TYPE:
-      if (flush === Z_BLOCK$1 || flush === Z_TREES) { break inf_leave; }
-      /* falls through */
-    case TYPEDO:
-      if (state.last) {
-        //--- BYTEBITS() ---//
-        hold >>>= bits & 7;
-        bits -= bits & 7;
-        //---//
-        state.mode = CHECK;
-        break;
-      }
-      //=== NEEDBITS(3); */
-      while (bits < 3) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      state.last = (hold & 0x01)/*BITS(1)*/;
-      //--- DROPBITS(1) ---//
-      hold >>>= 1;
-      bits -= 1;
-      //---//
-
-      switch ((hold & 0x03)/*BITS(2)*/) {
-      case 0:                             /* stored block */
-        //Tracev((stderr, "inflate:     stored block%s\n",
-        //        state.last ? " (last)" : ""));
-        state.mode = STORED;
-        break;
-      case 1:                             /* fixed block */
-        fixedtables(state);
-        //Tracev((stderr, "inflate:     fixed codes block%s\n",
-        //        state.last ? " (last)" : ""));
-        state.mode = LEN_;             /* decode codes */
-        if (flush === Z_TREES) {
-          //--- DROPBITS(2) ---//
-          hold >>>= 2;
-          bits -= 2;
-          //---//
-          break inf_leave;
+        state.mode = EXLEN;
+        /* falls through */
+      case EXLEN:
+        if (state.flags & 0x0400) {
+          //=== NEEDBITS(16); */
+          while (bits < 16) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          state.length = hold;
+          if (state.head) {
+            state.head.extra_len = hold;
+          }
+          if (state.flags & 0x0200) {
+            //=== CRC2(state.check, hold);
+            hbuf[0] = hold & 0xff;
+            hbuf[1] = (hold >>> 8) & 0xff;
+            state.check = crc32_1(state.check, hbuf, 2, 0);
+            //===//
+          }
+          //=== INITBITS();
+          hold = 0;
+          bits = 0;
+          //===//
         }
+        else if (state.head) {
+          state.head.extra = null/*Z_NULL*/;
+        }
+        state.mode = EXTRA;
+        /* falls through */
+      case EXTRA:
+        if (state.flags & 0x0400) {
+          copy = state.length;
+          if (copy > have) { copy = have; }
+          if (copy) {
+            if (state.head) {
+              len = state.head.extra_len - state.length;
+              if (!state.head.extra) {
+                // Use untyped array for more convenient processing later
+                state.head.extra = new Array(state.head.extra_len);
+              }
+              common.arraySet(
+                state.head.extra,
+                input,
+                next,
+                // extra field is limited to 65536 bytes
+                // - no need for additional size check
+                copy,
+                /*len + copy > state.head.extra_max - len ? state.head.extra_max : copy,*/
+                len
+              );
+              //zmemcpy(state.head.extra + len, next,
+              //        len + copy > state.head.extra_max ?
+              //        state.head.extra_max - len : copy);
+            }
+            if (state.flags & 0x0200) {
+              state.check = crc32_1(state.check, input, copy, next);
+            }
+            have -= copy;
+            next += copy;
+            state.length -= copy;
+          }
+          if (state.length) { break inf_leave; }
+        }
+        state.length = 0;
+        state.mode = NAME;
+        /* falls through */
+      case NAME:
+        if (state.flags & 0x0800) {
+          if (have === 0) { break inf_leave; }
+          copy = 0;
+          do {
+            // TODO: 2 or 1 bytes?
+            len = input[next + copy++];
+            /* use constant limit because in js we should not preallocate memory */
+            if (state.head && len &&
+                (state.length < 65536 /*state.head.name_max*/)) {
+              state.head.name += String.fromCharCode(len);
+            }
+          } while (len && copy < have);
+
+          if (state.flags & 0x0200) {
+            state.check = crc32_1(state.check, input, copy, next);
+          }
+          have -= copy;
+          next += copy;
+          if (len) { break inf_leave; }
+        }
+        else if (state.head) {
+          state.head.name = null;
+        }
+        state.length = 0;
+        state.mode = COMMENT;
+        /* falls through */
+      case COMMENT:
+        if (state.flags & 0x1000) {
+          if (have === 0) { break inf_leave; }
+          copy = 0;
+          do {
+            len = input[next + copy++];
+            /* use constant limit because in js we should not preallocate memory */
+            if (state.head && len &&
+                (state.length < 65536 /*state.head.comm_max*/)) {
+              state.head.comment += String.fromCharCode(len);
+            }
+          } while (len && copy < have);
+          if (state.flags & 0x0200) {
+            state.check = crc32_1(state.check, input, copy, next);
+          }
+          have -= copy;
+          next += copy;
+          if (len) { break inf_leave; }
+        }
+        else if (state.head) {
+          state.head.comment = null;
+        }
+        state.mode = HCRC;
+        /* falls through */
+      case HCRC:
+        if (state.flags & 0x0200) {
+          //=== NEEDBITS(16); */
+          while (bits < 16) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          if (hold !== (state.check & 0xffff)) {
+            strm.msg = 'header crc mismatch';
+            state.mode = BAD;
+            break;
+          }
+          //=== INITBITS();
+          hold = 0;
+          bits = 0;
+          //===//
+        }
+        if (state.head) {
+          state.head.hcrc = ((state.flags >> 9) & 1);
+          state.head.done = true;
+        }
+        strm.adler = state.check = 0;
+        state.mode = TYPE;
         break;
-      case 2:                             /* dynamic block */
-        //Tracev((stderr, "inflate:     dynamic codes block%s\n",
-        //        state.last ? " (last)" : ""));
-        state.mode = TABLE;
-        break;
-      case 3:
-        strm.msg = 'invalid block type';
-        state.mode = BAD;
-      }
-      //--- DROPBITS(2) ---//
-      hold >>>= 2;
-      bits -= 2;
-      //---//
-      break;
-    case STORED:
-      //--- BYTEBITS() ---// /* go to byte boundary */
-      hold >>>= bits & 7;
-      bits -= bits & 7;
-      //---//
-      //=== NEEDBITS(32); */
-      while (bits < 32) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      if ((hold & 0xffff) !== ((hold >>> 16) ^ 0xffff)) {
-        strm.msg = 'invalid stored block lengths';
-        state.mode = BAD;
-        break;
-      }
-      state.length = hold & 0xffff;
-      //Tracev((stderr, "inflate:       stored length %u\n",
-      //        state.length));
-      //=== INITBITS();
-      hold = 0;
-      bits = 0;
-      //===//
-      state.mode = COPY_;
-      if (flush === Z_TREES) { break inf_leave; }
-      /* falls through */
-    case COPY_:
-      state.mode = COPY;
-      /* falls through */
-    case COPY:
-      copy = state.length;
-      if (copy) {
-        if (copy > have) { copy = have; }
-        if (copy > left) { copy = left; }
-        if (copy === 0) { break inf_leave; }
-        //--- zmemcpy(put, next, copy); ---
-        common.arraySet(output, input, next, copy, put);
-        //---//
-        have -= copy;
-        next += copy;
-        left -= copy;
-        put += copy;
-        state.length -= copy;
-        break;
-      }
-      //Tracev((stderr, "inflate:       stored end\n"));
-      state.mode = TYPE;
-      break;
-    case TABLE:
-      //=== NEEDBITS(14); */
-      while (bits < 14) {
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-      }
-      //===//
-      state.nlen = (hold & 0x1f)/*BITS(5)*/ + 257;
-      //--- DROPBITS(5) ---//
-      hold >>>= 5;
-      bits -= 5;
-      //---//
-      state.ndist = (hold & 0x1f)/*BITS(5)*/ + 1;
-      //--- DROPBITS(5) ---//
-      hold >>>= 5;
-      bits -= 5;
-      //---//
-      state.ncode = (hold & 0x0f)/*BITS(4)*/ + 4;
-      //--- DROPBITS(4) ---//
-      hold >>>= 4;
-      bits -= 4;
-      //---//
-//#ifndef PKZIP_BUG_WORKAROUND
-      if (state.nlen > 286 || state.ndist > 30) {
-        strm.msg = 'too many length or distance symbols';
-        state.mode = BAD;
-        break;
-      }
-//#endif
-      //Tracev((stderr, "inflate:       table sizes ok\n"));
-      state.have = 0;
-      state.mode = LENLENS;
-      /* falls through */
-    case LENLENS:
-      while (state.have < state.ncode) {
-        //=== NEEDBITS(3);
+      case DICTID:
+        //=== NEEDBITS(32); */
+        while (bits < 32) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        strm.adler = state.check = zswap32(hold);
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        state.mode = DICT;
+        /* falls through */
+      case DICT:
+        if (state.havedict === 0) {
+          //--- RESTORE() ---
+          strm.next_out = put;
+          strm.avail_out = left;
+          strm.next_in = next;
+          strm.avail_in = have;
+          state.hold = hold;
+          state.bits = bits;
+          //---
+          return Z_NEED_DICT;
+        }
+        strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
+        state.mode = TYPE;
+        /* falls through */
+      case TYPE:
+        if (flush === Z_BLOCK$1 || flush === Z_TREES) { break inf_leave; }
+        /* falls through */
+      case TYPEDO:
+        if (state.last) {
+          //--- BYTEBITS() ---//
+          hold >>>= bits & 7;
+          bits -= bits & 7;
+          //---//
+          state.mode = CHECK;
+          break;
+        }
+        //=== NEEDBITS(3); */
         while (bits < 3) {
           if (have === 0) { break inf_leave; }
           have--;
@@ -5606,39 +5503,442 @@ function inflate$1(strm, flush) {
           bits += 8;
         }
         //===//
-        state.lens[order[state.have++]] = (hold & 0x07);//BITS(3);
-        //--- DROPBITS(3) ---//
-        hold >>>= 3;
-        bits -= 3;
+        state.last = (hold & 0x01)/*BITS(1)*/;
+        //--- DROPBITS(1) ---//
+        hold >>>= 1;
+        bits -= 1;
         //---//
-      }
-      while (state.have < 19) {
-        state.lens[order[state.have++]] = 0;
-      }
-      // We have separate tables & no pointers. 2 commented lines below not needed.
-      //state.next = state.codes;
-      //state.lencode = state.next;
-      // Switch to use dynamic table
-      state.lencode = state.lendyn;
-      state.lenbits = 7;
 
-      opts = { bits: state.lenbits };
-      ret = inftrees(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts);
-      state.lenbits = opts.bits;
-
-      if (ret) {
-        strm.msg = 'invalid code lengths set';
-        state.mode = BAD;
+        switch ((hold & 0x03)/*BITS(2)*/) {
+          case 0:                             /* stored block */
+            //Tracev((stderr, "inflate:     stored block%s\n",
+            //        state.last ? " (last)" : ""));
+            state.mode = STORED;
+            break;
+          case 1:                             /* fixed block */
+            fixedtables(state);
+            //Tracev((stderr, "inflate:     fixed codes block%s\n",
+            //        state.last ? " (last)" : ""));
+            state.mode = LEN_;             /* decode codes */
+            if (flush === Z_TREES) {
+              //--- DROPBITS(2) ---//
+              hold >>>= 2;
+              bits -= 2;
+              //---//
+              break inf_leave;
+            }
+            break;
+          case 2:                             /* dynamic block */
+            //Tracev((stderr, "inflate:     dynamic codes block%s\n",
+            //        state.last ? " (last)" : ""));
+            state.mode = TABLE;
+            break;
+          case 3:
+            strm.msg = 'invalid block type';
+            state.mode = BAD;
+        }
+        //--- DROPBITS(2) ---//
+        hold >>>= 2;
+        bits -= 2;
+        //---//
         break;
-      }
-      //Tracev((stderr, "inflate:       code lengths ok\n"));
-      state.have = 0;
-      state.mode = CODELENS;
-      /* falls through */
-    case CODELENS:
-      while (state.have < state.nlen + state.ndist) {
+      case STORED:
+        //--- BYTEBITS() ---// /* go to byte boundary */
+        hold >>>= bits & 7;
+        bits -= bits & 7;
+        //---//
+        //=== NEEDBITS(32); */
+        while (bits < 32) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        if ((hold & 0xffff) !== ((hold >>> 16) ^ 0xffff)) {
+          strm.msg = 'invalid stored block lengths';
+          state.mode = BAD;
+          break;
+        }
+        state.length = hold & 0xffff;
+        //Tracev((stderr, "inflate:       stored length %u\n",
+        //        state.length));
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        state.mode = COPY_;
+        if (flush === Z_TREES) { break inf_leave; }
+        /* falls through */
+      case COPY_:
+        state.mode = COPY;
+        /* falls through */
+      case COPY:
+        copy = state.length;
+        if (copy) {
+          if (copy > have) { copy = have; }
+          if (copy > left) { copy = left; }
+          if (copy === 0) { break inf_leave; }
+          //--- zmemcpy(put, next, copy); ---
+          common.arraySet(output, input, next, copy, put);
+          //---//
+          have -= copy;
+          next += copy;
+          left -= copy;
+          put += copy;
+          state.length -= copy;
+          break;
+        }
+        //Tracev((stderr, "inflate:       stored end\n"));
+        state.mode = TYPE;
+        break;
+      case TABLE:
+        //=== NEEDBITS(14); */
+        while (bits < 14) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        state.nlen = (hold & 0x1f)/*BITS(5)*/ + 257;
+        //--- DROPBITS(5) ---//
+        hold >>>= 5;
+        bits -= 5;
+        //---//
+        state.ndist = (hold & 0x1f)/*BITS(5)*/ + 1;
+        //--- DROPBITS(5) ---//
+        hold >>>= 5;
+        bits -= 5;
+        //---//
+        state.ncode = (hold & 0x0f)/*BITS(4)*/ + 4;
+        //--- DROPBITS(4) ---//
+        hold >>>= 4;
+        bits -= 4;
+        //---//
+//#ifndef PKZIP_BUG_WORKAROUND
+        if (state.nlen > 286 || state.ndist > 30) {
+          strm.msg = 'too many length or distance symbols';
+          state.mode = BAD;
+          break;
+        }
+//#endif
+        //Tracev((stderr, "inflate:       table sizes ok\n"));
+        state.have = 0;
+        state.mode = LENLENS;
+        /* falls through */
+      case LENLENS:
+        while (state.have < state.ncode) {
+          //=== NEEDBITS(3);
+          while (bits < 3) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          state.lens[order[state.have++]] = (hold & 0x07);//BITS(3);
+          //--- DROPBITS(3) ---//
+          hold >>>= 3;
+          bits -= 3;
+          //---//
+        }
+        while (state.have < 19) {
+          state.lens[order[state.have++]] = 0;
+        }
+        // We have separate tables & no pointers. 2 commented lines below not needed.
+        //state.next = state.codes;
+        //state.lencode = state.next;
+        // Switch to use dynamic table
+        state.lencode = state.lendyn;
+        state.lenbits = 7;
+
+        opts = { bits: state.lenbits };
+        ret = inftrees(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts);
+        state.lenbits = opts.bits;
+
+        if (ret) {
+          strm.msg = 'invalid code lengths set';
+          state.mode = BAD;
+          break;
+        }
+        //Tracev((stderr, "inflate:       code lengths ok\n"));
+        state.have = 0;
+        state.mode = CODELENS;
+        /* falls through */
+      case CODELENS:
+        while (state.have < state.nlen + state.ndist) {
+          for (;;) {
+            here = state.lencode[hold & ((1 << state.lenbits) - 1)];/*BITS(state.lenbits)*/
+            here_bits = here >>> 24;
+            here_op = (here >>> 16) & 0xff;
+            here_val = here & 0xffff;
+
+            if ((here_bits) <= bits) { break; }
+            //--- PULLBYTE() ---//
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+            //---//
+          }
+          if (here_val < 16) {
+            //--- DROPBITS(here.bits) ---//
+            hold >>>= here_bits;
+            bits -= here_bits;
+            //---//
+            state.lens[state.have++] = here_val;
+          }
+          else {
+            if (here_val === 16) {
+              //=== NEEDBITS(here.bits + 2);
+              n = here_bits + 2;
+              while (bits < n) {
+                if (have === 0) { break inf_leave; }
+                have--;
+                hold += input[next++] << bits;
+                bits += 8;
+              }
+              //===//
+              //--- DROPBITS(here.bits) ---//
+              hold >>>= here_bits;
+              bits -= here_bits;
+              //---//
+              if (state.have === 0) {
+                strm.msg = 'invalid bit length repeat';
+                state.mode = BAD;
+                break;
+              }
+              len = state.lens[state.have - 1];
+              copy = 3 + (hold & 0x03);//BITS(2);
+              //--- DROPBITS(2) ---//
+              hold >>>= 2;
+              bits -= 2;
+              //---//
+            }
+            else if (here_val === 17) {
+              //=== NEEDBITS(here.bits + 3);
+              n = here_bits + 3;
+              while (bits < n) {
+                if (have === 0) { break inf_leave; }
+                have--;
+                hold += input[next++] << bits;
+                bits += 8;
+              }
+              //===//
+              //--- DROPBITS(here.bits) ---//
+              hold >>>= here_bits;
+              bits -= here_bits;
+              //---//
+              len = 0;
+              copy = 3 + (hold & 0x07);//BITS(3);
+              //--- DROPBITS(3) ---//
+              hold >>>= 3;
+              bits -= 3;
+              //---//
+            }
+            else {
+              //=== NEEDBITS(here.bits + 7);
+              n = here_bits + 7;
+              while (bits < n) {
+                if (have === 0) { break inf_leave; }
+                have--;
+                hold += input[next++] << bits;
+                bits += 8;
+              }
+              //===//
+              //--- DROPBITS(here.bits) ---//
+              hold >>>= here_bits;
+              bits -= here_bits;
+              //---//
+              len = 0;
+              copy = 11 + (hold & 0x7f);//BITS(7);
+              //--- DROPBITS(7) ---//
+              hold >>>= 7;
+              bits -= 7;
+              //---//
+            }
+            if (state.have + copy > state.nlen + state.ndist) {
+              strm.msg = 'invalid bit length repeat';
+              state.mode = BAD;
+              break;
+            }
+            while (copy--) {
+              state.lens[state.have++] = len;
+            }
+          }
+        }
+
+        /* handle error breaks in while */
+        if (state.mode === BAD) { break; }
+
+        /* check for end-of-block code (better have one) */
+        if (state.lens[256] === 0) {
+          strm.msg = 'invalid code -- missing end-of-block';
+          state.mode = BAD;
+          break;
+        }
+
+        /* build code tables -- note: do not change the lenbits or distbits
+           values here (9 and 6) without reading the comments in inftrees.h
+           concerning the ENOUGH constants, which depend on those values */
+        state.lenbits = 9;
+
+        opts = { bits: state.lenbits };
+        ret = inftrees(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
+        // We have separate tables & no pointers. 2 commented lines below not needed.
+        // state.next_index = opts.table_index;
+        state.lenbits = opts.bits;
+        // state.lencode = state.next;
+
+        if (ret) {
+          strm.msg = 'invalid literal/lengths set';
+          state.mode = BAD;
+          break;
+        }
+
+        state.distbits = 6;
+        //state.distcode.copy(state.codes);
+        // Switch to use dynamic table
+        state.distcode = state.distdyn;
+        opts = { bits: state.distbits };
+        ret = inftrees(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
+        // We have separate tables & no pointers. 2 commented lines below not needed.
+        // state.next_index = opts.table_index;
+        state.distbits = opts.bits;
+        // state.distcode = state.next;
+
+        if (ret) {
+          strm.msg = 'invalid distances set';
+          state.mode = BAD;
+          break;
+        }
+        //Tracev((stderr, 'inflate:       codes ok\n'));
+        state.mode = LEN_;
+        if (flush === Z_TREES) { break inf_leave; }
+        /* falls through */
+      case LEN_:
+        state.mode = LEN;
+        /* falls through */
+      case LEN:
+        if (have >= 6 && left >= 258) {
+          //--- RESTORE() ---
+          strm.next_out = put;
+          strm.avail_out = left;
+          strm.next_in = next;
+          strm.avail_in = have;
+          state.hold = hold;
+          state.bits = bits;
+          //---
+          inffast(strm, _out);
+          //--- LOAD() ---
+          put = strm.next_out;
+          output = strm.output;
+          left = strm.avail_out;
+          next = strm.next_in;
+          input = strm.input;
+          have = strm.avail_in;
+          hold = state.hold;
+          bits = state.bits;
+          //---
+
+          if (state.mode === TYPE) {
+            state.back = -1;
+          }
+          break;
+        }
+        state.back = 0;
         for (;;) {
-          here = state.lencode[hold & ((1 << state.lenbits) - 1)];/*BITS(state.lenbits)*/
+          here = state.lencode[hold & ((1 << state.lenbits) - 1)];  /*BITS(state.lenbits)*/
+          here_bits = here >>> 24;
+          here_op = (here >>> 16) & 0xff;
+          here_val = here & 0xffff;
+
+          if (here_bits <= bits) { break; }
+          //--- PULLBYTE() ---//
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+          //---//
+        }
+        if (here_op && (here_op & 0xf0) === 0) {
+          last_bits = here_bits;
+          last_op = here_op;
+          last_val = here_val;
+          for (;;) {
+            here = state.lencode[last_val +
+                    ((hold & ((1 << (last_bits + last_op)) - 1))/*BITS(last.bits + last.op)*/ >> last_bits)];
+            here_bits = here >>> 24;
+            here_op = (here >>> 16) & 0xff;
+            here_val = here & 0xffff;
+
+            if ((last_bits + here_bits) <= bits) { break; }
+            //--- PULLBYTE() ---//
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+            //---//
+          }
+          //--- DROPBITS(last.bits) ---//
+          hold >>>= last_bits;
+          bits -= last_bits;
+          //---//
+          state.back += last_bits;
+        }
+        //--- DROPBITS(here.bits) ---//
+        hold >>>= here_bits;
+        bits -= here_bits;
+        //---//
+        state.back += here_bits;
+        state.length = here_val;
+        if (here_op === 0) {
+          //Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
+          //        "inflate:         literal '%c'\n" :
+          //        "inflate:         literal 0x%02x\n", here.val));
+          state.mode = LIT;
+          break;
+        }
+        if (here_op & 32) {
+          //Tracevv((stderr, "inflate:         end of block\n"));
+          state.back = -1;
+          state.mode = TYPE;
+          break;
+        }
+        if (here_op & 64) {
+          strm.msg = 'invalid literal/length code';
+          state.mode = BAD;
+          break;
+        }
+        state.extra = here_op & 15;
+        state.mode = LENEXT;
+        /* falls through */
+      case LENEXT:
+        if (state.extra) {
+          //=== NEEDBITS(state.extra);
+          n = state.extra;
+          while (bits < n) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          state.length += hold & ((1 << state.extra) - 1)/*BITS(state.extra)*/;
+          //--- DROPBITS(state.extra) ---//
+          hold >>>= state.extra;
+          bits -= state.extra;
+          //---//
+          state.back += state.extra;
+        }
+        //Tracevv((stderr, "inflate:         length %u\n", state.length));
+        state.was = state.length;
+        state.mode = DIST;
+        /* falls through */
+      case DIST:
+        for (;;) {
+          here = state.distcode[hold & ((1 << state.distbits) - 1)];/*BITS(state.distbits)*/
           here_bits = here >>> 24;
           here_op = (here >>> 16) & 0xff;
           here_val = here & 0xffff;
@@ -5651,354 +5951,85 @@ function inflate$1(strm, flush) {
           bits += 8;
           //---//
         }
-        if (here_val < 16) {
-          //--- DROPBITS(here.bits) ---//
-          hold >>>= here_bits;
-          bits -= here_bits;
-          //---//
-          state.lens[state.have++] = here_val;
-        }
-        else {
-          if (here_val === 16) {
-            //=== NEEDBITS(here.bits + 2);
-            n = here_bits + 2;
-            while (bits < n) {
-              if (have === 0) { break inf_leave; }
-              have--;
-              hold += input[next++] << bits;
-              bits += 8;
-            }
-            //===//
-            //--- DROPBITS(here.bits) ---//
-            hold >>>= here_bits;
-            bits -= here_bits;
+        if ((here_op & 0xf0) === 0) {
+          last_bits = here_bits;
+          last_op = here_op;
+          last_val = here_val;
+          for (;;) {
+            here = state.distcode[last_val +
+                    ((hold & ((1 << (last_bits + last_op)) - 1))/*BITS(last.bits + last.op)*/ >> last_bits)];
+            here_bits = here >>> 24;
+            here_op = (here >>> 16) & 0xff;
+            here_val = here & 0xffff;
+
+            if ((last_bits + here_bits) <= bits) { break; }
+            //--- PULLBYTE() ---//
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
             //---//
-            if (state.have === 0) {
-              strm.msg = 'invalid bit length repeat';
+          }
+          //--- DROPBITS(last.bits) ---//
+          hold >>>= last_bits;
+          bits -= last_bits;
+          //---//
+          state.back += last_bits;
+        }
+        //--- DROPBITS(here.bits) ---//
+        hold >>>= here_bits;
+        bits -= here_bits;
+        //---//
+        state.back += here_bits;
+        if (here_op & 64) {
+          strm.msg = 'invalid distance code';
+          state.mode = BAD;
+          break;
+        }
+        state.offset = here_val;
+        state.extra = (here_op) & 15;
+        state.mode = DISTEXT;
+        /* falls through */
+      case DISTEXT:
+        if (state.extra) {
+          //=== NEEDBITS(state.extra);
+          n = state.extra;
+          while (bits < n) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          state.offset += hold & ((1 << state.extra) - 1)/*BITS(state.extra)*/;
+          //--- DROPBITS(state.extra) ---//
+          hold >>>= state.extra;
+          bits -= state.extra;
+          //---//
+          state.back += state.extra;
+        }
+//#ifdef INFLATE_STRICT
+        if (state.offset > state.dmax) {
+          strm.msg = 'invalid distance too far back';
+          state.mode = BAD;
+          break;
+        }
+//#endif
+        //Tracevv((stderr, "inflate:         distance %u\n", state.offset));
+        state.mode = MATCH;
+        /* falls through */
+      case MATCH:
+        if (left === 0) { break inf_leave; }
+        copy = _out - left;
+        if (state.offset > copy) {         /* copy from window */
+          copy = state.offset - copy;
+          if (copy > state.whave) {
+            if (state.sane) {
+              strm.msg = 'invalid distance too far back';
               state.mode = BAD;
               break;
             }
-            len = state.lens[state.have - 1];
-            copy = 3 + (hold & 0x03);//BITS(2);
-            //--- DROPBITS(2) ---//
-            hold >>>= 2;
-            bits -= 2;
-            //---//
-          }
-          else if (here_val === 17) {
-            //=== NEEDBITS(here.bits + 3);
-            n = here_bits + 3;
-            while (bits < n) {
-              if (have === 0) { break inf_leave; }
-              have--;
-              hold += input[next++] << bits;
-              bits += 8;
-            }
-            //===//
-            //--- DROPBITS(here.bits) ---//
-            hold >>>= here_bits;
-            bits -= here_bits;
-            //---//
-            len = 0;
-            copy = 3 + (hold & 0x07);//BITS(3);
-            //--- DROPBITS(3) ---//
-            hold >>>= 3;
-            bits -= 3;
-            //---//
-          }
-          else {
-            //=== NEEDBITS(here.bits + 7);
-            n = here_bits + 7;
-            while (bits < n) {
-              if (have === 0) { break inf_leave; }
-              have--;
-              hold += input[next++] << bits;
-              bits += 8;
-            }
-            //===//
-            //--- DROPBITS(here.bits) ---//
-            hold >>>= here_bits;
-            bits -= here_bits;
-            //---//
-            len = 0;
-            copy = 11 + (hold & 0x7f);//BITS(7);
-            //--- DROPBITS(7) ---//
-            hold >>>= 7;
-            bits -= 7;
-            //---//
-          }
-          if (state.have + copy > state.nlen + state.ndist) {
-            strm.msg = 'invalid bit length repeat';
-            state.mode = BAD;
-            break;
-          }
-          while (copy--) {
-            state.lens[state.have++] = len;
-          }
-        }
-      }
-
-      /* handle error breaks in while */
-      if (state.mode === BAD) { break; }
-
-      /* check for end-of-block code (better have one) */
-      if (state.lens[256] === 0) {
-        strm.msg = 'invalid code -- missing end-of-block';
-        state.mode = BAD;
-        break;
-      }
-
-      /* build code tables -- note: do not change the lenbits or distbits
-         values here (9 and 6) without reading the comments in inftrees.h
-         concerning the ENOUGH constants, which depend on those values */
-      state.lenbits = 9;
-
-      opts = { bits: state.lenbits };
-      ret = inftrees(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
-      // We have separate tables & no pointers. 2 commented lines below not needed.
-      // state.next_index = opts.table_index;
-      state.lenbits = opts.bits;
-      // state.lencode = state.next;
-
-      if (ret) {
-        strm.msg = 'invalid literal/lengths set';
-        state.mode = BAD;
-        break;
-      }
-
-      state.distbits = 6;
-      //state.distcode.copy(state.codes);
-      // Switch to use dynamic table
-      state.distcode = state.distdyn;
-      opts = { bits: state.distbits };
-      ret = inftrees(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
-      // We have separate tables & no pointers. 2 commented lines below not needed.
-      // state.next_index = opts.table_index;
-      state.distbits = opts.bits;
-      // state.distcode = state.next;
-
-      if (ret) {
-        strm.msg = 'invalid distances set';
-        state.mode = BAD;
-        break;
-      }
-      //Tracev((stderr, 'inflate:       codes ok\n'));
-      state.mode = LEN_;
-      if (flush === Z_TREES) { break inf_leave; }
-      /* falls through */
-    case LEN_:
-      state.mode = LEN;
-      /* falls through */
-    case LEN:
-      if (have >= 6 && left >= 258) {
-        //--- RESTORE() ---
-        strm.next_out = put;
-        strm.avail_out = left;
-        strm.next_in = next;
-        strm.avail_in = have;
-        state.hold = hold;
-        state.bits = bits;
-        //---
-        inffast(strm, _out);
-        //--- LOAD() ---
-        put = strm.next_out;
-        output = strm.output;
-        left = strm.avail_out;
-        next = strm.next_in;
-        input = strm.input;
-        have = strm.avail_in;
-        hold = state.hold;
-        bits = state.bits;
-        //---
-
-        if (state.mode === TYPE) {
-          state.back = -1;
-        }
-        break;
-      }
-      state.back = 0;
-      for (;;) {
-        here = state.lencode[hold & ((1 << state.lenbits) - 1)];  /*BITS(state.lenbits)*/
-        here_bits = here >>> 24;
-        here_op = (here >>> 16) & 0xff;
-        here_val = here & 0xffff;
-
-        if (here_bits <= bits) { break; }
-        //--- PULLBYTE() ---//
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-        //---//
-      }
-      if (here_op && (here_op & 0xf0) === 0) {
-        last_bits = here_bits;
-        last_op = here_op;
-        last_val = here_val;
-        for (;;) {
-          here = state.lencode[last_val +
-                  ((hold & ((1 << (last_bits + last_op)) - 1))/*BITS(last.bits + last.op)*/ >> last_bits)];
-          here_bits = here >>> 24;
-          here_op = (here >>> 16) & 0xff;
-          here_val = here & 0xffff;
-
-          if ((last_bits + here_bits) <= bits) { break; }
-          //--- PULLBYTE() ---//
-          if (have === 0) { break inf_leave; }
-          have--;
-          hold += input[next++] << bits;
-          bits += 8;
-          //---//
-        }
-        //--- DROPBITS(last.bits) ---//
-        hold >>>= last_bits;
-        bits -= last_bits;
-        //---//
-        state.back += last_bits;
-      }
-      //--- DROPBITS(here.bits) ---//
-      hold >>>= here_bits;
-      bits -= here_bits;
-      //---//
-      state.back += here_bits;
-      state.length = here_val;
-      if (here_op === 0) {
-        //Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
-        //        "inflate:         literal '%c'\n" :
-        //        "inflate:         literal 0x%02x\n", here.val));
-        state.mode = LIT;
-        break;
-      }
-      if (here_op & 32) {
-        //Tracevv((stderr, "inflate:         end of block\n"));
-        state.back = -1;
-        state.mode = TYPE;
-        break;
-      }
-      if (here_op & 64) {
-        strm.msg = 'invalid literal/length code';
-        state.mode = BAD;
-        break;
-      }
-      state.extra = here_op & 15;
-      state.mode = LENEXT;
-      /* falls through */
-    case LENEXT:
-      if (state.extra) {
-        //=== NEEDBITS(state.extra);
-        n = state.extra;
-        while (bits < n) {
-          if (have === 0) { break inf_leave; }
-          have--;
-          hold += input[next++] << bits;
-          bits += 8;
-        }
-        //===//
-        state.length += hold & ((1 << state.extra) - 1)/*BITS(state.extra)*/;
-        //--- DROPBITS(state.extra) ---//
-        hold >>>= state.extra;
-        bits -= state.extra;
-        //---//
-        state.back += state.extra;
-      }
-      //Tracevv((stderr, "inflate:         length %u\n", state.length));
-      state.was = state.length;
-      state.mode = DIST;
-      /* falls through */
-    case DIST:
-      for (;;) {
-        here = state.distcode[hold & ((1 << state.distbits) - 1)];/*BITS(state.distbits)*/
-        here_bits = here >>> 24;
-        here_op = (here >>> 16) & 0xff;
-        here_val = here & 0xffff;
-
-        if ((here_bits) <= bits) { break; }
-        //--- PULLBYTE() ---//
-        if (have === 0) { break inf_leave; }
-        have--;
-        hold += input[next++] << bits;
-        bits += 8;
-        //---//
-      }
-      if ((here_op & 0xf0) === 0) {
-        last_bits = here_bits;
-        last_op = here_op;
-        last_val = here_val;
-        for (;;) {
-          here = state.distcode[last_val +
-                  ((hold & ((1 << (last_bits + last_op)) - 1))/*BITS(last.bits + last.op)*/ >> last_bits)];
-          here_bits = here >>> 24;
-          here_op = (here >>> 16) & 0xff;
-          here_val = here & 0xffff;
-
-          if ((last_bits + here_bits) <= bits) { break; }
-          //--- PULLBYTE() ---//
-          if (have === 0) { break inf_leave; }
-          have--;
-          hold += input[next++] << bits;
-          bits += 8;
-          //---//
-        }
-        //--- DROPBITS(last.bits) ---//
-        hold >>>= last_bits;
-        bits -= last_bits;
-        //---//
-        state.back += last_bits;
-      }
-      //--- DROPBITS(here.bits) ---//
-      hold >>>= here_bits;
-      bits -= here_bits;
-      //---//
-      state.back += here_bits;
-      if (here_op & 64) {
-        strm.msg = 'invalid distance code';
-        state.mode = BAD;
-        break;
-      }
-      state.offset = here_val;
-      state.extra = (here_op) & 15;
-      state.mode = DISTEXT;
-      /* falls through */
-    case DISTEXT:
-      if (state.extra) {
-        //=== NEEDBITS(state.extra);
-        n = state.extra;
-        while (bits < n) {
-          if (have === 0) { break inf_leave; }
-          have--;
-          hold += input[next++] << bits;
-          bits += 8;
-        }
-        //===//
-        state.offset += hold & ((1 << state.extra) - 1)/*BITS(state.extra)*/;
-        //--- DROPBITS(state.extra) ---//
-        hold >>>= state.extra;
-        bits -= state.extra;
-        //---//
-        state.back += state.extra;
-      }
-//#ifdef INFLATE_STRICT
-      if (state.offset > state.dmax) {
-        strm.msg = 'invalid distance too far back';
-        state.mode = BAD;
-        break;
-      }
-//#endif
-      //Tracevv((stderr, "inflate:         distance %u\n", state.offset));
-      state.mode = MATCH;
-      /* falls through */
-    case MATCH:
-      if (left === 0) { break inf_leave; }
-      copy = _out - left;
-      if (state.offset > copy) {         /* copy from window */
-        copy = state.offset - copy;
-        if (copy > state.whave) {
-          if (state.sane) {
-            strm.msg = 'invalid distance too far back';
-            state.mode = BAD;
-            break;
-          }
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 //#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
 //          Trace((stderr, "inflate.c too far\n"));
@@ -6013,106 +6044,106 @@ function inflate$1(strm, flush) {
 //          if (state.length === 0) { state.mode = LEN; }
 //          break;
 //#endif
+          }
+          if (copy > state.wnext) {
+            copy -= state.wnext;
+            from = state.wsize - copy;
+          }
+          else {
+            from = state.wnext - copy;
+          }
+          if (copy > state.length) { copy = state.length; }
+          from_source = state.window;
         }
-        if (copy > state.wnext) {
-          copy -= state.wnext;
-          from = state.wsize - copy;
+        else {                              /* copy from output */
+          from_source = output;
+          from = put - state.offset;
+          copy = state.length;
         }
-        else {
-          from = state.wnext - copy;
-        }
-        if (copy > state.length) { copy = state.length; }
-        from_source = state.window;
-      }
-      else {                              /* copy from output */
-        from_source = output;
-        from = put - state.offset;
-        copy = state.length;
-      }
-      if (copy > left) { copy = left; }
-      left -= copy;
-      state.length -= copy;
-      do {
-        output[put++] = from_source[from++];
-      } while (--copy);
-      if (state.length === 0) { state.mode = LEN; }
-      break;
-    case LIT:
-      if (left === 0) { break inf_leave; }
-      output[put++] = state.length;
-      left--;
-      state.mode = LEN;
-      break;
-    case CHECK:
-      if (state.wrap) {
-        //=== NEEDBITS(32);
-        while (bits < 32) {
-          if (have === 0) { break inf_leave; }
-          have--;
-          // Use '|' insdead of '+' to make sure that result is signed
-          hold |= input[next++] << bits;
-          bits += 8;
-        }
-        //===//
-        _out -= left;
-        strm.total_out += _out;
-        state.total += _out;
-        if (_out) {
-          strm.adler = state.check =
-              /*UPDATE(state.check, put - _out, _out);*/
-              (state.flags ? crc32_1(state.check, output, _out, put - _out) : adler32_1(state.check, output, _out, put - _out));
+        if (copy > left) { copy = left; }
+        left -= copy;
+        state.length -= copy;
+        do {
+          output[put++] = from_source[from++];
+        } while (--copy);
+        if (state.length === 0) { state.mode = LEN; }
+        break;
+      case LIT:
+        if (left === 0) { break inf_leave; }
+        output[put++] = state.length;
+        left--;
+        state.mode = LEN;
+        break;
+      case CHECK:
+        if (state.wrap) {
+          //=== NEEDBITS(32);
+          while (bits < 32) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            // Use '|' instead of '+' to make sure that result is signed
+            hold |= input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          _out -= left;
+          strm.total_out += _out;
+          state.total += _out;
+          if (_out) {
+            strm.adler = state.check =
+                /*UPDATE(state.check, put - _out, _out);*/
+                (state.flags ? crc32_1(state.check, output, _out, put - _out) : adler32_1(state.check, output, _out, put - _out));
 
+          }
+          _out = left;
+          // NB: crc32 stored as signed 32-bit int, zswap32 returns signed too
+          if ((state.flags ? hold : zswap32(hold)) !== state.check) {
+            strm.msg = 'incorrect data check';
+            state.mode = BAD;
+            break;
+          }
+          //=== INITBITS();
+          hold = 0;
+          bits = 0;
+          //===//
+          //Tracev((stderr, "inflate:   check matches trailer\n"));
         }
-        _out = left;
-        // NB: crc32 stored as signed 32-bit int, zswap32 returns signed too
-        if ((state.flags ? hold : zswap32(hold)) !== state.check) {
-          strm.msg = 'incorrect data check';
-          state.mode = BAD;
-          break;
+        state.mode = LENGTH;
+        /* falls through */
+      case LENGTH:
+        if (state.wrap && state.flags) {
+          //=== NEEDBITS(32);
+          while (bits < 32) {
+            if (have === 0) { break inf_leave; }
+            have--;
+            hold += input[next++] << bits;
+            bits += 8;
+          }
+          //===//
+          if (hold !== (state.total & 0xffffffff)) {
+            strm.msg = 'incorrect length check';
+            state.mode = BAD;
+            break;
+          }
+          //=== INITBITS();
+          hold = 0;
+          bits = 0;
+          //===//
+          //Tracev((stderr, "inflate:   length matches trailer\n"));
         }
-        //=== INITBITS();
-        hold = 0;
-        bits = 0;
-        //===//
-        //Tracev((stderr, "inflate:   check matches trailer\n"));
-      }
-      state.mode = LENGTH;
-      /* falls through */
-    case LENGTH:
-      if (state.wrap && state.flags) {
-        //=== NEEDBITS(32);
-        while (bits < 32) {
-          if (have === 0) { break inf_leave; }
-          have--;
-          hold += input[next++] << bits;
-          bits += 8;
-        }
-        //===//
-        if (hold !== (state.total & 0xffffffff)) {
-          strm.msg = 'incorrect length check';
-          state.mode = BAD;
-          break;
-        }
-        //=== INITBITS();
-        hold = 0;
-        bits = 0;
-        //===//
-        //Tracev((stderr, "inflate:   length matches trailer\n"));
-      }
-      state.mode = DONE;
-      /* falls through */
-    case DONE:
-      ret = Z_STREAM_END$2;
-      break inf_leave;
-    case BAD:
-      ret = Z_DATA_ERROR$1;
-      break inf_leave;
-    case MEM:
-      return Z_MEM_ERROR;
-    case SYNC:
-      /* falls through */
-    default:
-      return Z_STREAM_ERROR$1;
+        state.mode = DONE;
+        /* falls through */
+      case DONE:
+        ret = Z_STREAM_END$2;
+        break inf_leave;
+      case BAD:
+        ret = Z_DATA_ERROR$1;
+        break inf_leave;
+      case MEM:
+        return Z_MEM_ERROR;
+      case SYNC:
+        /* falls through */
+      default:
+        return Z_STREAM_ERROR$1;
     }
   }
 
@@ -6257,6 +6288,8 @@ var inflate_1$2 = {
 	inflateInfo: inflateInfo
 };
 
+'use strict';
+
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -6324,6 +6357,8 @@ var constants = {
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
 
+'use strict';
+
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -6381,6 +6416,17 @@ function GZheader() {
 
 var gzheader = GZheader;
 
+'use strict';
+
+
+
+
+
+
+
+
+
+
 var toString$1 = Object.prototype.toString;
 
 /**
@@ -6394,7 +6440,7 @@ var toString$1 = Object.prototype.toString;
 /* internal
  * inflate.chunks -> Array
  *
- * Chunks of output data, if [[Inflate#onData]] not overriden.
+ * Chunks of output data, if [[Inflate#onData]] not overridden.
  **/
 
 /**
@@ -6522,7 +6568,7 @@ function Inflate(options) {
  * Inflate#push(data[, mode]) -> Boolean
  * - data (Uint8Array|Array|ArrayBuffer|String): input data
  * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
- *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
  *
  * Sends input data to inflate pipe, generating [[Inflate#onData]] calls with
  * new output chunks. Returns `true` on success. The last data block must have
@@ -6669,7 +6715,7 @@ Inflate.prototype.push = function (data, mode) {
 
 /**
  * Inflate#onData(chunk) -> Void
- * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
  *   on js engine support. When string output requested, each chunk
  *   will be string.
  *
@@ -6696,7 +6742,7 @@ Inflate.prototype.onEnd = function (status) {
   if (status === constants.Z_OK) {
     if (this.options.to === 'string') {
       // Glue & convert here, until we teach pako to send
-      // utf8 alligned strings to onData
+      // utf8 aligned strings to onData
       this.result = this.chunks.join('');
     } else {
       this.result = common.flattenChunks(this.chunks);
@@ -6796,6 +6842,9 @@ var inflate_1 = {
 	ungzip: ungzip
 };
 
+// Top level file is just a mixin of submodules & constants
+'use strict';
+
 var assign    = common.assign;
 
 
@@ -6806,9 +6855,13 @@ var pako = {};
 
 assign(pako, deflate_1, inflate_1, constants);
 
-var index = pako;
+var pako_1 = pako;
 
-var index$1 = createCommonjsModule(function (module) {
+function createCommonjsModule$1(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var traverse_1 = createCommonjsModule$1(function (module) {
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
@@ -7124,486 +7177,804 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
 };
 });
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
 /**
 * The CodecUtils class gather some static methods that can be useful while
 * encodeing/decoding data.
 * CodecUtils does not have a constructor, don't try to instanciate it.
 */
-class CodecUtils {
 
-
-  /**
-  * Get whether or not the platform is using little endian.
-  * @return {Boolen } true if the platform is little endian, false if big endian
-  */
-  static isPlatformLittleEndian() {
-    var a = new Uint32Array([0x12345678]);
-    var b = new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
-    return (b[0] != 0x12);
+var CodecUtils = function () {
+  function CodecUtils() {
+    classCallCheck(this, CodecUtils);
   }
 
+  createClass(CodecUtils, null, [{
+    key: "isPlatformLittleEndian",
 
-  /**
-  * convert an ArrayBuffer into a unicode string (2 bytes for each char)
-  * Note: this method was kindly borrowed from Google Closure Compiler:
-  * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
-  * @param {ArrayBuffer} buf - input ArrayBuffer
-  * @return {String} a string compatible with Unicode characters
-  */
-  static arrayBufferToUnicode( buff ) {
-    var buffUint8 = new Uint8Array(buff);
-    var out = [], pos = 0, c = 0;
-    
-    while (pos < buffUint8.length) {
-      var c1 = buffUint8[pos++];
-      if (c1 < 128) {
-        out[c++] = String.fromCharCode(c1);
-      } else if (c1 > 191 && c1 < 224) {
-        var c2 = buffUint8[pos++];
-        out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
-      } else if (c1 > 239 && c1 < 365) {
-        // Surrogate Pair
-        var c2 = buffUint8[pos++];
-        var c3 = buffUint8[pos++];
-        var c4 = buffUint8[pos++];
-        var u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) -
-            0x10000;
-        out[c++] = String.fromCharCode(0xD800 + (u >> 10));
-        out[c++] = String.fromCharCode(0xDC00 + (u & 1023));
-      } else {
-        var c2 = buffUint8[pos++];
-        var c3 = buffUint8[pos++];
-        out[c++] =
-            String.fromCharCode((c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+
+    /**
+    * Get whether or not the platform is using little endian.
+    * @return {Boolen } true if the platform is little endian, false if big endian
+    */
+    value: function isPlatformLittleEndian() {
+      var a = new Uint32Array([0x12345678]);
+      var b = new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
+      return b[0] != 0x12;
+    }
+
+    /**
+    * convert an ArrayBuffer into a unicode string (2 bytes for each char)
+    * Note: this method was kindly borrowed from Google Closure Compiler:
+    * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+    * @param {ArrayBuffer} buf - input ArrayBuffer
+    * @return {String} a string compatible with Unicode characters
+    */
+
+  }, {
+    key: "arrayBufferToUnicode",
+    value: function arrayBufferToUnicode(buff) {
+      var buffUint8 = new Uint8Array(buff);
+      var out = [],
+          pos = 0,
+          c = 0;
+
+      while (pos < buffUint8.length) {
+        var c1 = buffUint8[pos++];
+        if (c1 < 128) {
+          out[c++] = String.fromCharCode(c1);
+        } else if (c1 > 191 && c1 < 224) {
+          var c2 = buffUint8[pos++];
+          out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
+        } else if (c1 > 239 && c1 < 365) {
+          // Surrogate Pair
+          var c2 = buffUint8[pos++];
+          var c3 = buffUint8[pos++];
+          var c4 = buffUint8[pos++];
+          var u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 0x10000;
+          out[c++] = String.fromCharCode(0xD800 + (u >> 10));
+          out[c++] = String.fromCharCode(0xDC00 + (u & 1023));
+        } else {
+          var c2 = buffUint8[pos++];
+          var c3 = buffUint8[pos++];
+          out[c++] = String.fromCharCode((c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+        }
+      }
+      return out.join('');
+    }
+  }, {
+    key: "unicodeToArrayBuffer",
+
+
+    /**
+    * convert a unicode string into an ArrayBuffer
+    * Note that the str is a regular string but it will be encoded with
+    * 2 bytes per char instead of 1 ( ASCII uses 1 byte/char ).
+    * Note: this method was kindly borrowed from Google Closure Compiler:
+    * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+    * @param {String} str - string to encode
+    * @return {ArrayBuffer} the output ArrayBuffer
+    */
+    value: function unicodeToArrayBuffer(str) {
+      var out = [],
+          p = 0;
+      for (var i = 0; i < str.length; i++) {
+        var c = str.charCodeAt(i);
+        if (c < 128) {
+          out[p++] = c;
+        } else if (c < 2048) {
+          out[p++] = c >> 6 | 192;
+          out[p++] = c & 63 | 128;
+        } else if ((c & 0xFC00) == 0xD800 && i + 1 < str.length && (str.charCodeAt(i + 1) & 0xFC00) == 0xDC00) {
+          // Surrogate Pair
+          c = 0x10000 + ((c & 0x03FF) << 10) + (str.charCodeAt(++i) & 0x03FF);
+          out[p++] = c >> 18 | 240;
+          out[p++] = c >> 12 & 63 | 128;
+          out[p++] = c >> 6 & 63 | 128;
+          out[p++] = c & 63 | 128;
+        } else {
+          out[p++] = c >> 12 | 224;
+          out[p++] = c >> 6 & 63 | 128;
+          out[p++] = c & 63 | 128;
+        }
+      }
+
+      // make a buffer out of the array
+      return new Uint8Array(out).buffer;
+    }
+  }, {
+    key: "arrayBufferToString8",
+
+
+    /**
+    * Convert an ArrayBuffer into a ASCII string (1 byte for each char)
+    * @param {ArrayBuffer} buf - buffer to convert into ASCII string
+    * @return {String} the output string
+    */
+    value: function arrayBufferToString8(buf) {
+      return String.fromCharCode.apply(null, new Uint8Array(buf));
+    }
+
+    /**
+    * Convert a ASCII string into an ArrayBuffer.
+    * Note that the str is a regular string, it will be encoded with 1 byte per char
+    * @param {String} str - string to encode
+    * @return {ArrayBuffer}
+    */
+
+  }, {
+    key: "string8ToArrayBuffer",
+    value: function string8ToArrayBuffer(str) {
+      var buf = new ArrayBuffer(str.length);
+      var bufView = new Uint8Array(buf);
+      for (var i = 0; i < str.length; i++) {
+        bufView[i] = str.charCodeAt(i);
+      }
+      return buf;
+    }
+
+    /**
+    * Write a ASCII string into a buffer
+    * @param {String} str - a string that contains only ASCII characters
+    * @param {ArrayBuffer} buffer - the buffer where to write the string
+    * @param {Number} byteOffset - the offset to apply, in number of bytes
+    */
+
+  }, {
+    key: "setString8InBuffer",
+    value: function setString8InBuffer(str, buffer) {
+      var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+      if (byteOffset < 0) {
+        console.warn("The byte offset cannot be negative.");
+        return;
+      }
+
+      if (!buffer || !(buffer instanceof ArrayBuffer)) {
+        console.warn("The buffer must be a valid ArrayBuffer.");
+        return;
+      }
+
+      if (str.length + byteOffset > buffer.byteLength) {
+        console.warn("The string is too long to be writen in this buffer.");
+        return;
+      }
+
+      var bufView = new Uint8Array(buffer);
+
+      for (var i = 0; i < str.length; i++) {
+        bufView[i + byteOffset] = str.charCodeAt(i);
       }
     }
-    return out.join('');
-  };
 
+    /**
+    * Extract an ASCII string from an ArrayBuffer
+    * @param {ArrayBuffer} buffer - the buffer
+    * @param {Number} strLength - number of chars in the string we want
+    * @param {Number} byteOffset - the offset in number of bytes
+    * @return {String} the string, or null in case of error
+    */
 
-  /**
-  * convert a unicode string into an ArrayBuffer
-  * Note that the str is a regular string but it will be encoded with
-  * 2 bytes per char instead of 1 ( ASCII uses 1 byte/char ).
-  * Note: this method was kindly borrowed from Google Closure Compiler:
-  * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
-  * @param {String} str - string to encode
-  * @return {ArrayBuffer} the output ArrayBuffer
-  */
-  static unicodeToArrayBuffer( str ) {
-    var out = [], p = 0;
-    for (var i = 0; i < str.length; i++) {
-      var c = str.charCodeAt(i);
-      if (c < 128) {
-        out[p++] = c;
-      } else if (c < 2048) {
-        out[p++] = (c >> 6) | 192;
-        out[p++] = (c & 63) | 128;
-      } else if (
-          ((c & 0xFC00) == 0xD800) && (i + 1) < str.length &&
-          ((str.charCodeAt(i + 1) & 0xFC00) == 0xDC00)) {
-        // Surrogate Pair
-        c = 0x10000 + ((c & 0x03FF) << 10) + (str.charCodeAt(++i) & 0x03FF);
-        out[p++] = (c >> 18) | 240;
-        out[p++] = ((c >> 12) & 63) | 128;
-        out[p++] = ((c >> 6) & 63) | 128;
-        out[p++] = (c & 63) | 128;
-      } else {
-        out[p++] = (c >> 12) | 224;
-        out[p++] = ((c >> 6) & 63) | 128;
-        out[p++] = (c & 63) | 128;
-      }
-    }
+  }, {
+    key: "getString8FromBuffer",
+    value: function getString8FromBuffer(buffer, strLength) {
+      var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
-    // make a buffer out of the array
-    return new Uint8Array(out).buffer;
-  };
-
-
-  /**
-  * Convert an ArrayBuffer into a ASCII string (1 byte for each char)
-  * @param {ArrayBuffer} buf - buffer to convert into ASCII string
-  * @return {String} the output string
-  */
-  static arrayBufferToString8( buf ) {
-    return String.fromCharCode.apply(null, new Uint8Array(buf));
-  }
-
-
-  /**
-  * Convert a ASCII string into an ArrayBuffer.
-  * Note that the str is a regular string, it will be encoded with 1 byte per char
-  * @param {String} str - string to encode
-  * @return {ArrayBuffer}
-  */
-  static string8ToArrayBuffer( str ) {
-    var buf = new ArrayBuffer(str.length);
-    var bufView = new Uint8Array(buf);
-    for (var i=0; i < str.length; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  }
-
-
-  /**
-  * Write a ASCII string into a buffer
-  * @param {String} str - a string that contains only ASCII characters
-  * @param {ArrayBuffer} buffer - the buffer where to write the string
-  * @param {Number} byteOffset - the offset to apply, in number of bytes
-  */
-  static setString8InBuffer( str, buffer, byteOffset = 0 ){
-    if( byteOffset < 0){
-      console.warn("The byte offset cannot be negative.");
-      return;
-    }
-
-    if( !buffer || !(buffer instanceof ArrayBuffer)){
-      console.warn("The buffer must be a valid ArrayBuffer.");
-      return;
-    }
-
-    if( (str.length + byteOffset) > buffer.byteLength ){
-      console.warn("The string is too long to be writen in this buffer.");
-      return;
-    }
-
-    var bufView = new Uint8Array(buffer);
-
-    for (var i=0; i < str.length; i++) {
-      bufView[i + byteOffset] = str.charCodeAt(i);
-    }
-  }
-
-
-  /**
-  * Extract an ASCII string from an ArrayBuffer
-  * @param {ArrayBuffer} buffer - the buffer
-  * @param {Number} strLength - number of chars in the string we want
-  * @param {Number} byteOffset - the offset in number of bytes
-  * @return {String} the string, or null in case of error
-  */
-  static getString8FromBuffer( buffer, strLength, byteOffset=0 ){
-    if( byteOffset < 0){
-      console.warn("The byte offset cannot be negative.");
-      return null;
-    }
-
-    if( !buffer || !(buffer instanceof ArrayBuffer)){
-      console.warn("The buffer must be a valid ArrayBuffer.");
-      return null;
-    }
-
-    if( (strLength + byteOffset) > buffer.byteLength ){
-      console.warn("The string is too long to be writen in this buffer.");
-      return null;
-    }
-
-    return String.fromCharCode.apply(null, new Uint8Array(buffer, byteOffset, strLength));
-  }
-
-
-  /**
-  * Serializes a JS object into an ArrayBuffer.
-  * This is using a unicode JSON intermediate step.
-  * @param {Object} obj - an object that does not have cyclic structure
-  * @return {ArrayBuffer} the serialized output
-  */
-  static objectToArrayBuffer( obj ){
-    var buff = null;
-    var objCleanClone = CodecUtils.makeSerializeFriendly(obj);
-
-    try{
-      var strObj = JSON.stringify( objCleanClone );
-      buff = CodecUtils.unicodeToArrayBuffer(strObj);
-    }catch(e){
-      console.warn(e);
-    }
-
-    return buff;
-  }
-
-
-  /**
-  * Convert an ArrayBuffer into a JS Object. This uses an intermediate unicode JSON string.
-  * Of course, this buffer has to come from a serialized object.
-  * @param {ArrayBuffer} buff - the ArrayBuffer that hides some object
-  * @return {Object} the deserialized object
-  */
-  static ArrayBufferToObject( buff ){
-    var obj = null;
-
-    try{
-      var strObj = CodecUtils.arrayBufferToUnicode( buff );
-      obj = JSON.parse( strObj );
-    }catch(e){
-      console.warn(e);
-    }
-
-    return obj;
-  }
-
-
-  /**
-  * Get if wether of not the arg is a typed array
-  * @param {Object} obj - possibly a typed array, or maybe not
-  * @return {Boolean} true if obj is a typed array
-  */
-  static isTypedArray( obj ){
-    return ( obj instanceof Int8Array         ||
-             obj instanceof Uint8Array        ||
-             obj instanceof Uint8ClampedArray ||
-             obj instanceof Int16Array        ||
-             obj instanceof Uint16Array       ||
-             obj instanceof Int32Array        ||
-             obj instanceof Uint32Array       ||
-             obj instanceof Float32Array      ||
-             obj instanceof Float64Array )
-  }
-
-
-  /**
-  * Merge some ArrayBuffes in a single one
-  * @param {Array} arrayOfBuffers - some ArrayBuffers
-  * @return {ArrayBuffer} the larger merged buffer
-  */
-  static mergeBuffers( arrayOfBuffers ){
-    var totalByteSize = 0;
-
-    for(var i=0; i<arrayOfBuffers.length; i++){
-      totalByteSize += arrayOfBuffers[i].byteLength;
-    }
-
-    var concatArray = new Uint8Array( totalByteSize );
-
-    var offset = 0;
-    for(var i=0; i<arrayOfBuffers.length; i++){
-      concatArray.set( new Uint8Array(arrayOfBuffers[i]), offset);
-      offset += arrayOfBuffers[i].byteLength;
-    }
-
-    return concatArray.buffer;
-  }
-
-
-  /**
-  * In a browser, the global object is `window` while in Node, it's `GLOBAL`.
-  * This method return the one that is relevant to the execution context.
-  * @return {Object} the global object
-  */
-  static getGlobalObject(){
-    var constructorHost = null;
-
-    try{
-      constructorHost = window; // in a web browser
-    }catch( e ){
-      try{
-        constructorHost = GLOBAL; // in node
-      }catch( e ){
-        console.warn( "You are not in a Javascript environment?? Weird." );
+      if (byteOffset < 0) {
+        console.warn("The byte offset cannot be negative.");
         return null;
       }
-    }
-    return constructorHost;
-  }
 
-
-  /**
-  * Extract a typed array from an arbitrary buffer, with an arbitrary offset
-  * @param {ArrayBuffer} buffer - the buffer from which we extract data
-  * @param {Number} byteOffset - offset from the begining of buffer
-  * @param {Function} arrayType - function object, actually the constructor of the output array
-  * @param {Number} numberOfElements - nb of elem we want to fetch from the buffer
-  * @return {TypedArray} output of type given by arg arrayType - this is a copy, not a view
-  */
-  static extractTypedArray( buffer, byteOffset, arrayType, numberOfElements ){
-    if( !buffer ){
-      console.warn("Input Buffer is null.");
-      return null;
-    }
-
-    if(! (buffer instanceof ArrayBuffer) ){
-      console.warn("Buffer must be of type ArrayBuffer");
-      return null;
-    }
-
-    if(numberOfElements <= 0){
-      console.warn("The number of elements to fetch must be greater than 0");
-      return null;
-    }
-
-    if(byteOffset < 0){
-      console.warn("The byte offset must be possitive or 0");
-      return null;
-    }
-
-    if( byteOffset >= buffer.byteLength ){
-      console.warn("The offset cannot be larger than the size of the buffer.");
-      return null;
-    }
-
-    if( arrayType instanceof Function && !("BYTES_PER_ELEMENT" in arrayType)){
-      console.warn("ArrayType must be a typed array constructor function.");
-      return null;
-    }
-
-    if( arrayType.BYTES_PER_ELEMENT * numberOfElements + byteOffset > buffer.byteLength ){
-      console.warn("The requested number of elements is too large for this buffer");
-      return;
-    }
-
-    var slicedBuff = buffer.slice(byteOffset, byteOffset + numberOfElements*arrayType.BYTES_PER_ELEMENT);
-    return new arrayType( slicedBuff )
-  }
-
-
-  /**
-  * Get some info about the given TypedArray
-  * @param {TypedArray} typedArray - one of the typed array
-  * @return {Object} in form of {type: String, signed: Boolean, bytesPerElements: Number, byteLength: Number, length: Number}
-  */
-  static getTypedArrayInfo( typedArray ){
-    var type = null;
-    var signed = false;
-
-    if( typedArray instanceof Int8Array ){
-      type = "int";
-      signed = false;
-    }else if( typedArray instanceof Uint8Array ){
-      type = "int";
-      signed = true;
-    }else if( typedArray instanceof Uint8ClampedArray ){
-      type = "int";
-      signed = true;
-    }else if( typedArray instanceof Int16Array ){
-      type = "int";
-      signed = false;
-    }else if( typedArray instanceof Uint16Array ){
-      type = "int";
-      signed = true;
-    }else if( typedArray instanceof Int32Array ){
-      type = "int";
-      signed = false;
-    }else if( typedArray instanceof Uint32Array ){
-      type = "int";
-      signed = true;
-    }else if( typedArray instanceof Float32Array ){
-      type = "float";
-      signed = false;
-    }else if( typedArray instanceof Float64Array ){
-      type = "float";
-      signed = false;
-    }
-
-    return {
-      type: type,
-      signed: signed,
-      bytesPerElements: typedArray.BYTES_PER_ELEMENT,
-      byteLength: typedArray.byteLength,
-      length: typedArray.length
-    }
-  }
-
-
-  /**
-  * Counts the number of typed array obj has as attributes
-  * @param {Object} obj - an Object
-  * @return {Number} the number of typed array
-  */
-  static howManyTypedArrayAttributes( obj ){
-    var typArrCounter = 0;
-    index$1(obj).forEach(function (x) {
-      typArrCounter += CodecUtils.isTypedArray(x);
-    });
-    return typArrCounter;
-  }
-
-
-  /**
-  * Check if the given object contains any circular reference.
-  * (Circular ref are non serilizable easily, we want to spot them)
-  * @param {Object} obj - An object to check
-  * @return {Boolean} true if obj contains circular refm false if not
-  */
-  static hasCircularReference( obj ){
-    var hasCircular = false;
-    index$1(obj).forEach(function (x) {
-      if (this.circular){
-        hasCircular = true;
+      if (!buffer || !(buffer instanceof ArrayBuffer)) {
+        console.warn("The buffer must be a valid ArrayBuffer.");
+        return null;
       }
-    });
-    return hasCircular;
-  }
 
-
-  /**
-  * Remove circular dependencies from an object and return a circularRef-free version
-  * of the object (does not change the original obj), of null if no circular ref was found
-  * @param {Object} obj - An object to check
-  * @return {Object} a circular-ref free object copy if any was found, or null if no circ was found
-  */
-  static removeCircularReference( obj ){
-    var hasCircular = false;
-    var noCircRefObj = index$1(obj).map(function (x) {
-      if (this.circular){
-        this.remove();
-        hasCircular = true;
+      if (strLength + byteOffset > buffer.byteLength) {
+        console.warn("The string is too long to be writen in this buffer.");
+        return null;
       }
-    });
-    return hasCircular ? noCircRefObj : null;
-  }
 
+      return String.fromCharCode.apply(null, new Uint8Array(buffer, byteOffset, strLength));
+    }
 
-  /**
-  * Clone the object and replace the typed array attributes by regular Arrays.
-  * @param {Object} obj - an object to alter
-  * @return {Object} the clone if ant typed array were changed, or null if was obj didnt contain any typed array.
-  */
-  static replaceTypedArrayAttributesByArrays( obj ){
-    var hasTypedArray = false;
+    /**
+    * Serializes a JS object into an ArrayBuffer.
+    * This is using a unicode JSON intermediate step.
+    * @param {Object} obj - an object that does not have cyclic structure
+    * @return {ArrayBuffer} the serialized output
+    */
 
-    var noTypedArrClone = index$1(obj).map(function (x) {
-      if (CodecUtils.isTypedArray(x)){
-        // here, we cannot call .length directly because traverse.map already serialized
-        // typed arrays into regular objects
-        var origSize = Object.keys(x).length;
-        var untypedArray = new Array( origSize );
+  }, {
+    key: "objectToArrayBuffer",
+    value: function objectToArrayBuffer(obj) {
+      var buff = null;
+      var objCleanClone = CodecUtils.makeSerializeFriendly(obj);
 
-        for(var i=0; i<origSize; i++){
-          untypedArray[i] = x[i];
+      try {
+        var strObj = JSON.stringify(objCleanClone);
+        buff = CodecUtils.unicodeToArrayBuffer(strObj);
+      } catch (e) {
+        console.warn(e);
+      }
+
+      return buff;
+    }
+
+    /**
+    * Convert an ArrayBuffer into a JS Object. This uses an intermediate unicode JSON string.
+    * Of course, this buffer has to come from a serialized object.
+    * @param {ArrayBuffer} buff - the ArrayBuffer that hides some object
+    * @return {Object} the deserialized object
+    */
+
+  }, {
+    key: "ArrayBufferToObject",
+    value: function ArrayBufferToObject(buff) {
+      var obj = null;
+
+      try {
+        var strObj = CodecUtils.arrayBufferToUnicode(buff);
+        obj = JSON.parse(strObj);
+      } catch (e) {
+        console.warn(e);
+      }
+
+      return obj;
+    }
+
+    /**
+    * Get if wether of not the arg is a typed array
+    * @param {Object} obj - possibly a typed array, or maybe not
+    * @return {Boolean} true if obj is a typed array
+    */
+
+  }, {
+    key: "isTypedArray",
+    value: function isTypedArray(obj) {
+      return obj instanceof Int8Array || obj instanceof Uint8Array || obj instanceof Uint8ClampedArray || obj instanceof Int16Array || obj instanceof Uint16Array || obj instanceof Int32Array || obj instanceof Uint32Array || obj instanceof Float32Array || obj instanceof Float64Array;
+    }
+
+    /**
+    * Merge some ArrayBuffes in a single one
+    * @param {Array} arrayOfBuffers - some ArrayBuffers
+    * @return {ArrayBuffer} the larger merged buffer
+    */
+
+  }, {
+    key: "mergeBuffers",
+    value: function mergeBuffers(arrayOfBuffers) {
+      var totalByteSize = 0;
+
+      for (var i = 0; i < arrayOfBuffers.length; i++) {
+        totalByteSize += arrayOfBuffers[i].byteLength;
+      }
+
+      var concatArray = new Uint8Array(totalByteSize);
+
+      var offset = 0;
+      for (var i = 0; i < arrayOfBuffers.length; i++) {
+        concatArray.set(new Uint8Array(arrayOfBuffers[i]), offset);
+        offset += arrayOfBuffers[i].byteLength;
+      }
+
+      return concatArray.buffer;
+    }
+
+    /**
+    * In a browser, the global object is `window` while in Node, it's `GLOBAL`.
+    * This method return the one that is relevant to the execution context.
+    * @return {Object} the global object
+    */
+
+  }, {
+    key: "getGlobalObject",
+    value: function getGlobalObject() {
+      var constructorHost = null;
+
+      try {
+        constructorHost = window; // in a web browser
+      } catch (e) {
+        try {
+          constructorHost = GLOBAL; // in node
+        } catch (e) {
+          console.warn("You are not in a Javascript environment?? Weird.");
+          return null;
         }
-        this.update( untypedArray );
-        hasTypedArray = true;
       }
-    });
-    return hasTypedArray ? noTypedArrClone : null;
+      return constructorHost;
+    }
+
+    /**
+    * Extract a typed array from an arbitrary buffer, with an arbitrary offset
+    * @param {ArrayBuffer} buffer - the buffer from which we extract data
+    * @param {Number} byteOffset - offset from the begining of buffer
+    * @param {Function} arrayType - function object, actually the constructor of the output array
+    * @param {Number} numberOfElements - nb of elem we want to fetch from the buffer
+    * @return {TypedArray} output of type given by arg arrayType - this is a copy, not a view
+    */
+
+  }, {
+    key: "extractTypedArray",
+    value: function extractTypedArray(buffer, byteOffset, arrayType, numberOfElements) {
+      if (!buffer) {
+        console.warn("Input Buffer is null.");
+        return null;
+      }
+
+      if (!(buffer instanceof ArrayBuffer)) {
+        console.warn("Buffer must be of type ArrayBuffer");
+        return null;
+      }
+
+      if (numberOfElements <= 0) {
+        console.warn("The number of elements to fetch must be greater than 0");
+        return null;
+      }
+
+      if (byteOffset < 0) {
+        console.warn("The byte offset must be possitive or 0");
+        return null;
+      }
+
+      if (byteOffset >= buffer.byteLength) {
+        console.warn("The offset cannot be larger than the size of the buffer.");
+        return null;
+      }
+
+      if (arrayType instanceof Function && !("BYTES_PER_ELEMENT" in arrayType)) {
+        console.warn("ArrayType must be a typed array constructor function.");
+        return null;
+      }
+
+      if (arrayType.BYTES_PER_ELEMENT * numberOfElements + byteOffset > buffer.byteLength) {
+        console.warn("The requested number of elements is too large for this buffer");
+        return;
+      }
+
+      var slicedBuff = buffer.slice(byteOffset, byteOffset + numberOfElements * arrayType.BYTES_PER_ELEMENT);
+      return new arrayType(slicedBuff);
+    }
+
+    /**
+    * Get some info about the given TypedArray
+    * @param {TypedArray} typedArray - one of the typed array
+    * @return {Object} in form of {type: String, signed: Boolean, bytesPerElements: Number, byteLength: Number, length: Number}
+    */
+
+  }, {
+    key: "getTypedArrayInfo",
+    value: function getTypedArrayInfo(typedArray) {
+      var type = null;
+      var signed = false;
+
+      if (typedArray instanceof Int8Array) {
+        type = "int";
+        signed = false;
+      } else if (typedArray instanceof Uint8Array) {
+        type = "int";
+        signed = true;
+      } else if (typedArray instanceof Uint8ClampedArray) {
+        type = "int";
+        signed = true;
+      } else if (typedArray instanceof Int16Array) {
+        type = "int";
+        signed = false;
+      } else if (typedArray instanceof Uint16Array) {
+        type = "int";
+        signed = true;
+      } else if (typedArray instanceof Int32Array) {
+        type = "int";
+        signed = false;
+      } else if (typedArray instanceof Uint32Array) {
+        type = "int";
+        signed = true;
+      } else if (typedArray instanceof Float32Array) {
+        type = "float";
+        signed = false;
+      } else if (typedArray instanceof Float64Array) {
+        type = "float";
+        signed = false;
+      }
+
+      return {
+        type: type,
+        signed: signed,
+        bytesPerElements: typedArray.BYTES_PER_ELEMENT,
+        byteLength: typedArray.byteLength,
+        length: typedArray.length
+      };
+    }
+
+    /**
+    * Counts the number of typed array obj has as attributes
+    * @param {Object} obj - an Object
+    * @return {Number} the number of typed array
+    */
+
+  }, {
+    key: "howManyTypedArrayAttributes",
+    value: function howManyTypedArrayAttributes(obj) {
+      var typArrCounter = 0;
+      traverse_1(obj).forEach(function (x) {
+        typArrCounter += CodecUtils.isTypedArray(x);
+      });
+      return typArrCounter;
+    }
+
+    /**
+    * Check if the given object contains any circular reference.
+    * (Circular ref are non serilizable easily, we want to spot them)
+    * @param {Object} obj - An object to check
+    * @return {Boolean} true if obj contains circular refm false if not
+    */
+
+  }, {
+    key: "hasCircularReference",
+    value: function hasCircularReference(obj) {
+      var hasCircular = false;
+      traverse_1(obj).forEach(function (x) {
+        if (this.circular) {
+          hasCircular = true;
+        }
+      });
+      return hasCircular;
+    }
+
+    /**
+    * Remove circular dependencies from an object and return a circularRef-free version
+    * of the object (does not change the original obj), of null if no circular ref was found
+    * @param {Object} obj - An object to check
+    * @return {Object} a circular-ref free object copy if any was found, or null if no circ was found
+    */
+
+  }, {
+    key: "removeCircularReference",
+    value: function removeCircularReference(obj) {
+      var hasCircular = false;
+      var noCircRefObj = traverse_1(obj).map(function (x) {
+        if (this.circular) {
+          this.remove();
+          hasCircular = true;
+        }
+      });
+      return hasCircular ? noCircRefObj : null;
+    }
+
+    /**
+    * Clone the object and replace the typed array attributes by regular Arrays.
+    * @param {Object} obj - an object to alter
+    * @return {Object} the clone if ant typed array were changed, or null if was obj didnt contain any typed array.
+    */
+
+  }, {
+    key: "replaceTypedArrayAttributesByArrays",
+    value: function replaceTypedArrayAttributesByArrays(obj) {
+      var hasTypedArray = false;
+
+      var noTypedArrClone = traverse_1(obj).map(function (x) {
+        if (CodecUtils.isTypedArray(x)) {
+          // here, we cannot call .length directly because traverse.map already serialized
+          // typed arrays into regular objects
+          var origSize = Object.keys(x).length;
+          var untypedArray = new Array(origSize);
+
+          for (var i = 0; i < origSize; i++) {
+            untypedArray[i] = x[i];
+          }
+          this.update(untypedArray);
+          hasTypedArray = true;
+        }
+      });
+      return hasTypedArray ? noTypedArrClone : null;
+    }
+
+    /**
+    * Creates a clone, does not alter the original object.
+    * Remove circular dependencies and replace typed arrays by regular arrays.
+    * Both will make the serialization possible and more reliable.
+    * @param {Object} obj - the object to make serialization friendly
+    * @return {Object} a clean clone, or null if nothing was done
+    */
+
+  }, {
+    key: "makeSerializeFriendly",
+    value: function makeSerializeFriendly(obj) {
+      var newObj = obj;
+      var noCircular = CodecUtils.removeCircularReference(newObj);
+
+      if (noCircular) newObj = noCircular;
+
+      var noTypedArr = CodecUtils.replaceTypedArrayAttributesByArrays(newObj);
+
+      if (noTypedArr) newObj = noTypedArr;
+
+      return newObj;
+    }
+  }]);
+  return CodecUtils;
+}(); /* END of class CodecUtils */
+
+var asyncGenerator$1 = function () {
+  function AwaitValue(value) {
+    this.value = value;
   }
 
+  function AsyncGenerator(gen) {
+    var front, back;
 
-  /**
-  * Creates a clone, does not alter the original object.
-  * Remove circular dependencies and replace typed arrays by regular arrays.
-  * Both will make the serialization possible and more reliable.
-  * @param {Object} obj - the object to make serialization friendly
-  * @return {Object} a clean clone, or null if nothing was done
-  */
-  static makeSerializeFriendly( obj ){
-    var newObj = obj;
-    var noCircular = CodecUtils.removeCircularReference(newObj);
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
 
-    if( noCircular )
-      newObj = noCircular;
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
 
-    var noTypedArr = CodecUtils.replaceTypedArrayAttributesByArrays(newObj);
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
 
-    if( noTypedArr )
-      newObj = noTypedArr;
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
 
-    return newObj;
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
   }
 
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
 
-} /* END of class CodecUtils */
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
+
+var classCallCheck$1 = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass$1 = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
 
 /*
 * Author    Jonathan Lurie - http://me.jonahanlurie.fr
@@ -7613,305 +7984,314 @@ class CodecUtils {
 * Lab       MCIN - Montreal Neurological Institute
 */
 
-
 // list of different kinds of data we accept as input
-const dataCases = {
-  invalid: null,  // the data is not compatible (Number, String)
-  typedArray: 1,  // the data is compatible, as a typed array
+var dataCases = {
+  invalid: null, // the data is not compatible (Number, String)
+  typedArray: 1, // the data is compatible, as a typed array
   mixedArrays: 2, // the data is compatible, as an array of typed array
   complexObject: 3 // a complex object is also compatible (can be a untyped array)
 };
 
+var PixBlockEncoder = function () {
+  function PixBlockEncoder() {
+    classCallCheck$1(this, PixBlockEncoder);
 
-class PixBlockEncoder {
-
-  constructor(){
     this._compress = false;
     this.reset();
   }
 
-
   /**
   * reset inputs and inputs
   */
-  reset(){
-    this._input = null;
-    this._inputCase = null;
-    this._output = null;
-  }
 
 
-  /**
-  * Set a boolean to secify if data should be compressed or not
-  * @param {Boolean} b - true to compress, false to not compress
-  */
-  enableDataCompression( b ){
-    this._compress = b;
-  }
-
-
-  /**
-  * Specify an input to the encoder
-  * @param {Object} obj - an object candidate, containing a _data and _metadata attributes
-  */
-  setInput( obj ){
-    this._inputCase = PixBlockEncoder.isGoodCandidate( obj );
-    if(this._inputCase){
-      this._input = obj;
-    }
-  }
-
-
-  /**
-  * Get the output
-  * @return {Object} the output, or null
-  */
-  getOutput(){
-    return this._output;
-  }
-
-
-  /**
-  * Check if the given object is a good intput candidate
-  * @param {Object} obj - an object candidate, containing a _data and _metadata attributes
-  * @return {Boolean} true if good candidate, false if not
-  */
-  static isGoodCandidate( obj ){
-    if( !obj ){
-      console.warn("Input object cannot be null.");
-      return false;
+  createClass$1(PixBlockEncoder, [{
+    key: 'reset',
+    value: function reset() {
+      this._input = null;
+      this._inputCase = null;
+      this._output = null;
     }
 
-    if( !("_metadata" in obj)){
-      console.warn("Input object must contain a _metadata object.");
-      return false;
+    /**
+    * Set a boolean to secify if data should be compressed or not
+    * @param {Boolean} b - true to compress, false to not compress
+    */
+
+  }, {
+    key: 'enableDataCompression',
+    value: function enableDataCompression(b) {
+      this._compress = b;
     }
 
-    if( !("_data" in obj)){
-      console.warn("Input object must contain a _data object.");
-      return false;
+    /**
+    * Specify an input to the encoder
+    * @param {Object} obj - an object candidate, containing a _data and _metadata attributes
+    */
+
+  }, {
+    key: 'setInput',
+    value: function setInput(obj) {
+      this._inputCase = PixBlockEncoder.isGoodCandidate(obj);
+      if (this._inputCase) {
+        this._input = obj;
+      }
     }
 
-    var metadata = obj._metadata;
-    var data = obj._data;
+    /**
+    * Get the output
+    * @return {Object} the output, or null
+    */
 
-    // check: metadata should not contain cyclic structures
-    try{
-      JSON.stringify( metadata );
-    }catch(e){
-      console.warn("The metadata object contains cyclic structures. Cannot be used.");
-      return false;
+  }, {
+    key: 'getOutput',
+    value: function getOutput() {
+      return this._output;
     }
 
-    var inputCase = PixBlockEncoder.determineDataCase( data );
+    /**
+    * Check if the given object is a good intput candidate
+    * @param {Object} obj - an object candidate, containing a _data and _metadata attributes
+    * @return {Boolean} true if good candidate, false if not
+    */
 
-    // testing the case based on the kinf of data we want to input
-    if( inputCase === dataCases.invalid ){
-      console.warn("The input is invalid.");
-    }
-
-    return inputCase;
-  }
-
-
-  /**
-  * Launch the encoding of the block
-  */
-  run(){
-    var input = this._input;
-
-    if( !input || !this._inputCase ){
-      console.warn("An input must be given to the PixBlockEncoder.");
-      return;
-    }
-
-    var compress = this._compress;
-    var data = input._data;
-    var encodedData = null;
-    var compressedData = null;
-
-    var byteStreamInfo = [];
-    var useMultipleDataStreams = false;
-
-    switch (this._inputCase) {
-
-      // The input is a typed array ********************************
-      case dataCases.typedArray:
-        {
-          // no real need to compress the data here
-          encodedData = data;
-          var byteStreamInfoSubset = this._getDataSubsetInfo(data);
-
-          // additional compression flag
-          byteStreamInfoSubset.compressedByteLength = null;
-
-          if(this._compress){
-            encodedData = index.deflate( encodedData.buffer );
-            byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
-          }
-
-          byteStreamInfo.push( byteStreamInfoSubset );
-        }
-        break;
+  }, {
+    key: 'run',
 
 
-      // The input is an Array of typed arrays *********************
-      case dataCases.mixedArrays:
-        {
-          useMultipleDataStreams = true;
-          compressedData = [];
+    /**
+    * Launch the encoding of the block
+    */
+    value: function run() {
+      var input = this._input;
 
-          encodedData = new Array( data.length );
-
-          // collect bytestream info for each subset of data
-          for(var i=0; i<data.length; i++){
-            var currentDataStream = data[i];
-            var byteStreamInfoSubset = this._getDataSubsetInfo( currentDataStream );
-
-            // if not a typed array, this subset needs further modifications
-            if( !byteStreamInfoSubset.isTypedArray ){
-              currentDataStream = new Uint8Array( CodecUtils.objectToArrayBuffer( currentDataStream ) );
-              byteStreamInfoSubset.byteLength = currentDataStream.byteLength;
-            }
-
-            if(this._compress){
-              var compressedDataSubset = index.deflate( currentDataStream.buffer );
-              byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
-              compressedData.push( compressedDataSubset );
-            }
-
-            byteStreamInfo.push( byteStreamInfoSubset );
-            
-            encodedData[i] = currentDataStream;
-          }
-          
-          if(this._compress){
-            encodedData = compressedData;
-          }
-        }
-        break;
-
-      // The input is an Array of typed arrays *********************
-      case dataCases.complexObject:
-        {
-          var byteStreamInfoSubset = this._getDataSubsetInfo( data );
-
-          // replace the original data object with this uncompressed serialized version.
-          // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
-          encodedData = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
-          byteStreamInfoSubset.byteLength = encodedData.byteLength;
-
-          if(this._compress){
-            encodedData = index.deflate( encodedData );
-            byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
-          }
-
-          byteStreamInfo.push( byteStreamInfoSubset );
-        }
-        break;
-
-      default:
-        console.warn("A problem occured.");
+      if (!input || !this._inputCase) {
+        console.warn("An input must be given to the PixBlockEncoder.");
         return;
-    }
+      }
 
-    // the metadata are converted into a buffer
-    var metadataBuffer = CodecUtils.objectToArrayBuffer( input._metadata );
+      var data = input._data;
+      var encodedData = null;
+      var compressedData = null;
 
-    var pixBlockHeader = {
-      byteStreamInfo         : byteStreamInfo,
-      useMultipleDataStreams : useMultipleDataStreams,
-      originalBlockType      : input.constructor.name,
-      metadataByteLength     : metadataBuffer.byteLength
-    };
+      var byteStreamInfo = [];
+      var useMultipleDataStreams = false;
 
-    // converting the pixBlockHeader obj into a buffer
-    var pixBlockHeaderBuff = CodecUtils.objectToArrayBuffer( pixBlockHeader );
+      switch (this._inputCase) {
 
-    // this list will then be transformed into a single buffer
-    var allBuffers = [
+        // The input is a typed array ********************************
+        case dataCases.typedArray:
+          {
+            // no real need to compress the data here
+            encodedData = data;
+            var byteStreamInfoSubset = this._getDataSubsetInfo(data);
+
+            // additional compression flag
+            byteStreamInfoSubset.compressedByteLength = null;
+
+            if (this._compress) {
+              encodedData = pako_1.deflate(encodedData.buffer);
+              byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
+            }
+
+            byteStreamInfo.push(byteStreamInfoSubset);
+          }
+          break;
+
+        // The input is an Array of typed arrays *********************
+        case dataCases.mixedArrays:
+          {
+            useMultipleDataStreams = true;
+            compressedData = [];
+
+            encodedData = new Array(data.length);
+
+            // collect bytestream info for each subset of data
+            for (var i = 0; i < data.length; i++) {
+              var currentDataStream = data[i];
+              var byteStreamInfoSubset = this._getDataSubsetInfo(currentDataStream);
+
+              // if not a typed array, this subset needs further modifications
+              if (!byteStreamInfoSubset.isTypedArray) {
+                currentDataStream = new Uint8Array(CodecUtils.objectToArrayBuffer(currentDataStream));
+                byteStreamInfoSubset.byteLength = currentDataStream.byteLength;
+              }
+
+              if (this._compress) {
+                var compressedDataSubset = pako_1.deflate(currentDataStream.buffer);
+                byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
+                compressedData.push(compressedDataSubset);
+              }
+
+              byteStreamInfo.push(byteStreamInfoSubset);
+
+              encodedData[i] = currentDataStream;
+            }
+
+            if (this._compress) {
+              encodedData = compressedData;
+            }
+          }
+          break;
+
+        // The input is an Array of typed arrays *********************
+        case dataCases.complexObject:
+          {
+            var byteStreamInfoSubset = this._getDataSubsetInfo(data);
+
+            // replace the original data object with this uncompressed serialized version.
+            // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
+            encodedData = new Uint8Array(CodecUtils.objectToArrayBuffer(data));
+            byteStreamInfoSubset.byteLength = encodedData.byteLength;
+
+            if (this._compress) {
+              encodedData = pako_1.deflate(encodedData);
+              byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
+            }
+
+            byteStreamInfo.push(byteStreamInfoSubset);
+          }
+          break;
+
+        default:
+          console.warn("A problem occured.");
+          return;
+      }
+
+      // the metadata are converted into a buffer
+      var metadataBuffer = CodecUtils.objectToArrayBuffer(input._metadata);
+
+      var pixBlockHeader = {
+        byteStreamInfo: byteStreamInfo,
+        useMultipleDataStreams: useMultipleDataStreams,
+        originalBlockType: input.constructor.name,
+        metadataByteLength: metadataBuffer.byteLength
+
+        // converting the pixBlockHeader obj into a buffer
+      };var pixBlockHeaderBuff = CodecUtils.objectToArrayBuffer(pixBlockHeader);
+
+      // this list will then be transformed into a single buffer
+      var allBuffers = [
       // primer, part 1: endianess
-      new Uint8Array( [ + CodecUtils.isPlatformLittleEndian() ] ).buffer,
+      new Uint8Array([+CodecUtils.isPlatformLittleEndian()]).buffer,
       // primer, part 2: size of the header buff
-      new Uint32Array( [pixBlockHeaderBuff.byteLength] ).buffer,
+      new Uint32Array([pixBlockHeaderBuff.byteLength]).buffer,
 
       // the header buff
       pixBlockHeaderBuff,
 
       // the metadata buffer
-      metadataBuffer
-    ];
+      metadataBuffer];
 
-    // adding the actual encodedData buffer to the list
-    if( useMultipleDataStreams ){
-      for(var i=0; i<encodedData.length; i++){
-          allBuffers.push( encodedData[i].buffer );
+      // adding the actual encodedData buffer to the list
+      if (useMultipleDataStreams) {
+        for (var i = 0; i < encodedData.length; i++) {
+          allBuffers.push(encodedData[i].buffer);
+        }
+      } else {
+        allBuffers.push(encodedData.buffer);
       }
-    }else{
-      allBuffers.push( encodedData.buffer );
+
+      this._output = CodecUtils.mergeBuffers(allBuffers);
     }
 
-    this._output = CodecUtils.mergeBuffers( allBuffers );
-  }
+    /**
+    * [STATIC]
+    * Give in what case we fall when we want to use this data.
+    * Cases are described at the top
+    * @param {Whatever} data - a piec of data, object, array, typed array...
+    * @return {Number} the case
+    */
+
+  }, {
+    key: '_getDataSubsetInfo',
 
 
-  /**
-  * [STATIC]
-  * Give in what case we fall when we want to use this data.
-  * Cases are described at the top
-  * @param {Whatever} data - a piec of data, object, array, typed array...
-  * @return {Number} the case
-  */
-  static determineDataCase( data ){
-    if( data instanceof Object ){
-      if( CodecUtils.isTypedArray( data ) )
-        return dataCases.typedArray;
+    /**
+    * [PRIVATE]
+    * Return some infomation about the data subset so that it's easier to parse later
+    * @param {Object} subset - can be a typedArray or a complex object
+    * @return {Object} reconstruction info about this subset
+    */
+    value: function _getDataSubsetInfo(subset) {
+      var infoObj = null;
 
-      /*
-      if( data instanceof Array )
-        if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
-          return dataCases.mixedArrays;
-      */
+      if (CodecUtils.isTypedArray(subset)) {
+        infoObj = CodecUtils.getTypedArrayInfo(subset);
+        infoObj.isTypedArray = true;
+        infoObj.compressedByteLength = null;
+      } else {
+        infoObj = {
+          type: subset.constructor.name,
+          compressedByteLength: null,
+          byteLength: null,
+          length: null,
+          isTypedArray: false
+        };
+      }
 
-      // TODO: change the name of this case, since we want to accept Arrays of whatever
-      if( data instanceof Array )
-        return dataCases.mixedArrays;
-
-      return dataCases.complexObject;
-    }else{
-      return dataCases.invalid;
+      return infoObj;
     }
-  }
+  }], [{
+    key: 'isGoodCandidate',
+    value: function isGoodCandidate(obj) {
+      if (!obj) {
+        console.warn("Input object cannot be null.");
+        return false;
+      }
 
+      if (!("_metadata" in obj)) {
+        console.warn("Input object must contain a _metadata object.");
+        return false;
+      }
 
-  /**
-  * [PRIVATE]
-  * Return some infomation about the data subset so that it's easier to parse later
-  * @param {Object} subset - can be a typedArray or a complex object
-  * @return {Object} reconstruction info about this subset
-  */
-  _getDataSubsetInfo( subset ){
-    var infoObj = null;
+      if (!("_data" in obj)) {
+        console.warn("Input object must contain a _data object.");
+        return false;
+      }
 
-    if( CodecUtils.isTypedArray(subset) ){
-      infoObj = CodecUtils.getTypedArrayInfo( subset );
-      infoObj.isTypedArray = true;
-      infoObj.compressedByteLength = null;
-    }else{
-      infoObj = {
-        type: subset.constructor.name,
-        compressedByteLength: null,
-        byteLength: null,
-        length: null,
-        isTypedArray: false
-      };
+      var data = obj._data;
+
+      // check: metadata should not contain cyclic structures
+      try {
+        
+      } catch (e) {
+        console.warn("The metadata object contains cyclic structures. Cannot be used.");
+        return false;
+      }
+
+      var inputCase = PixBlockEncoder.determineDataCase(data);
+
+      // testing the case based on the kinf of data we want to input
+      if (inputCase === dataCases.invalid) {
+        console.warn("The input is invalid.");
+      }
+
+      return inputCase;
     }
+  }, {
+    key: 'determineDataCase',
+    value: function determineDataCase(data) {
+      if (data instanceof Object) {
+        if (CodecUtils.isTypedArray(data)) return dataCases.typedArray;
 
-    return infoObj;
-  }
+        /*
+        if( data instanceof Array )
+          if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
+            return dataCases.mixedArrays;
+        */
 
+        // TODO: change the name of this case, since we want to accept Arrays of whatever
+        if (data instanceof Array) return dataCases.mixedArrays;
 
-} /* END of class PixBlockEncoder */
+        return dataCases.complexObject;
+      } else {
+        return dataCases.invalid;
+      }
+    }
+  }]);
+  return PixBlockEncoder;
+}(); /* END of class PixBlockEncoder */
 
 /*
 * Author    Jonathan Lurie - http://me.jonahanlurie.fr
@@ -7921,186 +8301,412 @@ class PixBlockEncoder {
 * Lab       MCIN - Montreal Neurological Institute
 */
 
-class PixBlockDecoder {
-  constructor(){
+var PixBlockDecoder = function () {
+  function PixBlockDecoder() {
+    classCallCheck$1(this, PixBlockDecoder);
+
     this.reset();
   }
-
 
   /**
   * reset inputs and inputs
   */
-  reset(){
-    this._input = null;
-    this._output = null;
-  }
 
 
-  /**
-  * Specify an input
-  * @param {ArrayBuffer} buff - the arraybuffer that contains some data to be deserialized
-  */
-  setInput( buff ){
-    // check input
-    if( !(buff instanceof ArrayBuffer) ){
-      console.warn("Input should be a valid ArrayBuffer");
-      return;
+  createClass$1(PixBlockDecoder, [{
+    key: 'reset',
+    value: function reset() {
+      this._input = null;
+      this._output = null;
     }
-    this._input = buff;
-  }
 
+    /**
+    * Specify an input
+    * @param {ArrayBuffer} buff - the arraybuffer that contains some data to be deserialized
+    */
 
-  /**
-  * Get the output
-  * @return {Object} the output, or null
-  */
-  getOutput(){
-    return this._output;
-  }
-
-
-  /*
-  * Launch the decoding
-  */
-  run(){
-
-    var input = this._input;
-    var view = new DataView( input );
-    var isLtlt = view.getUint8( 0 );
-    var readingByteOffset = 0;
-
-    // primer, part 1
-    // get the endianess used to encode the file
-    var isLittleEndian = view.getUint8(0);
-    readingByteOffset += 1;
-
-    // primer, part 2
-    // get the length of the string buffer (unicode json) that follows
-    var pixBlockHeaderBufferByteLength = view.getUint32(1, readingByteOffset);
-    readingByteOffset += 4;
-
-    // get the string buffer
-    var pixBlockHeaderBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeaderBufferByteLength );
-    var pixBlockHeader = CodecUtils.ArrayBufferToObject( pixBlockHeaderBuffer );
-    readingByteOffset += pixBlockHeaderBufferByteLength;
-
-    // fetching the metadata
-    var metadataBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeader.metadataByteLength );
-    var metadataObject = CodecUtils.ArrayBufferToObject( metadataBuffer );
-    readingByteOffset += pixBlockHeader.metadataByteLength;
-
-    // the data streams are the byte streams when they are converted back to actual typedArrays/Objects
-    var dataStreams = [];
-
-    for(var i=0; i<pixBlockHeader.byteStreamInfo.length; i++){
-      // act as a flag: if not null, it means data were compressed
-      var compressedByteLength = pixBlockHeader.byteStreamInfo[i].compressedByteLength;
-
-      // create a typed array out of the inflated buffer
-      var dataStreamConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
-
-      // know if it's a typed array or a complex object
-      var isTypedArray = pixBlockHeader.byteStreamInfo[i].isTypedArray;
-
-      // meaning, the stream is compresed
-      if( compressedByteLength ){
-        // fetch the compresed dataStream
-        var compressedByteStream = new Uint8Array( input, readingByteOffset, compressedByteLength );
-
-        // inflate the dataStream
-        var inflatedByteStream = index.inflate( compressedByteStream );
-
-        var dataStream = null;
-        /*
-        if( dataStreamConstructor === Object){
-          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
-        }else{
-          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
-        }
-        */
-
-        if( isTypedArray ){
-          dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
-        }else{
-          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
-        }
-
-        dataStreams.push( dataStream );
-        readingByteOffset += compressedByteLength;
-
+  }, {
+    key: 'setInput',
+    value: function setInput(buff) {
+      // check input
+      if (!(buff instanceof ArrayBuffer)) {
+        console.warn("Input should be a valid ArrayBuffer");
+        return;
       }
-      // the stream were NOT compressed
-      else{
-        var dataStream = null;
-        if( isTypedArray ){
-         dataStream = CodecUtils.extractTypedArray(
-           input,
-           readingByteOffset,
-           this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]),
-           pixBlockHeader.byteStreamInfo[i].length
-         );
-        }else{
-          var objectBuffer = CodecUtils.extractTypedArray(
-           input,
-           readingByteOffset,
-           Uint8Array,
-           pixBlockHeader.byteStreamInfo[i].byteLength
-          );
-          dataStream = CodecUtils.ArrayBufferToObject( objectBuffer.buffer );
+      this._input = buff;
+    }
+
+    /**
+    * Get the output
+    * @return {Object} the output, or null
+    */
+
+  }, {
+    key: 'getOutput',
+    value: function getOutput() {
+      return this._output;
+    }
+
+    /*
+    * Launch the decoding
+    */
+
+  }, {
+    key: 'run',
+    value: function run() {
+
+      var input = this._input;
+      var view = new DataView(input);
+      var isLtlt = view.getUint8(0);
+      var readingByteOffset = 0;
+
+      // primer, part 1
+      // get the endianess used to encode the file
+      var isLittleEndian = view.getUint8(0);
+      readingByteOffset += 1;
+
+      // primer, part 2
+      // get the length of the string buffer (unicode json) that follows
+      var pixBlockHeaderBufferByteLength = view.getUint32(1, readingByteOffset);
+      readingByteOffset += 4;
+
+      // get the string buffer
+      var pixBlockHeaderBuffer = input.slice(readingByteOffset, readingByteOffset + pixBlockHeaderBufferByteLength);
+      var pixBlockHeader = CodecUtils.ArrayBufferToObject(pixBlockHeaderBuffer);
+      readingByteOffset += pixBlockHeaderBufferByteLength;
+
+      // fetching the metadata
+      var metadataBuffer = input.slice(readingByteOffset, readingByteOffset + pixBlockHeader.metadataByteLength);
+      var metadataObject = CodecUtils.ArrayBufferToObject(metadataBuffer);
+      readingByteOffset += pixBlockHeader.metadataByteLength;
+
+      // the data streams are the byte streams when they are converted back to actual typedArrays/Objects
+      var dataStreams = [];
+
+      for (var i = 0; i < pixBlockHeader.byteStreamInfo.length; i++) {
+        // act as a flag: if not null, it means data were compressed
+        var compressedByteLength = pixBlockHeader.byteStreamInfo[i].compressedByteLength;
+
+        // create a typed array out of the inflated buffer
+        var dataStreamConstructor = this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]);
+
+        // know if it's a typed array or a complex object
+        var isTypedArray = pixBlockHeader.byteStreamInfo[i].isTypedArray;
+
+        // meaning, the stream is compresed
+        if (compressedByteLength) {
+          // fetch the compresed dataStream
+          var compressedByteStream = new Uint8Array(input, readingByteOffset, compressedByteLength);
+
+          // inflate the dataStream
+          var inflatedByteStream = pako_1.inflate(compressedByteStream);
+
+          var dataStream = null;
+          /*
+          if( dataStreamConstructor === Object){
+            dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
+          }else{
+            dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
+          }
+          */
+
+          if (isTypedArray) {
+            dataStream = new dataStreamConstructor(inflatedByteStream.buffer);
+          } else {
+            dataStream = CodecUtils.ArrayBufferToObject(inflatedByteStream.buffer);
+          }
+
+          dataStreams.push(dataStream);
+          readingByteOffset += compressedByteLength;
         }
+        // the stream were NOT compressed
+        else {
+            var dataStream = null;
+            if (isTypedArray) {
+              dataStream = CodecUtils.extractTypedArray(input, readingByteOffset, this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]), pixBlockHeader.byteStreamInfo[i].length);
+            } else {
+              var objectBuffer = CodecUtils.extractTypedArray(input, readingByteOffset, Uint8Array, pixBlockHeader.byteStreamInfo[i].byteLength);
+              dataStream = CodecUtils.ArrayBufferToObject(objectBuffer.buffer);
+            }
 
-
-        dataStreams.push( dataStream );
-        readingByteOffset += pixBlockHeader.byteStreamInfo[i].byteLength;
+            dataStreams.push(dataStream);
+            readingByteOffset += pixBlockHeader.byteStreamInfo[i].byteLength;
+          }
       }
+
+      // If data is a single typed array (= not composed of a subset)
+      // we get rid of the useless wrapping array
+      if (!pixBlockHeader.useMultipleDataStreams) {
+        dataStreams = dataStreams[0];
+      }
+
+      this._output = {
+        originalBlockType: pixBlockHeader.originalBlockType,
+        _data: dataStreams,
+        _metadata: metadataObject
+      };
     }
 
-    // If data is a single typed array (= not composed of a subset)
-    // we get rid of the useless wrapping array
-    if( !pixBlockHeader.useMultipleDataStreams ){
-      dataStreams = dataStreams[0];
-    }
+    /**
+    * Get the array type based on byte stream info.
+    * The returned object can be used as a constructor
+    * @return {Function} constructor of a typed array
+    */
 
-    this._output = {
-      originalBlockType: pixBlockHeader.originalBlockType,
-      _data: dataStreams,
-      _metadata: metadataObject
-    };
-  }
-
-
-  /**
-  * Get the array type based on byte stream info.
-  * The returned object can be used as a constructor
-  * @return {Function} constructor of a typed array
-  */
-  _getDataTypeFromByteStreamInfo( bsi ){
-    var dataType = "Object";
-    var globalObject = CodecUtils.getGlobalObject();
-
-    if( bsi.type === "int" ){
-      dataType = bsi.signed ? "Uint" : "Int";
-      dataType += bsi.bytesPerElements*8 + "Array";
-
-    }else if( bsi.type === "float" ){
-      dataType = "Float";
-      dataType += bsi.bytesPerElements*8 + "Array";
+  }, {
+    key: '_getDataTypeFromByteStreamInfo',
+    value: function _getDataTypeFromByteStreamInfo(bsi) {
+      var dataType = "Object";
       var globalObject = CodecUtils.getGlobalObject();
 
+      if (bsi.type === "int") {
+        dataType = bsi.signed ? "Uint" : "Int";
+        dataType += bsi.bytesPerElements * 8 + "Array";
+      } else if (bsi.type === "float") {
+        dataType = "Float";
+        dataType += bsi.bytesPerElements * 8 + "Array";
+        var globalObject = CodecUtils.getGlobalObject();
+      }
+
+      return globalObject[dataType];
+    }
+  }]);
+  return PixBlockDecoder;
+}(); /* END of class PixBlockDecoder */
+
+var global$1 = typeof global !== "undefined" ? global :
+            typeof self !== "undefined" ? self :
+            typeof window !== "undefined" ? window : {};
+
+// shim for using process in browser
+// based off https://github.com/defunctzombie/node-process/blob/master/browser.js
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+var cachedSetTimeout = defaultSetTimout;
+var cachedClearTimeout = defaultClearTimeout;
+if (typeof global$1.setTimeout === 'function') {
+    cachedSetTimeout = setTimeout;
+}
+if (typeof global$1.clearTimeout === 'function') {
+    cachedClearTimeout = clearTimeout;
+}
+
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
     }
 
-    return ( globalObject[ dataType ] )
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+function nextTick(fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+}
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+var title = 'browser';
+var platform = 'browser';
+var browser = true;
+var env = {};
+var argv = [];
+var version = ''; // empty string to avoid regexp issues
+var versions = {};
+var release = {};
+var config = {};
+
+function noop() {}
+
+var on = noop;
+var addListener = noop;
+var once = noop;
+var off = noop;
+var removeListener = noop;
+var removeAllListeners = noop;
+var emit = noop;
+
+function binding(name) {
+    throw new Error('process.binding is not supported');
+}
+
+function cwd () { return '/' }
+function chdir (dir) {
+    throw new Error('process.chdir is not supported');
+}
+function umask() { return 0; }
+
+// from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
+var performance = global$1.performance || {};
+var performanceNow =
+  performance.now        ||
+  performance.mozNow     ||
+  performance.msNow      ||
+  performance.oNow       ||
+  performance.webkitNow  ||
+  function(){ return (new Date()).getTime() };
+
+// generate timestamp or delta
+// see http://nodejs.org/api/process.html#process_process_hrtime
+function hrtime(previousTimestamp){
+  var clocktime = performanceNow.call(performance)*1e-3;
+  var seconds = Math.floor(clocktime);
+  var nanoseconds = Math.floor((clocktime%1)*1e9);
+  if (previousTimestamp) {
+    seconds = seconds - previousTimestamp[0];
+    nanoseconds = nanoseconds - previousTimestamp[1];
+    if (nanoseconds<0) {
+      seconds--;
+      nanoseconds += 1e9;
+    }
   }
+  return [seconds,nanoseconds]
+}
 
+var startTime = new Date();
+function uptime() {
+  var currentTime = new Date();
+  var dif = currentTime - startTime;
+  return dif / 1000;
+}
 
-} /* END of class PixBlockDecoder */
+var process = {
+  nextTick: nextTick,
+  title: title,
+  browser: browser,
+  env: env,
+  argv: argv,
+  version: version,
+  versions: versions,
+  on: on,
+  addListener: addListener,
+  once: once,
+  off: off,
+  removeListener: removeListener,
+  removeAllListeners: removeAllListeners,
+  emit: emit,
+  binding: binding,
+  cwd: cwd,
+  chdir: chdir,
+  umask: umask,
+  hrtime: hrtime,
+  platform: platform,
+  release: release,
+  config: config,
+  uptime: uptime
+};
 
 var md5 = createCommonjsModule(function (module) {
 /**
  * [js-md5]{@link https://github.com/emn178/js-md5}
  *
  * @namespace md5
- * @version 0.6.0
+ * @version 0.6.1
  * @author Chen, Yi-Cyuan [emn178@gmail.com]
  * @copyright Chen, Yi-Cyuan 2014-2017
  * @license MIT
@@ -8140,6 +8746,12 @@ var md5 = createCommonjsModule(function (module) {
   if (root.JS_MD5_NO_NODE_JS || !Array.isArray) {
     Array.isArray = function (obj) {
       return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+  }
+
+  if (ARRAY_BUFFER && (root.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+    ArrayBuffer.isView = function (obj) {
+      return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
     };
   }
 
@@ -8308,23 +8920,25 @@ var md5 = createCommonjsModule(function (module) {
     if (this.finalized) {
       return;
     }
-    var notString = typeof(message) != 'string';
-    if (notString) {
-      if (message === null || message === undefined) {
+
+    var notString, type = typeof message;
+    if (type !== 'string') {
+      if (type === 'object') {
+        if (message === null) {
+          throw ERROR;
+        } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+          message = new Uint8Array(message);
+        } else if (!Array.isArray(message)) {
+          if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+            throw ERROR;
+          }
+        }
+      } else {
         throw ERROR;
-      } else if (message.constructor === root.ArrayBuffer) {
-        message = new Uint8Array(message);
       }
+      notString = true;
     }
-    var length = message.length;
-    if (notString) {
-      if (typeof length !== 'number' ||
-        !Array.isArray(message) && 
-        !(ARRAY_BUFFER && ArrayBuffer.isView(message))) {
-        throw ERROR;
-      }
-    }
-    var code, index = 0, i, blocks = this.blocks;
+    var code, index = 0, i, length = message.length, blocks = this.blocks;
     var buffer8 = this.buffer8;
 
     while (index < length) {
@@ -8788,161 +9402,174 @@ var md5 = createCommonjsModule(function (module) {
 * **Usage**
 * - [examples/savePixpFile.html](../examples/savePixpFile.html)
 */
-class PixBinEncoder {
-  constructor(){
+
+var PixBinEncoder = function () {
+  function PixBinEncoder() {
+    classCallCheck$1(this, PixBinEncoder);
+
     this._compress = true;
     this.reset();
   }
-
 
   /**
   * [static]
   * the first sequence of bytes for a pixbin file is this ASCII string
   */
-  static MAGIC_NUMBER(){
-    return "PIXPIPE_PIXBIN";
-  }
 
 
-  /**
-  * [PRIVATE]
-  * reset inputs and inputs
-  */
-  reset(){
-    this._inputs = [];
-    this._output = null;
-    this._options = {
-      madeWith: "pixbincodec_js",
-      userObject: null,
-      description: null,
-    };
-  }
+  createClass$1(PixBinEncoder, [{
+    key: 'reset',
 
 
-  /**
-  * Set a boolean to secify if data should be compressed or not
-  * @param {Boolean} b - true to compress, false to not compress
-  */
-  enableDataCompression( b ){
-    this._compress = b;
-  }
-
-
-  /**
-  * Overwrite one of the default options.
-  * @param {String} optionName - one of "madeWith" (default: "pixbincodec_js"), "userObject" (default: null), "description" (default: null)
-  */
-  setOption( optionName, value ){
-    if( optionName in this._options){
-      this._options[ optionName ] = value;
-    }
-  }
-
-
-  /**
-  * Add an input. Multiple inputs can be added.
-  * @param {Object} obj - an object that comtain _data and _metadata
-  */
-  addInput( obj ){
-    if(PixBlockEncoder.isGoodCandidate( obj )){
-      this._inputs.push( obj );
-    }
-  }
-
-
-  /**
-  * Get the output
-  * @return {ArrayBuffer} the encoded data as a buffer
-  */
-  getOutput(){
-    return this._output;
-  }
-
-
-  /**
-  * Launch the encoding
-  */
-  run(){
-    if( !this._inputs.length ){
-      console.warn("The encoder must be specified at least one input.");
-      return;
+    /**
+    * [PRIVATE]
+    * reset inputs and inputs
+    */
+    value: function reset() {
+      this._inputs = [];
+      this._output = null;
+      this._options = {
+        madeWith: "pixbincodec_js",
+        userObject: null,
+        description: null
+      };
     }
 
-    var that = this;
-    var today = new Date();
-    var isLittleEndian = CodecUtils.isPlatformLittleEndian();
-    var blockEncoder = new PixBlockEncoder();
+    /**
+    * Set a boolean to secify if data should be compressed or not
+    * @param {Boolean} b - true to compress, false to not compress
+    */
 
-    // this object is the JSON description at the begining of a PixBin
-    var pixBinIndex = {
-      date: today.toISOString(),
-      createdWith: this._options.madeWith,
-      description: this._options.description,
-      userObject: this._options.userObject,
-      pixblocksInfo: []
-    };
+  }, {
+    key: 'enableDataCompression',
+    value: function enableDataCompression(b) {
+      this._compress = b;
+    }
 
-    // array of binary blocks (each are Uint8Array or ArrayBuffer)
-    var pixBlocks = [];
+    /**
+    * Overwrite one of the default options.
+    * @param {String} optionName - one of "madeWith" (default: "pixbincodec_js"), "userObject" (default: null), "description" (default: null)
+    */
 
-    // just a convenient shortcut
-    var pixblocksInfo = pixBinIndex.pixblocksInfo;
+  }, {
+    key: 'setOption',
+    value: function setOption(optionName, value) {
+      if (optionName in this._options) {
+        this._options[optionName] = value;
+      }
+    }
 
+    /**
+    * Add an input. Multiple inputs can be added.
+    * @param {Object} obj - an object that comtain _data and _metadata
+    */
 
-    this._inputs.forEach(function( input, index$$1 ){
-      blockEncoder.setInput( input );
-      blockEncoder.enableDataCompression( that._compress );
-      blockEncoder.run();
+  }, {
+    key: 'addInput',
+    value: function addInput(obj) {
+      if (PixBlockEncoder.isGoodCandidate(obj)) {
+        this._inputs.push(obj);
+      }
+    }
 
-      var encodedBlock = blockEncoder.getOutput();
+    /**
+    * Get the output
+    * @return {ArrayBuffer} the encoded data as a buffer
+    */
 
-      if( !encodedBlock ){
-        console.warn("The input of index " + index$$1 + " could not be encoded as a PixBlock.");
+  }, {
+    key: 'getOutput',
+    value: function getOutput() {
+      return this._output;
+    }
+
+    /**
+    * Launch the encoding
+    */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      if (!this._inputs.length) {
+        console.warn("The encoder must be specified at least one input.");
         return;
       }
 
-      // adding an entry to the PixBin index
-      var pixBinIndexEntry = {
-        type        : input.constructor.name,
-        description : ( "description" in input._metadata ) ? input._metadata.description : null,
-        byteLength  : encodedBlock.byteLength,
-        checksum    : md5( encodedBlock ),
-      };
+      var that = this;
+      var today = new Date();
+      var isLittleEndian = CodecUtils.isPlatformLittleEndian();
+      var blockEncoder = new PixBlockEncoder();
 
-      pixblocksInfo.push( pixBinIndexEntry );
-      pixBlocks.push( encodedBlock );
-    });
+      // this object is the JSON description at the begining of a PixBin
+      var pixBinIndex = {
+        date: today.toISOString(),
+        createdWith: this._options.madeWith,
+        description: this._options.description,
+        userObject: this._options.userObject,
+        pixblocksInfo: []
 
+        // array of binary blocks (each are Uint8Array or ArrayBuffer)
+      };var pixBlocks = [];
 
-    if( !pixBlocks.length ){
-      console.warn("No input was compatible for PixBlock encoding.");
+      // just a convenient shortcut
+      var pixblocksInfo = pixBinIndex.pixblocksInfo;
+
+      this._inputs.forEach(function (input, index) {
+        blockEncoder.setInput(input);
+        blockEncoder.enableDataCompression(that._compress);
+        blockEncoder.run();
+
+        var encodedBlock = blockEncoder.getOutput();
+
+        if (!encodedBlock) {
+          console.warn("The input of index " + index + " could not be encoded as a PixBlock.");
+          return;
+        }
+
+        // adding an entry to the PixBin index
+        var pixBinIndexEntry = {
+          type: input.constructor.name,
+          description: "description" in input._metadata ? input._metadata.description : null,
+          byteLength: encodedBlock.byteLength,
+          checksum: md5(encodedBlock)
+        };
+
+        pixblocksInfo.push(pixBinIndexEntry);
+        pixBlocks.push(encodedBlock);
+      });
+
+      if (!pixBlocks.length) {
+        console.warn("No input was compatible for PixBlock encoding.");
+      }
+
+      // Building the header ArrayBuffer of the file. It contains:
+      // - A ASCII string "pixpipe". 7 x Uint8 of charcodes (7 bytes)
+      // - A flag for encoding endianess, 0: big, 1: little. 1 x Uint8 (1 byte)
+      // - The byte length of the PixBin meta binary object. 1 x Uint32 (4 bytes)
+
+      // encoding the meta object into an ArrayBuffer
+      var pixBinIndexBinaryString = CodecUtils.objectToArrayBuffer(pixBinIndex);
+      var magicNumber = PixBinEncoder.MAGIC_NUMBER();
+
+      // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
+      var binPrimer = new ArrayBuffer(magicNumber.length + 5);
+      var binPrimerView = new DataView(binPrimer);
+
+      CodecUtils.setString8InBuffer(magicNumber, binPrimer);
+      binPrimerView.setUint8(magicNumber.length, +isLittleEndian);
+      binPrimerView.setUint32(magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian);
+
+      var allBuffers = [binPrimer, pixBinIndexBinaryString].concat(pixBlocks);
+      this._output = CodecUtils.mergeBuffers(allBuffers);
     }
-
-    // Building the header ArrayBuffer of the file. It contains:
-    // - A ASCII string "pixpipe". 7 x Uint8 of charcodes (7 bytes)
-    // - A flag for encoding endianess, 0: big, 1: little. 1 x Uint8 (1 byte)
-    // - The byte length of the PixBin meta binary object. 1 x Uint32 (4 bytes)
-
-    // encoding the meta object into an ArrayBuffer
-    var pixBinIndexBinaryString = CodecUtils.objectToArrayBuffer(pixBinIndex);
-    var magicNumber = PixBinEncoder.MAGIC_NUMBER();
-
-    // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
-    var binPrimer = new ArrayBuffer( magicNumber.length + 5 );
-    var binPrimerView = new DataView( binPrimer );
-
-    CodecUtils.setString8InBuffer( magicNumber, binPrimer );
-    binPrimerView.setUint8( magicNumber.length, (+isLittleEndian));
-    binPrimerView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
-
-    var allBuffers = [binPrimer, pixBinIndexBinaryString].concat( pixBlocks );
-    this._output = CodecUtils.mergeBuffers( allBuffers );
-
-  }
-
-
-
-} /* END of class PixBinEncoder */
+  }], [{
+    key: 'MAGIC_NUMBER',
+    value: function MAGIC_NUMBER() {
+      return "PIXPIPE_PIXBIN";
+    }
+  }]);
+  return PixBinEncoder;
+}(); /* END of class PixBinEncoder */
 
 /*
 * Author    Jonathan Lurie - http://me.jonahanlurie.fr
@@ -8951,7 +9578,6 @@ class PixBinEncoder {
 * Link      https://github.com/jonathanlurie/pixpipejs
 * Lab       MCIN - Montreal Neurological Institute
 */
-
 
 /**
 * A PixBinDecoder instance decodes a *.pixp file and output an Image2D or Image3D.
@@ -8961,250 +9587,283 @@ class PixBinEncoder {
 * **Usage**
 * - [examples/pixpFileToImage2D.html](../examples/pixpFileToImage2D.html)
 */
-class PixBinDecoder {
-  constructor(){
+
+var PixBinDecoder = function () {
+  function PixBinDecoder() {
+    classCallCheck$1(this, PixBinDecoder);
+
     this._verifyChecksum = false;
     this._input = null;
     this._output = null;
     this._binMeta = null;
     this._parsingInfo = {
       offsetToReachFirstBlock: -1,
-      isLittleEndian: -1,
+      isLittleEndian: -1
     };
-    
+
     this._decodedBlocks = {};
     this._isValid = false;
     this.reset();
   }
-
 
   /**
   * Specify an input
   * @param {ArrayBuffer} buff - the input
   */
-  setInput( buff ){
-    this.reset();
-    
-    if( buff instanceof ArrayBuffer ){
-      this._input = buff;
-      this._isValid = this._parseIndex();
-    }
-  }
 
 
-  /**
-  * To be called after setInput. Tells if the buffer loaded is valid or not.
-  * @return {Boolean} true if valid, false if not.
-  */
-  isValid(){
-    return this._isValid;
-  }
+  createClass$1(PixBinDecoder, [{
+    key: 'setInput',
+    value: function setInput(buff) {
+      this.reset();
 
-  /**
-  * Get the the decoded output
-  * @return {Object} a decoded object
-  */
-  getOutput(){
-    return this._output;
-  }
-  
-  
-  /**
-  * Get the number of blocks encoded in this PixBin file
-  * @return {Number}
-  */
-  getNumberOfBlocks(){
-    return this._binMeta.pixblocksInfo.length;
-  }
-
-
-  /**
-  * Get the creation date of the file in the ISO8601 format
-  * @return {String} the data
-  */
-  getBinCreationDate(){
-    return this._binMeta.date;
-  }
-
-
-  /**
-  * Get the description of the PixBin file
-  * @return {String} the description
-  */
-  getBinDescription(){
-    return this._binMeta.description;
-  }
-  
-  
-  /**
-  * The userObject is a generic container added to the PixBin. It can carry all sorts of data.
-  * If not specified during encoding, it's null.
-  * @return {Object} the userObject
-  */
-  getBinUserObject(){
-    return this._binMeta.userObject;
-  }
-
-
-  /**
-  * Get the description of the block at the given index
-  * @param {Number} n - the index of the block
-  * @return {String} the description of this block
-  */
-  getBlockDescription( n ){
-    if( n<0 || n >= this.getNumberOfBlocks() ){
-      console.warn("The block index is out of range.");
-      return null;
-    }
-    return this._binMeta.pixblocksInfo[n].description;
-  }
-  
-  
-  /**
-  * Get the original type of the block. Convenient for knowing how to rebuild
-  * the object in its original form.
-  * @param {Number} n - the index of the block
-  * @return {String} the type ( comes from constructor.name )
-  */
-  getBlockType( n ){
-    if( n<0 || n >= this.getNumberOfBlocks() ){
-      console.warn("The block index is out of range.");
-      return null;
-    }
-    return this._binMeta.pixblocksInfo[n].type;
-  }
-
-
-  /**
-  * reset I/O and data to query 
-  */
-  reset(){
-    this._isValid = false;
-    this._input = null;
-    this._output = null;
-    this._binMeta = null;
-    this._parsingInfo = {
-      offsetToReachFirstBlock: -1,
-      isLittleEndian: -1,
-    };
-    this._decodedBlocks = {};
-  }
-
-
-  /**
-  * Specify wether or not  the bin decoder must perform a checksum verification
-  * for each block to be decoded.
-  * @param {Boolean} b - true to perfom verification, false to skip it (default: false)
-  */
-  enableBlockVerification( b ){
-    this._verifyChecksum = b;
-  }
-
-
-  /**
-  * [PRIVATE]
-  * 
-  */
-  _parseIndex(){
-    var input = this._input;
-
-    if( !input ){
-      console.warn("Input cannot be null");
-      return false;
+      if (buff instanceof ArrayBuffer) {
+        this._input = buff;
+        this._isValid = this._parseIndex();
+      }
     }
 
-    var inputByteLength = input.byteLength;
-    var magicNumberToExpect = PixBinEncoder.MAGIC_NUMBER();
+    /**
+    * To be called after setInput. Tells if the buffer loaded is valid or not.
+    * @return {Boolean} true if valid, false if not.
+    */
 
-    // control 1: the file must be large enough
-    if( inputByteLength < (magicNumberToExpect.length + 5) ){
-      console.warn("This buffer does not match a PixBin file.");
-      return false;
+  }, {
+    key: 'isValid',
+    value: function isValid() {
+      return this._isValid;
     }
 
-    var view = new DataView( input );
-    var movingByteOffset = 0;
-    var magicNumber = CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length );
+    /**
+    * Get the the decoded output
+    * @return {Object} a decoded object
+    */
 
-    // control 2: the magic number
-    if( magicNumber !== magicNumberToExpect){
-      console.warn("This file is not of PixBin type. (wrong magic number)");
-      return false;
+  }, {
+    key: 'getOutput',
+    value: function getOutput() {
+      return this._output;
     }
 
-    movingByteOffset = magicNumberToExpect.length;
-    var isLittleEndian = view.getUint8(movingByteOffset);
+    /**
+    * Get the number of blocks encoded in this PixBin file
+    * @return {Number}
+    */
 
-    // control 3: the endianess must be 0 or 1
-    if(isLittleEndian != 0 && isLittleEndian != 1){
-      console.warn("This file is not of PixBin type. (wrong endianess code)");
-      return false;
-    }
-
-    movingByteOffset += 1;
-    var pixBinIndexBinaryStringByteLength = view.getUint32( movingByteOffset, isLittleEndian );
-    movingByteOffset += 4;
-    var pixBinIndexObj = CodecUtils.ArrayBufferToObject( input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
-    movingByteOffset += pixBinIndexBinaryStringByteLength;
-    
-    this._parsingInfo.offsetToReachFirstBlock = movingByteOffset;
-    this._parsingInfo.isLittleEndian = isLittleEndian;
-    this._binMeta = pixBinIndexObj;
-    
-    return true;
-  }
-  
-  
-  /**
-  * Fetch a block at the given index. The first time it called on a block,
-  * this block will be read from the stream and decoded.
-  * If a block is already decoded, it will be retrieved as is without trying to
-  * re-decode it, unless `forceDecoding` is `true`.
-  * @param {Number} n - the index of the block to fetch
-  * @param {Boolean} forceDecoding - force the decoding even though it was already decoded
-  * @return {Object} the decoded block, containing `_data_`, `_metadata` and `originalBlockType`
-  */
-  fetchBlock( n , forceDecoding=false ){
-    var nbBlocks = this.getNumberOfBlocks();
-    if( n<0 || n >= nbBlocks ){
-      console.warn("The block index is out of range.");
-      return null;
-    }
-    
-    if( n in this._decodedBlocks && !forceDecoding){
-      return this._decodedBlocks[ n ];
-    }
-    
-    var offset = this._parsingInfo.offsetToReachFirstBlock;
-    
-    for(var i=0; i<n; i++){
-      offset += this._binMeta.pixblocksInfo[i].byteLength;
-    }
-    
-    var blockInfo = this._binMeta.pixblocksInfo[n];
-    var pixBlockBuff = this._input.slice(offset, offset + blockInfo.byteLength);
-    
-    if( this._verifyChecksum && md5( pixBlockBuff ) !== blockInfo.checksum){
-      console.warn("The block #" + n + " is corrupted.");
-      return null;
+  }, {
+    key: 'getNumberOfBlocks',
+    value: function getNumberOfBlocks() {
+      return this._binMeta.pixblocksInfo.length;
     }
 
-    var blockDecoder = new PixBlockDecoder();
-    blockDecoder.setInput( pixBlockBuff );
-    blockDecoder.run();
-    var decodedBlock = blockDecoder.getOutput();
-    
-    if( !decodedBlock ){
-      console.warn("The block #" + n + " could not be decoded.");
-      return null;
+    /**
+    * Get the creation date of the file in the ISO8601 format
+    * @return {String} the data
+    */
+
+  }, {
+    key: 'getBinCreationDate',
+    value: function getBinCreationDate() {
+      return this._binMeta.date;
     }
-    
-    this._decodedBlocks[ n ] = decodedBlock;
-    return decodedBlock;
-  }
 
+    /**
+    * Get the description of the PixBin file
+    * @return {String} the description
+    */
 
-} /* END of class PixBinDecoder */
+  }, {
+    key: 'getBinDescription',
+    value: function getBinDescription() {
+      return this._binMeta.description;
+    }
+
+    /**
+    * The userObject is a generic container added to the PixBin. It can carry all sorts of data.
+    * If not specified during encoding, it's null.
+    * @return {Object} the userObject
+    */
+
+  }, {
+    key: 'getBinUserObject',
+    value: function getBinUserObject() {
+      return this._binMeta.userObject;
+    }
+
+    /**
+    * Get the description of the block at the given index
+    * @param {Number} n - the index of the block
+    * @return {String} the description of this block
+    */
+
+  }, {
+    key: 'getBlockDescription',
+    value: function getBlockDescription(n) {
+      if (n < 0 || n >= this.getNumberOfBlocks()) {
+        console.warn("The block index is out of range.");
+        return null;
+      }
+      return this._binMeta.pixblocksInfo[n].description;
+    }
+
+    /**
+    * Get the original type of the block. Convenient for knowing how to rebuild
+    * the object in its original form.
+    * @param {Number} n - the index of the block
+    * @return {String} the type ( comes from constructor.name )
+    */
+
+  }, {
+    key: 'getBlockType',
+    value: function getBlockType(n) {
+      if (n < 0 || n >= this.getNumberOfBlocks()) {
+        console.warn("The block index is out of range.");
+        return null;
+      }
+      return this._binMeta.pixblocksInfo[n].type;
+    }
+
+    /**
+    * reset I/O and data to query 
+    */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this._isValid = false;
+      this._input = null;
+      this._output = null;
+      this._binMeta = null;
+      this._parsingInfo = {
+        offsetToReachFirstBlock: -1,
+        isLittleEndian: -1
+      };
+      this._decodedBlocks = {};
+    }
+
+    /**
+    * Specify wether or not  the bin decoder must perform a checksum verification
+    * for each block to be decoded.
+    * @param {Boolean} b - true to perfom verification, false to skip it (default: false)
+    */
+
+  }, {
+    key: 'enableBlockVerification',
+    value: function enableBlockVerification(b) {
+      this._verifyChecksum = b;
+    }
+
+    /**
+    * [PRIVATE]
+    * 
+    */
+
+  }, {
+    key: '_parseIndex',
+    value: function _parseIndex() {
+      var input = this._input;
+
+      if (!input) {
+        console.warn("Input cannot be null");
+        return false;
+      }
+
+      var inputByteLength = input.byteLength;
+      var magicNumberToExpect = PixBinEncoder.MAGIC_NUMBER();
+
+      // control 1: the file must be large enough
+      if (inputByteLength < magicNumberToExpect.length + 5) {
+        console.warn("This buffer does not match a PixBin file.");
+        return false;
+      }
+
+      var view = new DataView(input);
+      var movingByteOffset = 0;
+      var magicNumber = CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length);
+
+      // control 2: the magic number
+      if (magicNumber !== magicNumberToExpect) {
+        console.warn("This file is not of PixBin type. (wrong magic number)");
+        return false;
+      }
+
+      movingByteOffset = magicNumberToExpect.length;
+      var isLittleEndian = view.getUint8(movingByteOffset);
+
+      // control 3: the endianess must be 0 or 1
+      if (isLittleEndian != 0 && isLittleEndian != 1) {
+        console.warn("This file is not of PixBin type. (wrong endianess code)");
+        return false;
+      }
+
+      movingByteOffset += 1;
+      var pixBinIndexBinaryStringByteLength = view.getUint32(movingByteOffset, isLittleEndian);
+      movingByteOffset += 4;
+      var pixBinIndexObj = CodecUtils.ArrayBufferToObject(input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
+      movingByteOffset += pixBinIndexBinaryStringByteLength;
+
+      this._parsingInfo.offsetToReachFirstBlock = movingByteOffset;
+      this._parsingInfo.isLittleEndian = isLittleEndian;
+      this._binMeta = pixBinIndexObj;
+
+      return true;
+    }
+
+    /**
+    * Fetch a block at the given index. The first time it called on a block,
+    * this block will be read from the stream and decoded.
+    * If a block is already decoded, it will be retrieved as is without trying to
+    * re-decode it, unless `forceDecoding` is `true`.
+    * @param {Number} n - the index of the block to fetch
+    * @param {Boolean} forceDecoding - force the decoding even though it was already decoded
+    * @return {Object} the decoded block, containing `_data_`, `_metadata` and `originalBlockType`
+    */
+
+  }, {
+    key: 'fetchBlock',
+    value: function fetchBlock(n) {
+      var forceDecoding = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      var nbBlocks = this.getNumberOfBlocks();
+      if (n < 0 || n >= nbBlocks) {
+        console.warn("The block index is out of range.");
+        return null;
+      }
+
+      if (n in this._decodedBlocks && !forceDecoding) {
+        return this._decodedBlocks[n];
+      }
+
+      var offset = this._parsingInfo.offsetToReachFirstBlock;
+
+      for (var i = 0; i < n; i++) {
+        offset += this._binMeta.pixblocksInfo[i].byteLength;
+      }
+
+      var blockInfo = this._binMeta.pixblocksInfo[n];
+      var pixBlockBuff = this._input.slice(offset, offset + blockInfo.byteLength);
+
+      if (this._verifyChecksum && md5(pixBlockBuff) !== blockInfo.checksum) {
+        console.warn("The block #" + n + " is corrupted.");
+        return null;
+      }
+
+      var blockDecoder = new PixBlockDecoder();
+      blockDecoder.setInput(pixBlockBuff);
+      blockDecoder.run();
+      var decodedBlock = blockDecoder.getOutput();
+
+      if (!decodedBlock) {
+        console.warn("The block #" + n + " could not be decoded.");
+        return null;
+      }
+
+      this._decodedBlocks[n] = decodedBlock;
+      return decodedBlock;
+    }
+  }]);
+  return PixBinDecoder;
+}(); /* END of class PixBinDecoder */
 
 /*
 * Author    Jonathan Lurie - http://me.jonahanlurie.fr
@@ -9214,12 +9873,4 @@ class PixBinDecoder {
 * Lab       MCIN - Montreal Neurological Institute
 */
 
-exports.PixBlockEncoder = PixBlockEncoder;
-exports.PixBlockDecoder = PixBlockDecoder;
-exports.PixBinEncoder = PixBinEncoder;
-exports.PixBinDecoder = PixBinDecoder;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-//# sourceMappingURL=pixbincodec.js.map
+export { PixBlockEncoder, PixBlockDecoder, PixBinEncoder, PixBinDecoder };
