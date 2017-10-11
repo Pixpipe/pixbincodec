@@ -1,17 +1,17 @@
 # The PixBin format
-The PixBin format is a simple way to serialize Javascript/JSON objects as well as low-level buffers into a single binary buffer file you can save on your computer. Originally it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) can savea piece of data and that could later be reinjected into another pipeline for further processing. In the context of Pixpipejs, this piece of data could be an `Image2D`, an `Image3D`, a `LineString`, etc. In the end, it's just Javascript/JSON Objects and a low level buffers!  
+The PixBin format is a simple way to serialize Javascript/JSON objects as well as low-level buffers into a single binary buffer file you can save on your computer. Originally, it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) could save a piece of data and that could later be reinjected into another pipeline for further processing. In the context of Pixpipejs, this piece of data could be an `Image2D`, an `Image3D`, a `LineString`, etc. In the end, it's just Javascript/JSON Objects and low level buffers!  
 
-The first use-case is in Pixpipejs/Javascript but the PixBin format can be created and decoded with other languages. As an examplem we also have [Python codec](https://github.com/Pixpipe/pyxbincodec).
+The first use-case is in Pixpipejs/Javascript but the PixBin format can be created and decoded with other languages. For, example we also have [Python codec](https://github.com/Pixpipe/pyxbincodec).
 
 # Again a new file format??
-That's right. At first, we wanted to use the *NIfTI* format to encode Pixpipe outputs but the browser-side Javascript context implyed to write a NIfTI encoder from scratch, which can be cumbersome. In addition, NIfTI is not multimodality, cannot store extensive metadata and cannot deal with internal buffer compression.
+That's right. At first, we wanted to use one of the *NIfTI* or *MINC* formats to encode Pixpipe outputs, but the browser-side Javascript context implied to write a NIfTI or MINC encoder from scratch, was cumbersome. Though MINC can store extensive metadata, multimodality data, and supports internal compression, it is built upon HDF5 making it difficult to reliably interact with in the web, and NIfTI does not have these desirable features. 
 
 To learn more about the PixBin format, read this [in-depth description](pixbinformat.md).
 
 ## Advantages
 - Optimized for numerical data
 - Still a generic store-what-you-want format
-- Is multimodality, a bit like an archive, you can store multiple blocks inside
+- Is multimodality, a bit like an archive, so you can store multiple blocks inside
 - Can handle as many metadata as you need, per block **and** at the parent level
 - Data of each block are *zlib* compressed (lossless) *- optional*
 - Streamable over blocks, since each block of data is compressed independently
