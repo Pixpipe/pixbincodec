@@ -31,7 +31,7 @@
     "rollup-plugin-node-resolve": "^2.0.0"
   },
   "dependencies": {
-    "codecutils": "github:pixpipe/codecutils",
+    "codecutils": "github:jonathanlurie/codecutils",
     "js-md5": "^0.6.0",
     "pako": "^1.0.5",
     "traverse": "^0.6.6"
