@@ -2,7 +2,7 @@
   "name": "pixbincodec",
   "version": "0.1.0",
   "description": "An encoder-decoder for PixBin format",
-  "main": "src/main.js",
+  "main": "dist/pixbincodec.cjs.js",
   "entry": "src/main.js",
   "commonjs": "dist/pixbincodec.cjs.js",
   "module": "dist/pixbincodec.module.js",
