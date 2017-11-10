@@ -2,7 +2,7 @@
   "name": "pixbincodec",
   "version": "0.1.0",
   "description": "An encoder-decoder for PixBin format",
-  "main": "dist/pixbincodec.cjs.js",
+  "main": "src/main.js",
   "entry": "src/main.js",
   "commonjs": "dist/pixbincodec.cjs.js",
   "module": "dist/pixbincodec.module.js",
@@ -10,7 +10,6 @@
   "repository": "jonathanlurie/pixbincodec",
   "moduleName": "pixbincodec",
   "scripts": {
-    "install": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
     "min": "java -jar closurecompiler/compiler.jar --language_out ECMASCRIPT5_STRICT --js dist/pixbincodec.umd.js --js_output_file dist/pixbincodec.min.js_NO_HEADER && printf \"// Build date: $(date '+%Y-%m%-dT%H:%M:%S')\n\n\" > dist/pixbincodec.min.js && cat header.txt >> dist/pixbincodec.min.js && cat dist/pixbincodec.min.js_NO_HEADER >> dist/pixbincodec.min.js && rm dist/pixbincodec.min.js_NO_HEADER",
