@@ -1,3 +1,9 @@
+# Install
+```
+npm install --save pixbincodec
+```
+
+
 # The PixBin format
 The PixBin format is a simple way to serialize Javascript/JSON objects as well as low-level buffers into a single binary buffer file you can save on your computer. Originally, it was created so that [Pixpipejs](https://github.com/Pixpipe/pixpipejs) could save a piece of data and that could later be reinjected into another pipeline for further processing. In the context of Pixpipejs, this piece of data could be an `Image2D`, an `Image3D`, a `LineString`, etc. In the end, it's just Javascript/JSON Objects and low level buffers!  
 
