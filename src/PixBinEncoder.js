@@ -8,7 +8,7 @@
 
 import pako from 'pako';
 import md5 from 'js-md5';
-import { CodecUtils } from 'codecutils';
+import codecutils from 'codecutils';
 import { PixBlockEncoder } from './PixBlockEncoder.js';
 
 /**
@@ -105,7 +105,7 @@ class PixBinEncoder {
 
     var that = this;
     var today = new Date();
-    var isLittleEndian = CodecUtils.isPlatformLittleEndian();
+    var isLittleEndian = codecutils.CodecUtils.isPlatformLittleEndian();
     var blockEncoder = new PixBlockEncoder();
 
     // this object is the JSON description at the begining of a PixBin
@@ -159,19 +159,19 @@ class PixBinEncoder {
     // - The byte length of the PixBin meta binary object. 1 x Uint32 (4 bytes)
 
     // encoding the meta object into an ArrayBuffer
-    var pixBinIndexBinaryString = CodecUtils.objectToArrayBuffer(pixBinIndex);
+    var pixBinIndexBinaryString = codecutils.CodecUtils.objectToArrayBuffer(pixBinIndex);
     var magicNumber = PixBinEncoder.MAGIC_NUMBER();
 
     // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
     var binPrimer = new ArrayBuffer( magicNumber.length + 5 );
     var binPrimerView = new DataView( binPrimer );
 
-    CodecUtils.setString8InBuffer( magicNumber, binPrimer );
+    codecutils.CodecUtils.setString8InBuffer( magicNumber, binPrimer );
     binPrimerView.setUint8( magicNumber.length, (+isLittleEndian))
     binPrimerView.setUint32( magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian );
 
     var allBuffers = [binPrimer, pixBinIndexBinaryString].concat( pixBlocks )
-    this._output = CodecUtils.mergeBuffers( allBuffers )
+    this._output = codecutils.CodecUtils.mergeBuffers( allBuffers )
 
   }
 

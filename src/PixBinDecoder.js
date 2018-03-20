@@ -8,7 +8,7 @@
 
 
 import md5 from 'js-md5';
-import { CodecUtils } from 'codecutils';
+import codecutils from 'codecutils';
 import { PixBlockDecoder } from './PixBlockDecoder.js';
 import { PixBinEncoder } from './PixBinEncoder.js';
 
@@ -30,7 +30,7 @@ class PixBinDecoder {
       offsetToReachFirstBlock: -1,
       isLittleEndian: -1,
     }
-    
+
     this._decodedBlocks = {};
     this._isValid = false;
     this.reset();
@@ -43,7 +43,7 @@ class PixBinDecoder {
   */
   setInput( buff ){
     this.reset();
-    
+
     if( buff instanceof ArrayBuffer ){
       this._input = buff;
       this._isValid = this._parseIndex();
@@ -66,8 +66,8 @@ class PixBinDecoder {
   getOutput(){
     return this._output;
   }
-  
-  
+
+
   /**
   * Get the number of blocks encoded in this PixBin file
   * @return {Number}
@@ -93,8 +93,8 @@ class PixBinDecoder {
   getBinDescription(){
     return this._binMeta.description;
   }
-  
-  
+
+
   /**
   * The userObject is a generic container added to the PixBin. It can carry all sorts of data.
   * If not specified during encoding, it's null.
@@ -117,8 +117,8 @@ class PixBinDecoder {
     }
     return this._binMeta.pixblocksInfo[n].description;
   }
-  
-  
+
+
   /**
   * Get the original type of the block. Convenient for knowing how to rebuild
   * the object in its original form.
@@ -135,7 +135,7 @@ class PixBinDecoder {
 
 
   /**
-  * reset I/O and data to query 
+  * reset I/O and data to query
   */
   reset(){
     this._isValid = false;
@@ -162,7 +162,7 @@ class PixBinDecoder {
 
   /**
   * [PRIVATE]
-  * 
+  *
   */
   _parseIndex(){
     var input = this._input;
@@ -183,7 +183,7 @@ class PixBinDecoder {
 
     var view = new DataView( input );
     var movingByteOffset = 0;
-    var magicNumber = CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length )
+    var magicNumber = codecutils.CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length )
 
     // control 2: the magic number
     if( magicNumber !== magicNumberToExpect){
@@ -203,17 +203,17 @@ class PixBinDecoder {
     movingByteOffset += 1;
     var pixBinIndexBinaryStringByteLength = view.getUint32( movingByteOffset, isLittleEndian );
     movingByteOffset += 4;
-    var pixBinIndexObj = CodecUtils.ArrayBufferToObject( input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
+    var pixBinIndexObj = codecutils.CodecUtils.ArrayBufferToObject( input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
     movingByteOffset += pixBinIndexBinaryStringByteLength;
-    
+
     this._parsingInfo.offsetToReachFirstBlock = movingByteOffset;
     this._parsingInfo.isLittleEndian = isLittleEndian;
     this._binMeta = pixBinIndexObj;
-    
+
     return true;
   }
-  
-  
+
+
   /**
   * Fetch a block at the given index. The first time it called on a block,
   * this block will be read from the stream and decoded.
@@ -229,20 +229,20 @@ class PixBinDecoder {
       console.warn("The block index is out of range.");
       return null;
     }
-    
+
     if( n in this._decodedBlocks && !forceDecoding){
       return this._decodedBlocks[ n ];
     }
-    
+
     var offset = this._parsingInfo.offsetToReachFirstBlock;
-    
+
     for(var i=0; i<n; i++){
       offset += this._binMeta.pixblocksInfo[i].byteLength;
     }
-    
+
     var blockInfo = this._binMeta.pixblocksInfo[n];
     var pixBlockBuff = this._input.slice(offset, offset + blockInfo.byteLength);
-    
+
     if( this._verifyChecksum && md5( pixBlockBuff ) !== blockInfo.checksum){
       console.warn("The block #" + n + " is corrupted.");
       return null;
@@ -252,12 +252,12 @@ class PixBinDecoder {
     blockDecoder.setInput( pixBlockBuff )
     blockDecoder.run();
     var decodedBlock = blockDecoder.getOutput();
-    
+
     if( !decodedBlock ){
       console.warn("The block #" + n + " could not be decoded.");
       return null;
     }
-    
+
     this._decodedBlocks[ n ] = decodedBlock;
     return decodedBlock;
   }

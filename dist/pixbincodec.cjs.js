@@ -4,16 +4,15 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-
-
-
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
 var common = createCommonjsModule(function (module, exports) {
-'use strict';
 
 
 var TYPED_OK =  (typeof Uint8Array !== 'undefined') &&
@@ -116,8 +115,12 @@ exports.setTyped = function (on) {
 
 exports.setTyped(TYPED_OK);
 });
-
-'use strict';
+var common_1 = common.assign;
+var common_2 = common.shrinkBuf;
+var common_3 = common.setTyped;
+var common_4 = common.Buf8;
+var common_5 = common.Buf16;
+var common_6 = common.Buf32;
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -147,19 +150,19 @@ exports.setTyped(TYPED_OK);
 //var Z_FILTERED          = 1;
 //var Z_HUFFMAN_ONLY      = 2;
 //var Z_RLE               = 3;
-var Z_FIXED$1               = 4;
+var Z_FIXED               = 4;
 //var Z_DEFAULT_STRATEGY  = 0;
 
 /* Possible values of the data_type field (though see inflate()) */
 var Z_BINARY              = 0;
 var Z_TEXT                = 1;
 //var Z_ASCII             = 1; // = Z_TEXT
-var Z_UNKNOWN$1             = 2;
+var Z_UNKNOWN             = 2;
 
 /*============================================================================*/
 
 
-function zero$1(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
+function zero(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
 
 // From zutil.h
 
@@ -168,8 +171,8 @@ var STATIC_TREES = 1;
 var DYN_TREES    = 2;
 /* The three kinds of block type */
 
-var MIN_MATCH$1    = 3;
-var MAX_MATCH$1    = 258;
+var MIN_MATCH    = 3;
+var MAX_MATCH    = 258;
 /* The minimum and maximum match lengths */
 
 // From deflate.h
@@ -177,25 +180,25 @@ var MAX_MATCH$1    = 258;
  * Internal compression state.
  */
 
-var LENGTH_CODES$1  = 29;
+var LENGTH_CODES  = 29;
 /* number of length codes, not counting the special END_BLOCK code */
 
-var LITERALS$1      = 256;
+var LITERALS      = 256;
 /* number of literal bytes 0..255 */
 
-var L_CODES$1       = LITERALS$1 + 1 + LENGTH_CODES$1;
+var L_CODES       = LITERALS + 1 + LENGTH_CODES;
 /* number of Literal or Length codes, including the END_BLOCK code */
 
-var D_CODES$1       = 30;
+var D_CODES       = 30;
 /* number of distance codes */
 
-var BL_CODES$1      = 19;
+var BL_CODES      = 19;
 /* number of codes used to transfer the bit lengths */
 
-var HEAP_SIZE$1     = 2 * L_CODES$1 + 1;
+var HEAP_SIZE     = 2 * L_CODES + 1;
 /* maximum heap size */
 
-var MAX_BITS$1      = 15;
+var MAX_BITS      = 15;
 /* All codes must not exceed MAX_BITS bits */
 
 var Buf_size      = 16;
@@ -248,37 +251,37 @@ var bl_order =
 var DIST_CODE_LEN = 512; /* see definition of array dist_code below */
 
 // !!!! Use flat array insdead of structure, Freq = i*2, Len = i*2+1
-var static_ltree  = new Array((L_CODES$1 + 2) * 2);
-zero$1(static_ltree);
+var static_ltree  = new Array((L_CODES + 2) * 2);
+zero(static_ltree);
 /* The static literal tree. Since the bit lengths are imposed, there is no
  * need for the L_CODES extra codes used during heap construction. However
  * The codes 286 and 287 are needed to build a canonical tree (see _tr_init
  * below).
  */
 
-var static_dtree  = new Array(D_CODES$1 * 2);
-zero$1(static_dtree);
+var static_dtree  = new Array(D_CODES * 2);
+zero(static_dtree);
 /* The static distance tree. (Actually a trivial tree since all codes use
  * 5 bits.)
  */
 
 var _dist_code    = new Array(DIST_CODE_LEN);
-zero$1(_dist_code);
+zero(_dist_code);
 /* Distance codes. The first 256 values correspond to the distances
  * 3 .. 258, the last 256 values correspond to the top 8 bits of
  * the 15 bit distances.
  */
 
-var _length_code  = new Array(MAX_MATCH$1 - MIN_MATCH$1 + 1);
-zero$1(_length_code);
+var _length_code  = new Array(MAX_MATCH - MIN_MATCH + 1);
+zero(_length_code);
 /* length code for each normalized match length (0 == MIN_MATCH) */
 
-var base_length   = new Array(LENGTH_CODES$1);
-zero$1(base_length);
+var base_length   = new Array(LENGTH_CODES);
+zero(base_length);
 /* First normalized length for each code (0 = MIN_MATCH) */
 
-var base_dist     = new Array(D_CODES$1);
-zero$1(base_dist);
+var base_dist     = new Array(D_CODES);
+zero(base_dist);
 /* First normalized distance for each code (0 = distance of 1) */
 
 
@@ -408,7 +411,7 @@ function gen_bitlen(s, desc)
   var f;              /* frequency */
   var overflow = 0;   /* number of elements with bit length too large */
 
-  for (bits = 0; bits <= MAX_BITS$1; bits++) {
+  for (bits = 0; bits <= MAX_BITS; bits++) {
     s.bl_count[bits] = 0;
   }
 
@@ -417,7 +420,7 @@ function gen_bitlen(s, desc)
    */
   tree[s.heap[s.heap_max] * 2 + 1]/*.Len*/ = 0; /* root of the heap */
 
-  for (h = s.heap_max + 1; h < HEAP_SIZE$1; h++) {
+  for (h = s.heap_max + 1; h < HEAP_SIZE; h++) {
     n = s.heap[h];
     bits = tree[tree[n * 2 + 1]/*.Dad*/ * 2 + 1]/*.Len*/ + 1;
     if (bits > max_length) {
@@ -492,7 +495,7 @@ function gen_codes(tree, max_code, bl_count)
 //    int max_code;              /* largest code with non zero frequency */
 //    ushf *bl_count;            /* number of codes at each bit length */
 {
-  var next_code = new Array(MAX_BITS$1 + 1); /* next code value for each bit length */
+  var next_code = new Array(MAX_BITS + 1); /* next code value for each bit length */
   var code = 0;              /* running code value */
   var bits;                  /* bit index */
   var n;                     /* code index */
@@ -500,7 +503,7 @@ function gen_codes(tree, max_code, bl_count)
   /* The distribution counts are first used to generate the code values
    * without bit reversal.
    */
-  for (bits = 1; bits <= MAX_BITS$1; bits++) {
+  for (bits = 1; bits <= MAX_BITS; bits++) {
     next_code[bits] = code = (code + bl_count[bits - 1]) << 1;
   }
   /* Check that the bit counts in bl_count are consistent. The last code
@@ -511,7 +514,7 @@ function gen_codes(tree, max_code, bl_count)
   //Tracev((stderr,"\ngen_codes: max_code %d ", max_code));
 
   for (n = 0;  n <= max_code; n++) {
-    var len = tree[n * 2 + 1];
+    var len = tree[n * 2 + 1]/*.Len*/;
     if (len === 0) { continue; }
     /* Now reverse the bits */
     tree[n * 2]/*.Code*/ = bi_reverse(next_code[len]++, len);
@@ -531,7 +534,7 @@ function tr_static_init() {
   var length;   /* length value */
   var code;     /* code value */
   var dist;     /* distance index */
-  var bl_count = new Array(MAX_BITS$1 + 1);
+  var bl_count = new Array(MAX_BITS + 1);
   /* number of codes at each bit length for an optimal tree */
 
   // do check in _tr_init()
@@ -548,7 +551,7 @@ function tr_static_init() {
 
   /* Initialize the mapping length (0..255) -> length code (0..28) */
   length = 0;
-  for (code = 0; code < LENGTH_CODES$1 - 1; code++) {
+  for (code = 0; code < LENGTH_CODES - 1; code++) {
     base_length[code] = length;
     for (n = 0; n < (1 << extra_lbits[code]); n++) {
       _length_code[length++] = code;
@@ -571,7 +574,7 @@ function tr_static_init() {
   }
   //Assert (dist == 256, "tr_static_init: dist != 256");
   dist >>= 7; /* from now on, all distances are divided by 128 */
-  for (; code < D_CODES$1; code++) {
+  for (; code < D_CODES; code++) {
     base_dist[code] = dist << 7;
     for (n = 0; n < (1 << (extra_dbits[code] - 7)); n++) {
       _dist_code[256 + dist++] = code;
@@ -580,7 +583,7 @@ function tr_static_init() {
   //Assert (dist == 256, "tr_static_init: 256+dist != 512");
 
   /* Construct the codes of the static literal tree */
-  for (bits = 0; bits <= MAX_BITS$1; bits++) {
+  for (bits = 0; bits <= MAX_BITS; bits++) {
     bl_count[bits] = 0;
   }
 
@@ -609,18 +612,18 @@ function tr_static_init() {
    * tree construction to get a canonical Huffman tree (longest code
    * all ones)
    */
-  gen_codes(static_ltree, L_CODES$1 + 1, bl_count);
+  gen_codes(static_ltree, L_CODES + 1, bl_count);
 
   /* The static distance tree is trivial: */
-  for (n = 0; n < D_CODES$1; n++) {
+  for (n = 0; n < D_CODES; n++) {
     static_dtree[n * 2 + 1]/*.Len*/ = 5;
     static_dtree[n * 2]/*.Code*/ = bi_reverse(n, 5);
   }
 
   // Now data ready and we can init static trees
-  static_l_desc = new StaticTreeDesc(static_ltree, extra_lbits, LITERALS$1 + 1, L_CODES$1, MAX_BITS$1);
-  static_d_desc = new StaticTreeDesc(static_dtree, extra_dbits, 0,          D_CODES$1, MAX_BITS$1);
-  static_bl_desc = new StaticTreeDesc(new Array(0), extra_blbits, 0,         BL_CODES$1, MAX_BL_BITS);
+  static_l_desc = new StaticTreeDesc(static_ltree, extra_lbits, LITERALS + 1, L_CODES, MAX_BITS);
+  static_d_desc = new StaticTreeDesc(static_dtree, extra_dbits, 0,          D_CODES, MAX_BITS);
+  static_bl_desc = new StaticTreeDesc(new Array(0), extra_blbits, 0,         BL_CODES, MAX_BL_BITS);
 
   //static_init_done = true;
 }
@@ -633,9 +636,9 @@ function init_block(s) {
   var n; /* iterates over tree elements */
 
   /* Initialize the trees. */
-  for (n = 0; n < L_CODES$1;  n++) { s.dyn_ltree[n * 2]/*.Freq*/ = 0; }
-  for (n = 0; n < D_CODES$1;  n++) { s.dyn_dtree[n * 2]/*.Freq*/ = 0; }
-  for (n = 0; n < BL_CODES$1; n++) { s.bl_tree[n * 2]/*.Freq*/ = 0; }
+  for (n = 0; n < L_CODES;  n++) { s.dyn_ltree[n * 2]/*.Freq*/ = 0; }
+  for (n = 0; n < D_CODES;  n++) { s.dyn_dtree[n * 2]/*.Freq*/ = 0; }
+  for (n = 0; n < BL_CODES; n++) { s.bl_tree[n * 2]/*.Freq*/ = 0; }
 
   s.dyn_ltree[END_BLOCK * 2]/*.Freq*/ = 1;
   s.opt_len = s.static_len = 0;
@@ -754,7 +757,7 @@ function compress_block(s, ltree, dtree)
       } else {
         /* Here, lc is the match length - MIN_MATCH */
         code = _length_code[lc];
-        send_code(s, code + LITERALS$1 + 1, ltree); /* send the length code */
+        send_code(s, code + LITERALS + 1, ltree); /* send the length code */
         extra = extra_lbits[code];
         if (extra !== 0) {
           lc -= base_length[code];
@@ -808,7 +811,7 @@ function build_tree(s, desc)
    * heap[0] is not used.
    */
   s.heap_len = 0;
-  s.heap_max = HEAP_SIZE$1;
+  s.heap_max = HEAP_SIZE;
 
   for (n = 0; n < elems; n++) {
     if (tree[n * 2]/*.Freq*/ !== 0) {
@@ -896,7 +899,7 @@ function scan_tree(s, tree, max_code)
   var prevlen = -1;          /* last emitted length */
   var curlen;                /* length of current code */
 
-  var nextlen = tree[0 * 2 + 1]; /* length of next code */
+  var nextlen = tree[0 * 2 + 1]/*.Len*/; /* length of next code */
 
   var count = 0;             /* repeat count of the current code */
   var max_count = 7;         /* max repeat count */
@@ -962,7 +965,7 @@ function send_tree(s, tree, max_code)
   var prevlen = -1;          /* last emitted length */
   var curlen;                /* length of current code */
 
-  var nextlen = tree[0 * 2 + 1]; /* length of next code */
+  var nextlen = tree[0 * 2 + 1]/*.Len*/; /* length of next code */
 
   var count = 0;             /* repeat count of the current code */
   var max_count = 7;         /* max repeat count */
@@ -1041,7 +1044,7 @@ function build_bl_tree(s) {
    * requires that at least 4 bit length codes be sent. (appnote.txt says
    * 3 but the actual value used is 4.)
    */
-  for (max_blindex = BL_CODES$1 - 1; max_blindex >= 3; max_blindex--) {
+  for (max_blindex = BL_CODES - 1; max_blindex >= 3; max_blindex--) {
     if (s.bl_tree[bl_order[max_blindex] * 2 + 1]/*.Len*/ !== 0) {
       break;
     }
@@ -1120,7 +1123,7 @@ function detect_data_type(s) {
       s.dyn_ltree[13 * 2]/*.Freq*/ !== 0) {
     return Z_TEXT;
   }
-  for (n = 32; n < LITERALS$1; n++) {
+  for (n = 32; n < LITERALS; n++) {
     if (s.dyn_ltree[n * 2]/*.Freq*/ !== 0) {
       return Z_TEXT;
     }
@@ -1200,7 +1203,7 @@ function _tr_flush_block(s, buf, stored_len, last)
   if (s.level > 0) {
 
     /* Check if the file is binary or text */
-    if (s.strm.data_type === Z_UNKNOWN$1) {
+    if (s.strm.data_type === Z_UNKNOWN) {
       s.strm.data_type = detect_data_type(s);
     }
 
@@ -1247,7 +1250,7 @@ function _tr_flush_block(s, buf, stored_len, last)
      */
     _tr_stored_block(s, buf, stored_len, last);
 
-  } else if (s.strategy === Z_FIXED$1 || static_lenb === opt_lenb) {
+  } else if (s.strategy === Z_FIXED || static_lenb === opt_lenb) {
 
     send_bits(s, (STATIC_TREES << 1) + (last ? 1 : 0), 3);
     compress_block(s, static_ltree, static_dtree);
@@ -1298,7 +1301,7 @@ function _tr_tally(s, dist, lc)
     //       (ush)lc <= (ush)(MAX_MATCH-MIN_MATCH) &&
     //       (ush)d_code(dist) < (ush)D_CODES,  "_tr_tally: bad match");
 
-    s.dyn_ltree[(_length_code[lc] + LITERALS$1 + 1) * 2]/*.Freq*/++;
+    s.dyn_ltree[(_length_code[lc] + LITERALS + 1) * 2]/*.Freq*/++;
     s.dyn_dtree[d_code(dist) * 2]/*.Freq*/++;
   }
 
@@ -1345,8 +1348,6 @@ var trees = {
 	_tr_tally: _tr_tally_1,
 	_tr_align: _tr_align_1
 };
-
-'use strict';
 
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
 // It doesn't worth to make additional optimizationa as in original.
@@ -1397,8 +1398,6 @@ function adler32(adler, buf, len, pos) {
 
 
 var adler32_1 = adler32;
-
-'use strict';
 
 // Note: we can't get significant speed boost here.
 // So write code to minimize size - no pregenerated tables
@@ -1458,8 +1457,6 @@ function crc32(crc, buf, len, pos) {
 
 var crc32_1 = crc32;
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -1491,8 +1488,6 @@ var messages = {
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -1523,11 +1518,11 @@ var messages = {
 
 
 /* Allowed flush values; see deflate() and inflate() below for details */
-var Z_NO_FLUSH$1      = 0;
+var Z_NO_FLUSH      = 0;
 var Z_PARTIAL_FLUSH = 1;
 //var Z_SYNC_FLUSH    = 2;
 var Z_FULL_FLUSH    = 3;
-var Z_FINISH$1        = 4;
+var Z_FINISH        = 4;
 var Z_BLOCK         = 5;
 //var Z_TREES         = 6;
 
@@ -1535,8 +1530,8 @@ var Z_BLOCK         = 5;
 /* Return codes for the compression/decompression functions. Negative values
  * are errors, positive values are used for special but normal events.
  */
-var Z_OK$1            = 0;
-var Z_STREAM_END$1    = 1;
+var Z_OK            = 0;
+var Z_STREAM_END    = 1;
 //var Z_NEED_DICT     = 2;
 //var Z_ERRNO         = -1;
 var Z_STREAM_ERROR  = -2;
@@ -1550,24 +1545,24 @@ var Z_BUF_ERROR     = -5;
 //var Z_NO_COMPRESSION      = 0;
 //var Z_BEST_SPEED          = 1;
 //var Z_BEST_COMPRESSION    = 9;
-var Z_DEFAULT_COMPRESSION$1 = -1;
+var Z_DEFAULT_COMPRESSION = -1;
 
 
 var Z_FILTERED            = 1;
 var Z_HUFFMAN_ONLY        = 2;
 var Z_RLE                 = 3;
-var Z_FIXED               = 4;
-var Z_DEFAULT_STRATEGY$1    = 0;
+var Z_FIXED$1               = 4;
+var Z_DEFAULT_STRATEGY    = 0;
 
 /* Possible values of the data_type field (though see inflate()) */
 //var Z_BINARY              = 0;
 //var Z_TEXT                = 1;
 //var Z_ASCII               = 1; // = Z_TEXT
-var Z_UNKNOWN             = 2;
+var Z_UNKNOWN$1             = 2;
 
 
 /* The deflate compression method */
-var Z_DEFLATED$1  = 8;
+var Z_DEFLATED  = 8;
 
 /*============================================================================*/
 
@@ -1579,24 +1574,24 @@ var MAX_WBITS = 15;
 var DEF_MEM_LEVEL = 8;
 
 
-var LENGTH_CODES  = 29;
+var LENGTH_CODES$1  = 29;
 /* number of length codes, not counting the special END_BLOCK code */
-var LITERALS      = 256;
+var LITERALS$1      = 256;
 /* number of literal bytes 0..255 */
-var L_CODES       = LITERALS + 1 + LENGTH_CODES;
+var L_CODES$1       = LITERALS$1 + 1 + LENGTH_CODES$1;
 /* number of Literal or Length codes, including the END_BLOCK code */
-var D_CODES       = 30;
+var D_CODES$1       = 30;
 /* number of distance codes */
-var BL_CODES      = 19;
+var BL_CODES$1      = 19;
 /* number of codes used to transfer the bit lengths */
-var HEAP_SIZE     = 2 * L_CODES + 1;
+var HEAP_SIZE$1     = 2 * L_CODES$1 + 1;
 /* maximum heap size */
-var MAX_BITS  = 15;
+var MAX_BITS$1  = 15;
 /* All codes must not exceed MAX_BITS bits */
 
-var MIN_MATCH = 3;
-var MAX_MATCH = 258;
-var MIN_LOOKAHEAD = (MAX_MATCH + MIN_MATCH + 1);
+var MIN_MATCH$1 = 3;
+var MAX_MATCH$1 = 258;
+var MIN_LOOKAHEAD = (MAX_MATCH$1 + MIN_MATCH$1 + 1);
 
 var PRESET_DICT = 0x20;
 
@@ -1624,7 +1619,7 @@ function rank(f) {
   return ((f) << 1) - ((f) > 4 ? 9 : 0);
 }
 
-function zero(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
+function zero$1(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
 
 
 /* =========================================================================
@@ -1729,7 +1724,7 @@ function longest_match(s, cur_match) {
   var best_len = s.prev_length;              /* best match length so far */
   var nice_match = s.nice_match;             /* stop if match long enough */
   var limit = (s.strstart > (s.w_size - MIN_LOOKAHEAD)) ?
-      s.strstart - (s.w_size - MIN_LOOKAHEAD) : 0;
+      s.strstart - (s.w_size - MIN_LOOKAHEAD) : 0/*NIL*/;
 
   var _win = s.window; // shortcut
 
@@ -1740,7 +1735,7 @@ function longest_match(s, cur_match) {
    * we prevent matches with the string of window index 0.
    */
 
-  var strend = s.strstart + MAX_MATCH;
+  var strend = s.strstart + MAX_MATCH$1;
   var scan_end1  = _win[scan + best_len - 1];
   var scan_end   = _win[scan + best_len];
 
@@ -1803,8 +1798,8 @@ function longest_match(s, cur_match) {
 
     // Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
 
-    len = MAX_MATCH - (strend - scan);
-    scan = strend - MAX_MATCH;
+    len = MAX_MATCH$1 - (strend - scan);
+    scan = strend - MAX_MATCH$1;
 
     if (len > best_len) {
       s.match_start = cur_match;
@@ -1915,7 +1910,7 @@ function fill_window(s) {
     s.lookahead += n;
 
     /* Initialize the hash value now that we have some input: */
-    if (s.lookahead + s.insert >= MIN_MATCH) {
+    if (s.lookahead + s.insert >= MIN_MATCH$1) {
       str = s.strstart - s.insert;
       s.ins_h = s.window[str];
 
@@ -1926,13 +1921,13 @@ function fill_window(s) {
 //#endif
       while (s.insert) {
         /* UPDATE_HASH(s, s->ins_h, s->window[str + MIN_MATCH-1]); */
-        s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + MIN_MATCH - 1]) & s.hash_mask;
+        s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + MIN_MATCH$1 - 1]) & s.hash_mask;
 
         s.prev[str & s.w_mask] = s.head[s.ins_h];
         s.head[s.ins_h] = str;
         str++;
         s.insert--;
-        if (s.lookahead + s.insert < MIN_MATCH) {
+        if (s.lookahead + s.insert < MIN_MATCH$1) {
           break;
         }
       }
@@ -2013,7 +2008,7 @@ function deflate_stored(s, flush) {
 //      }
 
       fill_window(s);
-      if (s.lookahead === 0 && flush === Z_NO_FLUSH$1) {
+      if (s.lookahead === 0 && flush === Z_NO_FLUSH) {
         return BS_NEED_MORE;
       }
 
@@ -2059,7 +2054,7 @@ function deflate_stored(s, flush) {
 
   s.insert = 0;
 
-  if (flush === Z_FINISH$1) {
+  if (flush === Z_FINISH) {
     /*** FLUSH_BLOCK(s, 1); ***/
     flush_block_only(s, true);
     if (s.strm.avail_out === 0) {
@@ -2100,7 +2095,7 @@ function deflate_fast(s, flush) {
      */
     if (s.lookahead < MIN_LOOKAHEAD) {
       fill_window(s);
-      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH$1) {
+      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH) {
         return BS_NEED_MORE;
       }
       if (s.lookahead === 0) {
@@ -2112,9 +2107,9 @@ function deflate_fast(s, flush) {
      * dictionary, and set hash_head to the head of the hash chain:
      */
     hash_head = 0/*NIL*/;
-    if (s.lookahead >= MIN_MATCH) {
+    if (s.lookahead >= MIN_MATCH$1) {
       /*** INSERT_STRING(s, s.strstart, hash_head); ***/
-      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH$1 - 1]) & s.hash_mask;
       hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
       s.head[s.ins_h] = s.strstart;
       /***/
@@ -2131,24 +2126,24 @@ function deflate_fast(s, flush) {
       s.match_length = longest_match(s, hash_head);
       /* longest_match() sets match_start */
     }
-    if (s.match_length >= MIN_MATCH) {
+    if (s.match_length >= MIN_MATCH$1) {
       // check_match(s, s.strstart, s.match_start, s.match_length); // for debug only
 
       /*** _tr_tally_dist(s, s.strstart - s.match_start,
                      s.match_length - MIN_MATCH, bflush); ***/
-      bflush = trees._tr_tally(s, s.strstart - s.match_start, s.match_length - MIN_MATCH);
+      bflush = trees._tr_tally(s, s.strstart - s.match_start, s.match_length - MIN_MATCH$1);
 
       s.lookahead -= s.match_length;
 
       /* Insert new strings in the hash table only if the match length
        * is not too large. This saves time but degrades compression.
        */
-      if (s.match_length <= s.max_lazy_match/*max_insert_length*/ && s.lookahead >= MIN_MATCH) {
+      if (s.match_length <= s.max_lazy_match/*max_insert_length*/ && s.lookahead >= MIN_MATCH$1) {
         s.match_length--; /* string at strstart already in table */
         do {
           s.strstart++;
           /*** INSERT_STRING(s, s.strstart, hash_head); ***/
-          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH$1 - 1]) & s.hash_mask;
           hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
           s.head[s.ins_h] = s.strstart;
           /***/
@@ -2190,8 +2185,8 @@ function deflate_fast(s, flush) {
       /***/
     }
   }
-  s.insert = ((s.strstart < (MIN_MATCH - 1)) ? s.strstart : MIN_MATCH - 1);
-  if (flush === Z_FINISH$1) {
+  s.insert = ((s.strstart < (MIN_MATCH$1 - 1)) ? s.strstart : MIN_MATCH$1 - 1);
+  if (flush === Z_FINISH) {
     /*** FLUSH_BLOCK(s, 1); ***/
     flush_block_only(s, true);
     if (s.strm.avail_out === 0) {
@@ -2231,7 +2226,7 @@ function deflate_slow(s, flush) {
      */
     if (s.lookahead < MIN_LOOKAHEAD) {
       fill_window(s);
-      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH$1) {
+      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH) {
         return BS_NEED_MORE;
       }
       if (s.lookahead === 0) { break; } /* flush the current block */
@@ -2241,9 +2236,9 @@ function deflate_slow(s, flush) {
      * dictionary, and set hash_head to the head of the hash chain:
      */
     hash_head = 0/*NIL*/;
-    if (s.lookahead >= MIN_MATCH) {
+    if (s.lookahead >= MIN_MATCH$1) {
       /*** INSERT_STRING(s, s.strstart, hash_head); ***/
-      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH$1 - 1]) & s.hash_mask;
       hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
       s.head[s.ins_h] = s.strstart;
       /***/
@@ -2253,7 +2248,7 @@ function deflate_slow(s, flush) {
      */
     s.prev_length = s.match_length;
     s.prev_match = s.match_start;
-    s.match_length = MIN_MATCH - 1;
+    s.match_length = MIN_MATCH$1 - 1;
 
     if (hash_head !== 0/*NIL*/ && s.prev_length < s.max_lazy_match &&
         s.strstart - hash_head <= (s.w_size - MIN_LOOKAHEAD)/*MAX_DIST(s)*/) {
@@ -2265,26 +2260,26 @@ function deflate_slow(s, flush) {
       /* longest_match() sets match_start */
 
       if (s.match_length <= 5 &&
-         (s.strategy === Z_FILTERED || (s.match_length === MIN_MATCH && s.strstart - s.match_start > 4096/*TOO_FAR*/))) {
+         (s.strategy === Z_FILTERED || (s.match_length === MIN_MATCH$1 && s.strstart - s.match_start > 4096/*TOO_FAR*/))) {
 
         /* If prev_match is also MIN_MATCH, match_start is garbage
          * but we will ignore the current match anyway.
          */
-        s.match_length = MIN_MATCH - 1;
+        s.match_length = MIN_MATCH$1 - 1;
       }
     }
     /* If there was a match at the previous step and the current
      * match is not better, output the previous match:
      */
-    if (s.prev_length >= MIN_MATCH && s.match_length <= s.prev_length) {
-      max_insert = s.strstart + s.lookahead - MIN_MATCH;
+    if (s.prev_length >= MIN_MATCH$1 && s.match_length <= s.prev_length) {
+      max_insert = s.strstart + s.lookahead - MIN_MATCH$1;
       /* Do not insert strings in hash table beyond this. */
 
       //check_match(s, s.strstart-1, s.prev_match, s.prev_length);
 
       /***_tr_tally_dist(s, s.strstart - 1 - s.prev_match,
                      s.prev_length - MIN_MATCH, bflush);***/
-      bflush = trees._tr_tally(s, s.strstart - 1 - s.prev_match, s.prev_length - MIN_MATCH);
+      bflush = trees._tr_tally(s, s.strstart - 1 - s.prev_match, s.prev_length - MIN_MATCH$1);
       /* Insert in hash table all strings up to the end of the match.
        * strstart-1 and strstart are already inserted. If there is not
        * enough lookahead, the last two strings are not inserted in
@@ -2295,14 +2290,14 @@ function deflate_slow(s, flush) {
       do {
         if (++s.strstart <= max_insert) {
           /*** INSERT_STRING(s, s.strstart, hash_head); ***/
-          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH$1 - 1]) & s.hash_mask;
           hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
           s.head[s.ins_h] = s.strstart;
           /***/
         }
       } while (--s.prev_length !== 0);
       s.match_available = 0;
-      s.match_length = MIN_MATCH - 1;
+      s.match_length = MIN_MATCH$1 - 1;
       s.strstart++;
 
       if (bflush) {
@@ -2350,8 +2345,8 @@ function deflate_slow(s, flush) {
 
     s.match_available = 0;
   }
-  s.insert = s.strstart < MIN_MATCH - 1 ? s.strstart : MIN_MATCH - 1;
-  if (flush === Z_FINISH$1) {
+  s.insert = s.strstart < MIN_MATCH$1 - 1 ? s.strstart : MIN_MATCH$1 - 1;
+  if (flush === Z_FINISH) {
     /*** FLUSH_BLOCK(s, 1); ***/
     flush_block_only(s, true);
     if (s.strm.avail_out === 0) {
@@ -2390,9 +2385,9 @@ function deflate_rle(s, flush) {
      * at the end of the input file. We need MAX_MATCH bytes
      * for the longest run, plus one for the unrolled loop.
      */
-    if (s.lookahead <= MAX_MATCH) {
+    if (s.lookahead <= MAX_MATCH$1) {
       fill_window(s);
-      if (s.lookahead <= MAX_MATCH && flush === Z_NO_FLUSH$1) {
+      if (s.lookahead <= MAX_MATCH$1 && flush === Z_NO_FLUSH) {
         return BS_NEED_MORE;
       }
       if (s.lookahead === 0) { break; } /* flush the current block */
@@ -2400,11 +2395,11 @@ function deflate_rle(s, flush) {
 
     /* See how many times the previous byte repeats */
     s.match_length = 0;
-    if (s.lookahead >= MIN_MATCH && s.strstart > 0) {
+    if (s.lookahead >= MIN_MATCH$1 && s.strstart > 0) {
       scan = s.strstart - 1;
       prev = _win[scan];
       if (prev === _win[++scan] && prev === _win[++scan] && prev === _win[++scan]) {
-        strend = s.strstart + MAX_MATCH;
+        strend = s.strstart + MAX_MATCH$1;
         do {
           /*jshint noempty:false*/
         } while (prev === _win[++scan] && prev === _win[++scan] &&
@@ -2412,7 +2407,7 @@ function deflate_rle(s, flush) {
                  prev === _win[++scan] && prev === _win[++scan] &&
                  prev === _win[++scan] && prev === _win[++scan] &&
                  scan < strend);
-        s.match_length = MAX_MATCH - (strend - scan);
+        s.match_length = MAX_MATCH$1 - (strend - scan);
         if (s.match_length > s.lookahead) {
           s.match_length = s.lookahead;
         }
@@ -2421,11 +2416,11 @@ function deflate_rle(s, flush) {
     }
 
     /* Emit match if have run of MIN_MATCH or longer, else emit literal */
-    if (s.match_length >= MIN_MATCH) {
+    if (s.match_length >= MIN_MATCH$1) {
       //check_match(s, s.strstart, s.strstart - 1, s.match_length);
 
       /*** _tr_tally_dist(s, 1, s.match_length - MIN_MATCH, bflush); ***/
-      bflush = trees._tr_tally(s, 1, s.match_length - MIN_MATCH);
+      bflush = trees._tr_tally(s, 1, s.match_length - MIN_MATCH$1);
 
       s.lookahead -= s.match_length;
       s.strstart += s.match_length;
@@ -2449,7 +2444,7 @@ function deflate_rle(s, flush) {
     }
   }
   s.insert = 0;
-  if (flush === Z_FINISH$1) {
+  if (flush === Z_FINISH) {
     /*** FLUSH_BLOCK(s, 1); ***/
     flush_block_only(s, true);
     if (s.strm.avail_out === 0) {
@@ -2481,7 +2476,7 @@ function deflate_huff(s, flush) {
     if (s.lookahead === 0) {
       fill_window(s);
       if (s.lookahead === 0) {
-        if (flush === Z_NO_FLUSH$1) {
+        if (flush === Z_NO_FLUSH) {
           return BS_NEED_MORE;
         }
         break;      /* flush the current block */
@@ -2505,7 +2500,7 @@ function deflate_huff(s, flush) {
     }
   }
   s.insert = 0;
-  if (flush === Z_FINISH$1) {
+  if (flush === Z_FINISH) {
     /*** FLUSH_BLOCK(s, 1); ***/
     flush_block_only(s, true);
     if (s.strm.avail_out === 0) {
@@ -2563,7 +2558,7 @@ function lm_init(s) {
   s.window_size = 2 * s.w_size;
 
   /*** CLEAR_HASH(s); ***/
-  zero(s.head); // Fill with NIL (= 0);
+  zero$1(s.head); // Fill with NIL (= 0);
 
   /* Set the default configuration parameters:
    */
@@ -2576,7 +2571,7 @@ function lm_init(s) {
   s.block_start = 0;
   s.lookahead = 0;
   s.insert = 0;
-  s.match_length = s.prev_length = MIN_MATCH - 1;
+  s.match_length = s.prev_length = MIN_MATCH$1 - 1;
   s.match_available = 0;
   s.ins_h = 0;
 }
@@ -2592,7 +2587,7 @@ function DeflateState() {
   this.wrap = 0;              /* bit 0 true for zlib, bit 1 true for gzip */
   this.gzhead = null;         /* gzip header information to write */
   this.gzindex = 0;           /* where in extra, name, or comment */
-  this.method = Z_DEFLATED$1; /* can only be DEFLATED */
+  this.method = Z_DEFLATED; /* can only be DEFLATED */
   this.last_flush = -1;   /* value of flush param for previous deflate call */
 
   this.w_size = 0;  /* LZ77 window size (32K by default) */
@@ -2685,24 +2680,24 @@ function DeflateState() {
 
   // Use flat array of DOUBLE size, with interleaved fata,
   // because JS does not support effective
-  this.dyn_ltree  = new common.Buf16(HEAP_SIZE * 2);
-  this.dyn_dtree  = new common.Buf16((2 * D_CODES + 1) * 2);
-  this.bl_tree    = new common.Buf16((2 * BL_CODES + 1) * 2);
-  zero(this.dyn_ltree);
-  zero(this.dyn_dtree);
-  zero(this.bl_tree);
+  this.dyn_ltree  = new common.Buf16(HEAP_SIZE$1 * 2);
+  this.dyn_dtree  = new common.Buf16((2 * D_CODES$1 + 1) * 2);
+  this.bl_tree    = new common.Buf16((2 * BL_CODES$1 + 1) * 2);
+  zero$1(this.dyn_ltree);
+  zero$1(this.dyn_dtree);
+  zero$1(this.bl_tree);
 
   this.l_desc   = null;         /* desc. for literal tree */
   this.d_desc   = null;         /* desc. for distance tree */
   this.bl_desc  = null;         /* desc. for bit length tree */
 
   //ush bl_count[MAX_BITS+1];
-  this.bl_count = new common.Buf16(MAX_BITS + 1);
+  this.bl_count = new common.Buf16(MAX_BITS$1 + 1);
   /* number of codes at each bit length for an optimal tree */
 
   //int heap[2*L_CODES+1];      /* heap used to build the Huffman trees */
-  this.heap = new common.Buf16(2 * L_CODES + 1);  /* heap used to build the Huffman trees */
-  zero(this.heap);
+  this.heap = new common.Buf16(2 * L_CODES$1 + 1);  /* heap used to build the Huffman trees */
+  zero$1(this.heap);
 
   this.heap_len = 0;               /* number of elements in the heap */
   this.heap_max = 0;               /* element of largest frequency */
@@ -2710,8 +2705,8 @@ function DeflateState() {
    * The same heap array is used to build all trees.
    */
 
-  this.depth = new common.Buf16(2 * L_CODES + 1); //uch depth[2*L_CODES+1];
-  zero(this.depth);
+  this.depth = new common.Buf16(2 * L_CODES$1 + 1); //uch depth[2*L_CODES+1];
+  zero$1(this.depth);
   /* Depth of each subtree used as tie breaker for trees of equal frequency
    */
 
@@ -2779,7 +2774,7 @@ function deflateResetKeep(strm) {
   }
 
   strm.total_in = strm.total_out = 0;
-  strm.data_type = Z_UNKNOWN;
+  strm.data_type = Z_UNKNOWN$1;
 
   s = strm.state;
   s.pending = 0;
@@ -2794,15 +2789,15 @@ function deflateResetKeep(strm) {
     0  // crc32(0, Z_NULL, 0)
   :
     1; // adler32(0, Z_NULL, 0)
-  s.last_flush = Z_NO_FLUSH$1;
+  s.last_flush = Z_NO_FLUSH;
   trees._tr_init(s);
-  return Z_OK$1;
+  return Z_OK;
 }
 
 
 function deflateReset(strm) {
   var ret = deflateResetKeep(strm);
-  if (ret === Z_OK$1) {
+  if (ret === Z_OK) {
     lm_init(strm.state);
   }
   return ret;
@@ -2813,7 +2808,7 @@ function deflateSetHeader(strm, head) {
   if (!strm || !strm.state) { return Z_STREAM_ERROR; }
   if (strm.state.wrap !== 2) { return Z_STREAM_ERROR; }
   strm.state.gzhead = head;
-  return Z_OK$1;
+  return Z_OK;
 }
 
 
@@ -2823,7 +2818,7 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
   }
   var wrap = 1;
 
-  if (level === Z_DEFAULT_COMPRESSION$1) {
+  if (level === Z_DEFAULT_COMPRESSION) {
     level = 6;
   }
 
@@ -2838,9 +2833,9 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
   }
 
 
-  if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method !== Z_DEFLATED$1 ||
+  if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method !== Z_DEFLATED ||
     windowBits < 8 || windowBits > 15 || level < 0 || level > 9 ||
-    strategy < 0 || strategy > Z_FIXED) {
+    strategy < 0 || strategy > Z_FIXED$1) {
     return err(strm, Z_STREAM_ERROR);
   }
 
@@ -2864,7 +2859,7 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
   s.hash_bits = memLevel + 7;
   s.hash_size = 1 << s.hash_bits;
   s.hash_mask = s.hash_size - 1;
-  s.hash_shift = ~~((s.hash_bits + MIN_MATCH - 1) / MIN_MATCH);
+  s.hash_shift = ~~((s.hash_bits + MIN_MATCH$1 - 1) / MIN_MATCH$1);
 
   s.window = new common.Buf8(s.w_size * 2);
   s.head = new common.Buf16(s.hash_size);
@@ -2896,11 +2891,11 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
 }
 
 function deflateInit(strm, level) {
-  return deflateInit2(strm, level, Z_DEFLATED$1, MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY$1);
+  return deflateInit2(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
 }
 
 
-function deflate$1(strm, flush) {
+function deflate(strm, flush) {
   var old_flush, s;
   var beg, val; // for gzip header write only
 
@@ -2913,7 +2908,7 @@ function deflate$1(strm, flush) {
 
   if (!strm.output ||
       (!strm.input && strm.avail_in !== 0) ||
-      (s.status === FINISH_STATE && flush !== Z_FINISH$1)) {
+      (s.status === FINISH_STATE && flush !== Z_FINISH)) {
     return err(strm, (strm.avail_out === 0) ? Z_BUF_ERROR : Z_STREAM_ERROR);
   }
 
@@ -2969,7 +2964,7 @@ function deflate$1(strm, flush) {
     }
     else // DEFLATE header
     {
-      var header = (Z_DEFLATED$1 + ((s.w_bits - 8) << 4)) << 8;
+      var header = (Z_DEFLATED + ((s.w_bits - 8) << 4)) << 8;
       var level_flags = -1;
 
       if (s.strategy >= Z_HUFFMAN_ONLY || s.level < 2) {
@@ -3132,7 +3127,7 @@ function deflate$1(strm, flush) {
        * return OK instead of BUF_ERROR at next call of deflate:
        */
       s.last_flush = -1;
-      return Z_OK$1;
+      return Z_OK;
     }
 
     /* Make sure there is something to do and avoid duplicate consecutive
@@ -3140,7 +3135,7 @@ function deflate$1(strm, flush) {
      * returning Z_STREAM_END instead of Z_BUF_ERROR.
      */
   } else if (strm.avail_in === 0 && rank(flush) <= rank(old_flush) &&
-    flush !== Z_FINISH$1) {
+    flush !== Z_FINISH) {
     return err(strm, Z_BUF_ERROR);
   }
 
@@ -3152,7 +3147,7 @@ function deflate$1(strm, flush) {
   /* Start a new block or continue the current one.
    */
   if (strm.avail_in !== 0 || s.lookahead !== 0 ||
-    (flush !== Z_NO_FLUSH$1 && s.status !== FINISH_STATE)) {
+    (flush !== Z_NO_FLUSH && s.status !== FINISH_STATE)) {
     var bstate = (s.strategy === Z_HUFFMAN_ONLY) ? deflate_huff(s, flush) :
       (s.strategy === Z_RLE ? deflate_rle(s, flush) :
         configuration_table[s.level].func(s, flush));
@@ -3165,7 +3160,7 @@ function deflate$1(strm, flush) {
         s.last_flush = -1;
         /* avoid BUF_ERROR next call, see above */
       }
-      return Z_OK$1;
+      return Z_OK;
       /* If flush != Z_NO_FLUSH && avail_out == 0, the next call
        * of deflate should use the same flush parameter to make sure
        * that the flush is complete. So we don't have to output an
@@ -3186,7 +3181,7 @@ function deflate$1(strm, flush) {
          */
         if (flush === Z_FULL_FLUSH) {
           /*** CLEAR_HASH(s); ***/             /* forget history */
-          zero(s.head); // Fill with NIL (= 0);
+          zero$1(s.head); // Fill with NIL (= 0);
 
           if (s.lookahead === 0) {
             s.strstart = 0;
@@ -3198,15 +3193,15 @@ function deflate$1(strm, flush) {
       flush_pending(strm);
       if (strm.avail_out === 0) {
         s.last_flush = -1; /* avoid BUF_ERROR at next call, see above */
-        return Z_OK$1;
+        return Z_OK;
       }
     }
   }
   //Assert(strm->avail_out > 0, "bug2");
   //if (strm.avail_out <= 0) { throw new Error("bug2");}
 
-  if (flush !== Z_FINISH$1) { return Z_OK$1; }
-  if (s.wrap <= 0) { return Z_STREAM_END$1; }
+  if (flush !== Z_FINISH) { return Z_OK; }
+  if (s.wrap <= 0) { return Z_STREAM_END; }
 
   /* Write the trailer */
   if (s.wrap === 2) {
@@ -3231,7 +3226,7 @@ function deflate$1(strm, flush) {
    */
   if (s.wrap > 0) { s.wrap = -s.wrap; }
   /* write the trailer only once! */
-  return s.pending !== 0 ? Z_OK$1 : Z_STREAM_END$1;
+  return s.pending !== 0 ? Z_OK : Z_STREAM_END;
 }
 
 function deflateEnd(strm) {
@@ -3255,7 +3250,7 @@ function deflateEnd(strm) {
 
   strm.state = null;
 
-  return status === BUSY_STATE ? err(strm, Z_DATA_ERROR) : Z_OK$1;
+  return status === BUSY_STATE ? err(strm, Z_DATA_ERROR) : Z_OK;
 }
 
 
@@ -3297,7 +3292,7 @@ function deflateSetDictionary(strm, dictionary) {
   if (dictLength >= s.w_size) {
     if (wrap === 0) {            /* already empty otherwise */
       /*** CLEAR_HASH(s); ***/
-      zero(s.head); // Fill with NIL (= 0);
+      zero$1(s.head); // Fill with NIL (= 0);
       s.strstart = 0;
       s.block_start = 0;
       s.insert = 0;
@@ -3317,12 +3312,12 @@ function deflateSetDictionary(strm, dictionary) {
   strm.next_in = 0;
   strm.input = dictionary;
   fill_window(s);
-  while (s.lookahead >= MIN_MATCH) {
+  while (s.lookahead >= MIN_MATCH$1) {
     str = s.strstart;
-    n = s.lookahead - (MIN_MATCH - 1);
+    n = s.lookahead - (MIN_MATCH$1 - 1);
     do {
       /* UPDATE_HASH(s, s->ins_h, s->window[str + MIN_MATCH-1]); */
-      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + MIN_MATCH - 1]) & s.hash_mask;
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + MIN_MATCH$1 - 1]) & s.hash_mask;
 
       s.prev[str & s.w_mask] = s.head[s.ins_h];
 
@@ -3330,20 +3325,20 @@ function deflateSetDictionary(strm, dictionary) {
       str++;
     } while (--n);
     s.strstart = str;
-    s.lookahead = MIN_MATCH - 1;
+    s.lookahead = MIN_MATCH$1 - 1;
     fill_window(s);
   }
   s.strstart += s.lookahead;
   s.block_start = s.strstart;
   s.insert = s.lookahead;
   s.lookahead = 0;
-  s.match_length = s.prev_length = MIN_MATCH - 1;
+  s.match_length = s.prev_length = MIN_MATCH$1 - 1;
   s.match_available = 0;
   strm.next_in = next;
   strm.input = input;
   strm.avail_in = avail;
   s.wrap = wrap;
-  return Z_OK$1;
+  return Z_OK;
 }
 
 
@@ -3352,7 +3347,7 @@ var deflateInit2_1 = deflateInit2;
 var deflateReset_1 = deflateReset;
 var deflateResetKeep_1 = deflateResetKeep;
 var deflateSetHeader_1 = deflateSetHeader;
-var deflate_2$1 = deflate$1;
+var deflate_2 = deflate;
 var deflateEnd_1 = deflateEnd;
 var deflateSetDictionary_1 = deflateSetDictionary;
 var deflateInfo = 'pako deflate (from Nodeca project)';
@@ -3366,24 +3361,17 @@ exports.deflatePrime = deflatePrime;
 exports.deflateTune = deflateTune;
 */
 
-var deflate_1$2 = {
+var deflate_1 = {
 	deflateInit: deflateInit_1,
 	deflateInit2: deflateInit2_1,
 	deflateReset: deflateReset_1,
 	deflateResetKeep: deflateResetKeep_1,
 	deflateSetHeader: deflateSetHeader_1,
-	deflate: deflate_2$1,
+	deflate: deflate_2,
 	deflateEnd: deflateEnd_1,
 	deflateSetDictionary: deflateSetDictionary_1,
 	deflateInfo: deflateInfo
 };
-
-// String encode/decode helpers
-'use strict';
-
-
-
-
 
 // Quick check if we can use fast array to bin string conversion
 //
@@ -3572,8 +3560,6 @@ var strings = {
 	utf8border: utf8border
 };
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -3620,32 +3606,23 @@ function ZStream() {
 
 var zstream = ZStream;
 
-'use strict';
-
-
-
-
-
-
-
-
 var toString = Object.prototype.toString;
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
 
-var Z_NO_FLUSH      = 0;
-var Z_FINISH        = 4;
+var Z_NO_FLUSH$1      = 0;
+var Z_FINISH$1        = 4;
 
-var Z_OK            = 0;
-var Z_STREAM_END    = 1;
+var Z_OK$1            = 0;
+var Z_STREAM_END$1    = 1;
 var Z_SYNC_FLUSH    = 2;
 
-var Z_DEFAULT_COMPRESSION = -1;
+var Z_DEFAULT_COMPRESSION$1 = -1;
 
-var Z_DEFAULT_STRATEGY    = 0;
+var Z_DEFAULT_STRATEGY$1    = 0;
 
-var Z_DEFLATED  = 8;
+var Z_DEFLATED$1  = 8;
 
 /* ===========================================================================*/
 
@@ -3743,12 +3720,12 @@ function Deflate(options) {
   if (!(this instanceof Deflate)) return new Deflate(options);
 
   this.options = common.assign({
-    level: Z_DEFAULT_COMPRESSION,
-    method: Z_DEFLATED,
+    level: Z_DEFAULT_COMPRESSION$1,
+    method: Z_DEFLATED$1,
     chunkSize: 16384,
     windowBits: 15,
     memLevel: 8,
-    strategy: Z_DEFAULT_STRATEGY,
+    strategy: Z_DEFAULT_STRATEGY$1,
     to: ''
   }, options || {});
 
@@ -3770,7 +3747,7 @@ function Deflate(options) {
   this.strm = new zstream();
   this.strm.avail_out = 0;
 
-  var status = deflate_1$2.deflateInit2(
+  var status = deflate_1.deflateInit2(
     this.strm,
     opt.level,
     opt.method,
@@ -3779,12 +3756,12 @@ function Deflate(options) {
     opt.strategy
   );
 
-  if (status !== Z_OK) {
+  if (status !== Z_OK$1) {
     throw new Error(messages[status]);
   }
 
   if (opt.header) {
-    deflate_1$2.deflateSetHeader(this.strm, opt.header);
+    deflate_1.deflateSetHeader(this.strm, opt.header);
   }
 
   if (opt.dictionary) {
@@ -3799,9 +3776,9 @@ function Deflate(options) {
       dict = opt.dictionary;
     }
 
-    status = deflate_1$2.deflateSetDictionary(this.strm, dict);
+    status = deflate_1.deflateSetDictionary(this.strm, dict);
 
-    if (status !== Z_OK) {
+    if (status !== Z_OK$1) {
       throw new Error(messages[status]);
     }
 
@@ -3845,7 +3822,7 @@ Deflate.prototype.push = function (data, mode) {
 
   if (this.ended) { return false; }
 
-  _mode = (mode === ~~mode) ? mode : ((mode === true) ? Z_FINISH : Z_NO_FLUSH);
+  _mode = (mode === ~~mode) ? mode : ((mode === true) ? Z_FINISH$1 : Z_NO_FLUSH$1);
 
   // Convert data if needed
   if (typeof data === 'string') {
@@ -3866,33 +3843,33 @@ Deflate.prototype.push = function (data, mode) {
       strm.next_out = 0;
       strm.avail_out = chunkSize;
     }
-    status = deflate_1$2.deflate(strm, _mode);    /* no bad return value */
+    status = deflate_1.deflate(strm, _mode);    /* no bad return value */
 
-    if (status !== Z_STREAM_END && status !== Z_OK) {
+    if (status !== Z_STREAM_END$1 && status !== Z_OK$1) {
       this.onEnd(status);
       this.ended = true;
       return false;
     }
-    if (strm.avail_out === 0 || (strm.avail_in === 0 && (_mode === Z_FINISH || _mode === Z_SYNC_FLUSH))) {
+    if (strm.avail_out === 0 || (strm.avail_in === 0 && (_mode === Z_FINISH$1 || _mode === Z_SYNC_FLUSH))) {
       if (this.options.to === 'string') {
         this.onData(strings.buf2binstring(common.shrinkBuf(strm.output, strm.next_out)));
       } else {
         this.onData(common.shrinkBuf(strm.output, strm.next_out));
       }
     }
-  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== Z_STREAM_END);
+  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== Z_STREAM_END$1);
 
   // Finalize on the last chunk.
-  if (_mode === Z_FINISH) {
-    status = deflate_1$2.deflateEnd(this.strm);
+  if (_mode === Z_FINISH$1) {
+    status = deflate_1.deflateEnd(this.strm);
     this.onEnd(status);
     this.ended = true;
-    return status === Z_OK;
+    return status === Z_OK$1;
   }
 
   // callback interim results if Z_SYNC_FLUSH.
   if (_mode === Z_SYNC_FLUSH) {
-    this.onEnd(Z_OK);
+    this.onEnd(Z_OK$1);
     strm.avail_out = 0;
     return true;
   }
@@ -3927,7 +3904,7 @@ Deflate.prototype.onData = function (chunk) {
  **/
 Deflate.prototype.onEnd = function (status) {
   // On success - join
-  if (status === Z_OK) {
+  if (status === Z_OK$1) {
     if (this.options.to === 'string') {
       this.result = this.chunks.join('');
     } else {
@@ -3974,7 +3951,7 @@ Deflate.prototype.onEnd = function (status) {
  * console.log(pako.deflate(data));
  * ```
  **/
-function deflate(input, options) {
+function deflate$1(input, options) {
   var deflator = new Deflate(options);
 
   deflator.push(input, true);
@@ -3997,7 +3974,7 @@ function deflate(input, options) {
 function deflateRaw(input, options) {
   options = options || {};
   options.raw = true;
-  return deflate(input, options);
+  return deflate$1(input, options);
 }
 
 
@@ -4012,23 +3989,21 @@ function deflateRaw(input, options) {
 function gzip(input, options) {
   options = options || {};
   options.gzip = true;
-  return deflate(input, options);
+  return deflate$1(input, options);
 }
 
 
 var Deflate_1 = Deflate;
-var deflate_2 = deflate;
+var deflate_2$1 = deflate$1;
 var deflateRaw_1 = deflateRaw;
 var gzip_1 = gzip;
 
-var deflate_1 = {
+var deflate_1$1 = {
 	Deflate: Deflate_1,
-	deflate: deflate_2,
+	deflate: deflate_2$1,
 	deflateRaw: deflateRaw_1,
 	gzip: gzip_1
 };
-
-'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -4050,8 +4025,8 @@ var deflate_1 = {
 // 3. This notice may not be removed or altered from any source distribution.
 
 // See state defs from inflate.js
-var BAD$1 = 30;       /* got a data error -- remain here until reset */
-var TYPE$1 = 12;      /* i: waiting for type bits, including last-flag bit */
+var BAD = 30;       /* got a data error -- remain here until reset */
+var TYPE = 12;      /* i: waiting for type bits, including last-flag bit */
 
 /*
    Decode literal, length, and distance codes and write out the resulting
@@ -4214,7 +4189,7 @@ var inffast = function inflate_fast(strm, start) {
 //#ifdef INFLATE_STRICT
             if (dist > dmax) {
               strm.msg = 'invalid distance too far back';
-              state.mode = BAD$1;
+              state.mode = BAD;
               break top;
             }
 //#endif
@@ -4227,7 +4202,7 @@ var inffast = function inflate_fast(strm, start) {
               if (op > whave) {
                 if (state.sane) {
                   strm.msg = 'invalid distance too far back';
-                  state.mode = BAD$1;
+                  state.mode = BAD;
                   break top;
                 }
 
@@ -4332,7 +4307,7 @@ var inffast = function inflate_fast(strm, start) {
           }
           else {
             strm.msg = 'invalid distance code';
-            state.mode = BAD$1;
+            state.mode = BAD;
             break top;
           }
 
@@ -4345,12 +4320,12 @@ var inffast = function inflate_fast(strm, start) {
       }
       else if (op & 32) {                     /* end-of-block */
         //Tracevv((stderr, "inflate:         end of block\n"));
-        state.mode = TYPE$1;
+        state.mode = TYPE;
         break top;
       }
       else {
         strm.msg = 'invalid literal/length code';
-        state.mode = BAD$1;
+        state.mode = BAD;
         break top;
       }
 
@@ -4374,8 +4349,6 @@ var inffast = function inflate_fast(strm, start) {
   return;
 };
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -4398,13 +4371,13 @@ var inffast = function inflate_fast(strm, start) {
 
 
 var MAXBITS = 15;
-var ENOUGH_LENS$1 = 852;
-var ENOUGH_DISTS$1 = 592;
+var ENOUGH_LENS = 852;
+var ENOUGH_DISTS = 592;
 //var ENOUGH = (ENOUGH_LENS+ENOUGH_DISTS);
 
-var CODES$1 = 0;
-var LENS$1 = 1;
-var DISTS$1 = 2;
+var CODES = 0;
+var LENS = 1;
+var DISTS = 2;
 
 var lbase = [ /* Length codes 257..285 base */
   3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
@@ -4536,7 +4509,7 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
       return -1;
     }        /* over-subscribed */
   }
-  if (left > 0 && (type === CODES$1 || max !== 1)) {
+  if (left > 0 && (type === CODES || max !== 1)) {
     return -1;                      /* incomplete set */
   }
 
@@ -4587,11 +4560,11 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
   /* set up for code type */
   // poor man optimization - use if-else instead of switch,
   // to avoid deopts in old v8
-  if (type === CODES$1) {
+  if (type === CODES) {
     base = extra = work;    /* dummy value--not used */
     end = 19;
 
-  } else if (type === LENS$1) {
+  } else if (type === LENS) {
     base = lbase;
     base_index -= 257;
     extra = lext;
@@ -4616,8 +4589,8 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
   mask = used - 1;            /* mask for comparing low */
 
   /* check available table space */
-  if ((type === LENS$1 && used > ENOUGH_LENS$1) ||
-    (type === DISTS$1 && used > ENOUGH_DISTS$1)) {
+  if ((type === LENS && used > ENOUGH_LENS) ||
+    (type === DISTS && used > ENOUGH_DISTS)) {
     return 1;
   }
 
@@ -4688,8 +4661,8 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
 
       /* check for enough space */
       used += 1 << curr;
-      if ((type === LENS$1 && used > ENOUGH_LENS$1) ||
-        (type === DISTS$1 && used > ENOUGH_DISTS$1)) {
+      if ((type === LENS && used > ENOUGH_LENS) ||
+        (type === DISTS && used > ENOUGH_DISTS)) {
         return 1;
       }
 
@@ -4718,8 +4691,6 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
   return 0;
 };
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -4745,9 +4716,9 @@ var inftrees = function inflate_table(type, lens, lens_index, codes, table, tabl
 
 
 
-var CODES = 0;
-var LENS = 1;
-var DISTS = 2;
+var CODES$1 = 0;
+var LENS$1 = 1;
+var DISTS$1 = 2;
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
@@ -4784,45 +4755,45 @@ var Z_DEFLATED$2  = 8;
 /* ===========================================================================*/
 
 
-var HEAD = 1;       /* i: waiting for magic header */
-var FLAGS = 2;      /* i: waiting for method and flags (gzip) */
-var TIME = 3;       /* i: waiting for modification time (gzip) */
-var OS = 4;         /* i: waiting for extra flags and operating system (gzip) */
-var EXLEN = 5;      /* i: waiting for extra length (gzip) */
-var EXTRA = 6;      /* i: waiting for extra bytes (gzip) */
-var NAME = 7;       /* i: waiting for end of file name (gzip) */
-var COMMENT = 8;    /* i: waiting for end of comment (gzip) */
-var HCRC = 9;       /* i: waiting for header crc (gzip) */
-var DICTID = 10;    /* i: waiting for dictionary check value */
-var DICT = 11;      /* waiting for inflateSetDictionary() call */
-var TYPE = 12;      /* i: waiting for type bits, including last-flag bit */
-var TYPEDO = 13;    /* i: same, but skip check to exit inflate on new block */
-var STORED = 14;    /* i: waiting for stored size (length and complement) */
-var COPY_ = 15;     /* i/o: same as COPY below, but only first time in */
-var COPY = 16;      /* i/o: waiting for input or output to copy stored block */
-var TABLE = 17;     /* i: waiting for dynamic block table lengths */
-var LENLENS = 18;   /* i: waiting for code length code lengths */
-var CODELENS = 19;  /* i: waiting for length/lit and distance code lengths */
-var LEN_ = 20;      /* i: same as LEN below, but only first time in */
-var LEN = 21;       /* i: waiting for length/lit/eob code */
-var LENEXT = 22;    /* i: waiting for length extra bits */
-var DIST = 23;      /* i: waiting for distance code */
-var DISTEXT = 24;   /* i: waiting for distance extra bits */
-var MATCH = 25;     /* o: waiting for output space to copy string */
-var LIT = 26;       /* o: waiting for output space to write literal */
-var CHECK = 27;     /* i: waiting for 32-bit check value */
-var LENGTH = 28;    /* i: waiting for 32-bit length (gzip) */
-var DONE = 29;      /* finished check, done -- remain here until reset */
-var BAD = 30;       /* got a data error -- remain here until reset */
-var MEM = 31;       /* got an inflate() memory error -- remain here until reset */
-var SYNC = 32;      /* looking for synchronization bytes to restart inflate() */
+var    HEAD = 1;       /* i: waiting for magic header */
+var    FLAGS = 2;      /* i: waiting for method and flags (gzip) */
+var    TIME = 3;       /* i: waiting for modification time (gzip) */
+var    OS = 4;         /* i: waiting for extra flags and operating system (gzip) */
+var    EXLEN = 5;      /* i: waiting for extra length (gzip) */
+var    EXTRA = 6;      /* i: waiting for extra bytes (gzip) */
+var    NAME = 7;       /* i: waiting for end of file name (gzip) */
+var    COMMENT = 8;    /* i: waiting for end of comment (gzip) */
+var    HCRC = 9;       /* i: waiting for header crc (gzip) */
+var    DICTID = 10;    /* i: waiting for dictionary check value */
+var    DICT = 11;      /* waiting for inflateSetDictionary() call */
+var        TYPE$1 = 12;      /* i: waiting for type bits, including last-flag bit */
+var        TYPEDO = 13;    /* i: same, but skip check to exit inflate on new block */
+var        STORED = 14;    /* i: waiting for stored size (length and complement) */
+var        COPY_ = 15;     /* i/o: same as COPY below, but only first time in */
+var        COPY = 16;      /* i/o: waiting for input or output to copy stored block */
+var        TABLE = 17;     /* i: waiting for dynamic block table lengths */
+var        LENLENS = 18;   /* i: waiting for code length code lengths */
+var        CODELENS = 19;  /* i: waiting for length/lit and distance code lengths */
+var            LEN_ = 20;      /* i: same as LEN below, but only first time in */
+var            LEN = 21;       /* i: waiting for length/lit/eob code */
+var            LENEXT = 22;    /* i: waiting for length extra bits */
+var            DIST = 23;      /* i: waiting for distance code */
+var            DISTEXT = 24;   /* i: waiting for distance extra bits */
+var            MATCH = 25;     /* o: waiting for output space to copy string */
+var            LIT = 26;       /* o: waiting for output space to write literal */
+var    CHECK = 27;     /* i: waiting for 32-bit check value */
+var    LENGTH = 28;    /* i: waiting for 32-bit length (gzip) */
+var    DONE = 29;      /* finished check, done -- remain here until reset */
+var    BAD$1 = 30;       /* got a data error -- remain here until reset */
+var    MEM = 31;       /* got an inflate() memory error -- remain here until reset */
+var    SYNC = 32;      /* looking for synchronization bytes to restart inflate() */
 
 /* ===========================================================================*/
 
 
 
-var ENOUGH_LENS = 852;
-var ENOUGH_DISTS = 592;
+var ENOUGH_LENS$1 = 852;
+var ENOUGH_DISTS$1 = 592;
 //var ENOUGH =  (ENOUGH_LENS+ENOUGH_DISTS);
 
 var MAX_WBITS$1 = 15;
@@ -4914,8 +4885,8 @@ function inflateResetKeep(strm) {
   state.hold = 0;
   state.bits = 0;
   //state.lencode = state.distcode = state.next = state.codes;
-  state.lencode = state.lendyn = new common.Buf32(ENOUGH_LENS);
-  state.distcode = state.distdyn = new common.Buf32(ENOUGH_DISTS);
+  state.lencode = state.lendyn = new common.Buf32(ENOUGH_LENS$1);
+  state.distcode = state.distdyn = new common.Buf32(ENOUGH_DISTS$1);
 
   state.sane = 1;
   state.back = -1;
@@ -5006,8 +4977,7 @@ function inflateInit(strm) {
  */
 var virgin = true;
 
-var lenfix;
-var distfix; // We have no pointers in JS, so keep tables separate
+var lenfix, distfix; // We have no pointers in JS, so keep tables separate
 
 function fixedtables(state) {
   /* build fixed huffman tables if first call (may not be thread safe) */
@@ -5024,13 +4994,13 @@ function fixedtables(state) {
     while (sym < 280) { state.lens[sym++] = 7; }
     while (sym < 288) { state.lens[sym++] = 8; }
 
-    inftrees(LENS,  state.lens, 0, 288, lenfix,   0, state.work, { bits: 9 });
+    inftrees(LENS$1,  state.lens, 0, 288, lenfix,   0, state.work, { bits: 9 });
 
     /* distance table */
     sym = 0;
     while (sym < 32) { state.lens[sym++] = 5; }
 
-    inftrees(DISTS, state.lens, 0, 32,   distfix, 0, state.work, { bits: 5 });
+    inftrees(DISTS$1, state.lens, 0, 32,   distfix, 0, state.work, { bits: 5 });
 
     /* do this just once */
     virgin = false;
@@ -5099,7 +5069,7 @@ function updatewindow(strm, src, end, copy) {
   return 0;
 }
 
-function inflate$1(strm, flush) {
+function inflate(strm, flush) {
   var state;
   var input, output;          // input/output buffers
   var next;                   /* next input INDEX */
@@ -5132,7 +5102,7 @@ function inflate$1(strm, flush) {
   }
 
   state = strm.state;
-  if (state.mode === TYPE) { state.mode = TYPEDO; }    /* skip check */
+  if (state.mode === TYPE$1) { state.mode = TYPEDO; }    /* skip check */
 
 
   //--- LOAD() ---
@@ -5188,12 +5158,12 @@ function inflate$1(strm, flush) {
       if (!(state.wrap & 1) ||   /* check if zlib header allowed */
         (((hold & 0xff)/*BITS(8)*/ << 8) + (hold >> 8)) % 31) {
         strm.msg = 'incorrect header check';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       if ((hold & 0x0f)/*BITS(4)*/ !== Z_DEFLATED$2) {
         strm.msg = 'unknown compression method';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       //--- DROPBITS(4) ---//
@@ -5206,13 +5176,13 @@ function inflate$1(strm, flush) {
       }
       else if (len > state.wbits) {
         strm.msg = 'invalid window size';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       state.dmax = 1 << len;
       //Tracev((stderr, "inflate:   zlib header ok\n"));
       strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
-      state.mode = hold & 0x200 ? DICTID : TYPE;
+      state.mode = hold & 0x200 ? DICTID : TYPE$1;
       //=== INITBITS();
       hold = 0;
       bits = 0;
@@ -5230,12 +5200,12 @@ function inflate$1(strm, flush) {
       state.flags = hold;
       if ((state.flags & 0xff) !== Z_DEFLATED$2) {
         strm.msg = 'unknown compression method';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       if (state.flags & 0xe000) {
         strm.msg = 'unknown header flags set';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       if (state.head) {
@@ -5438,7 +5408,7 @@ function inflate$1(strm, flush) {
         //===//
         if (hold !== (state.check & 0xffff)) {
           strm.msg = 'header crc mismatch';
-          state.mode = BAD;
+          state.mode = BAD$1;
           break;
         }
         //=== INITBITS();
@@ -5451,7 +5421,7 @@ function inflate$1(strm, flush) {
         state.head.done = true;
       }
       strm.adler = state.check = 0;
-      state.mode = TYPE;
+      state.mode = TYPE$1;
       break;
     case DICTID:
       //=== NEEDBITS(32); */
@@ -5482,9 +5452,9 @@ function inflate$1(strm, flush) {
         return Z_NEED_DICT;
       }
       strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
-      state.mode = TYPE;
+      state.mode = TYPE$1;
       /* falls through */
-    case TYPE:
+    case TYPE$1:
       if (flush === Z_BLOCK$1 || flush === Z_TREES) { break inf_leave; }
       /* falls through */
     case TYPEDO:
@@ -5536,7 +5506,7 @@ function inflate$1(strm, flush) {
         break;
       case 3:
         strm.msg = 'invalid block type';
-        state.mode = BAD;
+        state.mode = BAD$1;
       }
       //--- DROPBITS(2) ---//
       hold >>>= 2;
@@ -5558,7 +5528,7 @@ function inflate$1(strm, flush) {
       //===//
       if ((hold & 0xffff) !== ((hold >>> 16) ^ 0xffff)) {
         strm.msg = 'invalid stored block lengths';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       state.length = hold & 0xffff;
@@ -5591,7 +5561,7 @@ function inflate$1(strm, flush) {
         break;
       }
       //Tracev((stderr, "inflate:       stored end\n"));
-      state.mode = TYPE;
+      state.mode = TYPE$1;
       break;
     case TABLE:
       //=== NEEDBITS(14); */
@@ -5620,7 +5590,7 @@ function inflate$1(strm, flush) {
 //#ifndef PKZIP_BUG_WORKAROUND
       if (state.nlen > 286 || state.ndist > 30) {
         strm.msg = 'too many length or distance symbols';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
 //#endif
@@ -5655,12 +5625,12 @@ function inflate$1(strm, flush) {
       state.lenbits = 7;
 
       opts = { bits: state.lenbits };
-      ret = inftrees(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts);
+      ret = inftrees(CODES$1, state.lens, 0, 19, state.lencode, 0, state.work, opts);
       state.lenbits = opts.bits;
 
       if (ret) {
         strm.msg = 'invalid code lengths set';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       //Tracev((stderr, "inflate:       code lengths ok\n"));
@@ -5707,7 +5677,7 @@ function inflate$1(strm, flush) {
             //---//
             if (state.have === 0) {
               strm.msg = 'invalid bit length repeat';
-              state.mode = BAD;
+              state.mode = BAD$1;
               break;
             }
             len = state.lens[state.have - 1];
@@ -5761,7 +5731,7 @@ function inflate$1(strm, flush) {
           }
           if (state.have + copy > state.nlen + state.ndist) {
             strm.msg = 'invalid bit length repeat';
-            state.mode = BAD;
+            state.mode = BAD$1;
             break;
           }
           while (copy--) {
@@ -5771,12 +5741,12 @@ function inflate$1(strm, flush) {
       }
 
       /* handle error breaks in while */
-      if (state.mode === BAD) { break; }
+      if (state.mode === BAD$1) { break; }
 
       /* check for end-of-block code (better have one) */
       if (state.lens[256] === 0) {
         strm.msg = 'invalid code -- missing end-of-block';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
 
@@ -5786,7 +5756,7 @@ function inflate$1(strm, flush) {
       state.lenbits = 9;
 
       opts = { bits: state.lenbits };
-      ret = inftrees(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
+      ret = inftrees(LENS$1, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
       // We have separate tables & no pointers. 2 commented lines below not needed.
       // state.next_index = opts.table_index;
       state.lenbits = opts.bits;
@@ -5794,7 +5764,7 @@ function inflate$1(strm, flush) {
 
       if (ret) {
         strm.msg = 'invalid literal/lengths set';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
 
@@ -5803,7 +5773,7 @@ function inflate$1(strm, flush) {
       // Switch to use dynamic table
       state.distcode = state.distdyn;
       opts = { bits: state.distbits };
-      ret = inftrees(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
+      ret = inftrees(DISTS$1, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
       // We have separate tables & no pointers. 2 commented lines below not needed.
       // state.next_index = opts.table_index;
       state.distbits = opts.bits;
@@ -5811,7 +5781,7 @@ function inflate$1(strm, flush) {
 
       if (ret) {
         strm.msg = 'invalid distances set';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       //Tracev((stderr, 'inflate:       codes ok\n'));
@@ -5843,7 +5813,7 @@ function inflate$1(strm, flush) {
         bits = state.bits;
         //---
 
-        if (state.mode === TYPE) {
+        if (state.mode === TYPE$1) {
           state.back = -1;
         }
         break;
@@ -5904,12 +5874,12 @@ function inflate$1(strm, flush) {
       if (here_op & 32) {
         //Tracevv((stderr, "inflate:         end of block\n"));
         state.back = -1;
-        state.mode = TYPE;
+        state.mode = TYPE$1;
         break;
       }
       if (here_op & 64) {
         strm.msg = 'invalid literal/length code';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       state.extra = here_op & 15;
@@ -5984,7 +5954,7 @@ function inflate$1(strm, flush) {
       state.back += here_bits;
       if (here_op & 64) {
         strm.msg = 'invalid distance code';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
       state.offset = here_val;
@@ -6012,7 +5982,7 @@ function inflate$1(strm, flush) {
 //#ifdef INFLATE_STRICT
       if (state.offset > state.dmax) {
         strm.msg = 'invalid distance too far back';
-        state.mode = BAD;
+        state.mode = BAD$1;
         break;
       }
 //#endif
@@ -6027,7 +5997,7 @@ function inflate$1(strm, flush) {
         if (copy > state.whave) {
           if (state.sane) {
             strm.msg = 'invalid distance too far back';
-            state.mode = BAD;
+            state.mode = BAD$1;
             break;
           }
 // (!) This block is disabled in zlib defailts,
@@ -6099,7 +6069,7 @@ function inflate$1(strm, flush) {
         // NB: crc32 stored as signed 32-bit int, zswap32 returns signed too
         if ((state.flags ? hold : zswap32(hold)) !== state.check) {
           strm.msg = 'incorrect data check';
-          state.mode = BAD;
+          state.mode = BAD$1;
           break;
         }
         //=== INITBITS();
@@ -6122,7 +6092,7 @@ function inflate$1(strm, flush) {
         //===//
         if (hold !== (state.total & 0xffffffff)) {
           strm.msg = 'incorrect length check';
-          state.mode = BAD;
+          state.mode = BAD$1;
           break;
         }
         //=== INITBITS();
@@ -6136,7 +6106,7 @@ function inflate$1(strm, flush) {
     case DONE:
       ret = Z_STREAM_END$2;
       break inf_leave;
-    case BAD:
+    case BAD$1:
       ret = Z_DATA_ERROR$1;
       break inf_leave;
     case MEM:
@@ -6166,7 +6136,7 @@ function inflate$1(strm, flush) {
   state.bits = bits;
   //---
 
-  if (state.wsize || (_out !== strm.avail_out && state.mode < BAD &&
+  if (state.wsize || (_out !== strm.avail_out && state.mode < BAD$1 &&
                       (state.mode < CHECK || flush !== Z_FINISH$2))) {
     if (updatewindow(strm, strm.output, strm.next_out, _out - strm.avail_out)) {
       state.mode = MEM;
@@ -6183,7 +6153,7 @@ function inflate$1(strm, flush) {
       (state.flags ? crc32_1(state.check, output, _out, strm.next_out - _out) : adler32_1(state.check, output, _out, strm.next_out - _out));
   }
   strm.data_type = state.bits + (state.last ? 64 : 0) +
-                    (state.mode === TYPE ? 128 : 0) +
+                    (state.mode === TYPE$1 ? 128 : 0) +
                     (state.mode === LEN_ || state.mode === COPY_ ? 256 : 0);
   if (((_in === 0 && _out === 0) || flush === Z_FINISH$2) && ret === Z_OK$2) {
     ret = Z_BUF_ERROR$1;
@@ -6260,7 +6230,7 @@ var inflateReset2_1 = inflateReset2;
 var inflateResetKeep_1 = inflateResetKeep;
 var inflateInit_1 = inflateInit;
 var inflateInit2_1 = inflateInit2;
-var inflate_2$1 = inflate$1;
+var inflate_2 = inflate;
 var inflateEnd_1 = inflateEnd;
 var inflateGetHeader_1 = inflateGetHeader;
 var inflateSetDictionary_1 = inflateSetDictionary;
@@ -6276,20 +6246,18 @@ exports.inflateSyncPoint = inflateSyncPoint;
 exports.inflateUndermine = inflateUndermine;
 */
 
-var inflate_1$2 = {
+var inflate_1 = {
 	inflateReset: inflateReset_1,
 	inflateReset2: inflateReset2_1,
 	inflateResetKeep: inflateResetKeep_1,
 	inflateInit: inflateInit_1,
 	inflateInit2: inflateInit2_1,
-	inflate: inflate_2$1,
+	inflate: inflate_2,
 	inflateEnd: inflateEnd_1,
 	inflateGetHeader: inflateGetHeader_1,
 	inflateSetDictionary: inflateSetDictionary_1,
 	inflateInfo: inflateInfo
 };
-
-'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -6358,8 +6326,6 @@ var constants = {
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
 
-'use strict';
-
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
 //
@@ -6416,17 +6382,6 @@ function GZheader() {
 }
 
 var gzheader = GZheader;
-
-'use strict';
-
-
-
-
-
-
-
-
-
 
 var toString$1 = Object.prototype.toString;
 
@@ -6551,7 +6506,7 @@ function Inflate(options) {
   this.strm   = new zstream();
   this.strm.avail_out = 0;
 
-  var status  = inflate_1$2.inflateInit2(
+  var status  = inflate_1.inflateInit2(
     this.strm,
     opt.windowBits
   );
@@ -6562,7 +6517,7 @@ function Inflate(options) {
 
   this.header = new gzheader();
 
-  inflate_1$2.inflateGetHeader(this.strm, this.header);
+  inflate_1.inflateGetHeader(this.strm, this.header);
 }
 
 /**
@@ -6628,7 +6583,7 @@ Inflate.prototype.push = function (data, mode) {
       strm.avail_out = chunkSize;
     }
 
-    status = inflate_1$2.inflate(strm, constants.Z_NO_FLUSH);    /* no bad return value */
+    status = inflate_1.inflate(strm, constants.Z_NO_FLUSH);    /* no bad return value */
 
     if (status === constants.Z_NEED_DICT && dictionary) {
       // Convert data if needed
@@ -6640,7 +6595,7 @@ Inflate.prototype.push = function (data, mode) {
         dict = dictionary;
       }
 
-      status = inflate_1$2.inflateSetDictionary(this.strm, dict);
+      status = inflate_1.inflateSetDictionary(this.strm, dict);
 
     }
 
@@ -6697,7 +6652,7 @@ Inflate.prototype.push = function (data, mode) {
 
   // Finalize on the last chunk.
   if (_mode === constants.Z_FINISH) {
-    status = inflate_1$2.inflateEnd(this.strm);
+    status = inflate_1.inflateEnd(this.strm);
     this.onEnd(status);
     this.ended = true;
     return status === constants.Z_OK;
@@ -6794,7 +6749,7 @@ Inflate.prototype.onEnd = function (status) {
  * }
  * ```
  **/
-function inflate(input, options) {
+function inflate$1(input, options) {
   var inflator = new Inflate(options);
 
   inflator.push(input, true);
@@ -6817,7 +6772,7 @@ function inflate(input, options) {
 function inflateRaw(input, options) {
   options = options || {};
   options.raw = true;
-  return inflate(input, options);
+  return inflate$1(input, options);
 }
 
 
@@ -6832,19 +6787,16 @@ function inflateRaw(input, options) {
 
 
 var Inflate_1 = Inflate;
-var inflate_2 = inflate;
+var inflate_2$1 = inflate$1;
 var inflateRaw_1 = inflateRaw;
-var ungzip  = inflate;
+var ungzip  = inflate$1;
 
-var inflate_1 = {
+var inflate_1$1 = {
 	Inflate: Inflate_1,
-	inflate: inflate_2,
+	inflate: inflate_2$1,
 	inflateRaw: inflateRaw_1,
 	ungzip: ungzip
 };
-
-// Top level file is just a mixin of submodules & constants
-'use strict';
 
 var assign    = common.assign;
 
@@ -6854,446 +6806,924 @@ var assign    = common.assign;
 
 var pako = {};
 
-assign(pako, deflate_1, inflate_1, constants);
+assign(pako, deflate_1$1, inflate_1$1, constants);
 
-var index = pako;
+var pako_1 = pako;
 
-function createCommonjsModule$1(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
+var codecutils_umd = createCommonjsModule(function (module, exports) {
+(function (global, factory) {
+            factory(exports);
+}(commonjsGlobal, (function (exports) {
+            var global$1 = typeof commonjsGlobal !== "undefined" ? commonjsGlobal :
+                        typeof self !== "undefined" ? self :
+                        typeof window !== "undefined" ? window : {};
 
-var traverse_1 = createCommonjsModule$1(function (module) {
-var traverse = module.exports = function (obj) {
-    return new Traverse(obj);
-};
-
-function Traverse (obj) {
-    this.value = obj;
-}
-
-Traverse.prototype.get = function (ps) {
-    var node = this.value;
-    for (var i = 0; i < ps.length; i ++) {
-        var key = ps[i];
-        if (!node || !hasOwnProperty.call(node, key)) {
-            node = undefined;
-            break;
-        }
-        node = node[key];
-    }
-    return node;
-};
-
-Traverse.prototype.has = function (ps) {
-    var node = this.value;
-    for (var i = 0; i < ps.length; i ++) {
-        var key = ps[i];
-        if (!node || !hasOwnProperty.call(node, key)) {
-            return false;
-        }
-        node = node[key];
-    }
-    return true;
-};
-
-Traverse.prototype.set = function (ps, value) {
-    var node = this.value;
-    for (var i = 0; i < ps.length - 1; i ++) {
-        var key = ps[i];
-        if (!hasOwnProperty.call(node, key)) node[key] = {};
-        node = node[key];
-    }
-    node[ps[i]] = value;
-    return value;
-};
-
-Traverse.prototype.map = function (cb) {
-    return walk(this.value, cb, true);
-};
-
-Traverse.prototype.forEach = function (cb) {
-    this.value = walk(this.value, cb, false);
-    return this.value;
-};
-
-Traverse.prototype.reduce = function (cb, init) {
-    var skip = arguments.length === 1;
-    var acc = skip ? this.value : init;
-    this.forEach(function (x) {
-        if (!this.isRoot || !skip) {
-            acc = cb.call(this, acc, x);
-        }
-    });
-    return acc;
-};
-
-Traverse.prototype.paths = function () {
-    var acc = [];
-    this.forEach(function (x) {
-        acc.push(this.path); 
-    });
-    return acc;
-};
-
-Traverse.prototype.nodes = function () {
-    var acc = [];
-    this.forEach(function (x) {
-        acc.push(this.node);
-    });
-    return acc;
-};
-
-Traverse.prototype.clone = function () {
-    var parents = [], nodes = [];
-    
-    return (function clone (src) {
-        for (var i = 0; i < parents.length; i++) {
-            if (parents[i] === src) {
-                return nodes[i];
+            function createCommonjsModule$$1(fn, module) {
+            	return module = { exports: {} }, fn(module, module.exports), module.exports;
             }
-        }
-        
-        if (typeof src === 'object' && src !== null) {
-            var dst = copy(src);
-            
-            parents.push(src);
-            nodes.push(dst);
-            
-            forEach(objectKeys(src), function (key) {
-                dst[key] = clone(src[key]);
-            });
-            
-            parents.pop();
-            nodes.pop();
-            return dst;
-        }
-        else {
-            return src;
-        }
-    })(this.value);
-};
 
-function walk (root, cb, immutable) {
-    var path = [];
-    var parents = [];
-    var alive = true;
-    
-    return (function walker (node_) {
-        var node = immutable ? copy(node_) : node_;
-        var modifiers = {};
-        
-        var keepGoing = true;
-        
-        var state = {
-            node : node,
-            node_ : node_,
-            path : [].concat(path),
-            parent : parents[parents.length - 1],
-            parents : parents,
-            key : path.slice(-1)[0],
-            isRoot : path.length === 0,
-            level : path.length,
-            circular : null,
-            update : function (x, stopHere) {
-                if (!state.isRoot) {
-                    state.parent.node[state.key] = x;
-                }
-                state.node = x;
-                if (stopHere) keepGoing = false;
-            },
-            'delete' : function (stopHere) {
-                delete state.parent.node[state.key];
-                if (stopHere) keepGoing = false;
-            },
-            remove : function (stopHere) {
-                if (isArray(state.parent.node)) {
-                    state.parent.node.splice(state.key, 1);
-                }
-                else {
-                    delete state.parent.node[state.key];
-                }
-                if (stopHere) keepGoing = false;
-            },
-            keys : null,
-            before : function (f) { modifiers.before = f; },
-            after : function (f) { modifiers.after = f; },
-            pre : function (f) { modifiers.pre = f; },
-            post : function (f) { modifiers.post = f; },
-            stop : function () { alive = false; },
-            block : function () { keepGoing = false; }
-        };
-        
-        if (!alive) return state;
-        
-        function updateState() {
-            if (typeof state.node === 'object' && state.node !== null) {
-                if (!state.keys || state.node_ !== state.node) {
-                    state.keys = objectKeys(state.node);
-                }
-                
-                state.isLeaf = state.keys.length == 0;
-                
-                for (var i = 0; i < parents.length; i++) {
-                    if (parents[i].node_ === node_) {
-                        state.circular = parents[i];
+            var traverse_1 = createCommonjsModule$$1(function (module) {
+            var traverse = module.exports = function (obj) {
+                return new Traverse(obj);
+            };
+
+            function Traverse (obj) {
+                this.value = obj;
+            }
+
+            Traverse.prototype.get = function (ps) {
+                var node = this.value;
+                for (var i = 0; i < ps.length; i ++) {
+                    var key = ps[i];
+                    if (!node || !hasOwnProperty.call(node, key)) {
+                        node = undefined;
                         break;
                     }
+                    node = node[key];
                 }
-            }
-            else {
-                state.isLeaf = true;
-                state.keys = null;
-            }
-            
-            state.notLeaf = !state.isLeaf;
-            state.notRoot = !state.isRoot;
-        }
-        
-        updateState();
-        
-        // use return values to update if defined
-        var ret = cb.call(state, state.node);
-        if (ret !== undefined && state.update) state.update(ret);
-        
-        if (modifiers.before) modifiers.before.call(state, state.node);
-        
-        if (!keepGoing) return state;
-        
-        if (typeof state.node == 'object'
-        && state.node !== null && !state.circular) {
-            parents.push(state);
-            
-            updateState();
-            
-            forEach(state.keys, function (key, i) {
-                path.push(key);
-                
-                if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
-                
-                var child = walker(state.node[key]);
-                if (immutable && hasOwnProperty.call(state.node, key)) {
-                    state.node[key] = child.node;
+                return node;
+            };
+
+            Traverse.prototype.has = function (ps) {
+                var node = this.value;
+                for (var i = 0; i < ps.length; i ++) {
+                    var key = ps[i];
+                    if (!node || !hasOwnProperty.call(node, key)) {
+                        return false;
+                    }
+                    node = node[key];
                 }
+                return true;
+            };
+
+            Traverse.prototype.set = function (ps, value) {
+                var node = this.value;
+                for (var i = 0; i < ps.length - 1; i ++) {
+                    var key = ps[i];
+                    if (!hasOwnProperty.call(node, key)) node[key] = {};
+                    node = node[key];
+                }
+                node[ps[i]] = value;
+                return value;
+            };
+
+            Traverse.prototype.map = function (cb) {
+                return walk(this.value, cb, true);
+            };
+
+            Traverse.prototype.forEach = function (cb) {
+                this.value = walk(this.value, cb, false);
+                return this.value;
+            };
+
+            Traverse.prototype.reduce = function (cb, init) {
+                var skip = arguments.length === 1;
+                var acc = skip ? this.value : init;
+                this.forEach(function (x) {
+                    if (!this.isRoot || !skip) {
+                        acc = cb.call(this, acc, x);
+                    }
+                });
+                return acc;
+            };
+
+            Traverse.prototype.paths = function () {
+                var acc = [];
+                this.forEach(function (x) {
+                    acc.push(this.path); 
+                });
+                return acc;
+            };
+
+            Traverse.prototype.nodes = function () {
+                var acc = [];
+                this.forEach(function (x) {
+                    acc.push(this.node);
+                });
+                return acc;
+            };
+
+            Traverse.prototype.clone = function () {
+                var parents = [], nodes = [];
                 
-                child.isLast = i == state.keys.length - 1;
-                child.isFirst = i == 0;
+                return (function clone (src) {
+                    for (var i = 0; i < parents.length; i++) {
+                        if (parents[i] === src) {
+                            return nodes[i];
+                        }
+                    }
+                    
+                    if (typeof src === 'object' && src !== null) {
+                        var dst = copy(src);
+                        
+                        parents.push(src);
+                        nodes.push(dst);
+                        
+                        forEach(objectKeys(src), function (key) {
+                            dst[key] = clone(src[key]);
+                        });
+                        
+                        parents.pop();
+                        nodes.pop();
+                        return dst;
+                    }
+                    else {
+                        return src;
+                    }
+                })(this.value);
+            };
+
+            function walk (root, cb, immutable) {
+                var path = [];
+                var parents = [];
+                var alive = true;
                 
-                if (modifiers.post) modifiers.post.call(state, child);
-                
-                path.pop();
+                return (function walker (node_) {
+                    var node = immutable ? copy(node_) : node_;
+                    var modifiers = {};
+                    
+                    var keepGoing = true;
+                    
+                    var state = {
+                        node : node,
+                        node_ : node_,
+                        path : [].concat(path),
+                        parent : parents[parents.length - 1],
+                        parents : parents,
+                        key : path.slice(-1)[0],
+                        isRoot : path.length === 0,
+                        level : path.length,
+                        circular : null,
+                        update : function (x, stopHere) {
+                            if (!state.isRoot) {
+                                state.parent.node[state.key] = x;
+                            }
+                            state.node = x;
+                            if (stopHere) keepGoing = false;
+                        },
+                        'delete' : function (stopHere) {
+                            delete state.parent.node[state.key];
+                            if (stopHere) keepGoing = false;
+                        },
+                        remove : function (stopHere) {
+                            if (isArray(state.parent.node)) {
+                                state.parent.node.splice(state.key, 1);
+                            }
+                            else {
+                                delete state.parent.node[state.key];
+                            }
+                            if (stopHere) keepGoing = false;
+                        },
+                        keys : null,
+                        before : function (f) { modifiers.before = f; },
+                        after : function (f) { modifiers.after = f; },
+                        pre : function (f) { modifiers.pre = f; },
+                        post : function (f) { modifiers.post = f; },
+                        stop : function () { alive = false; },
+                        block : function () { keepGoing = false; }
+                    };
+                    
+                    if (!alive) return state;
+                    
+                    function updateState() {
+                        if (typeof state.node === 'object' && state.node !== null) {
+                            if (!state.keys || state.node_ !== state.node) {
+                                state.keys = objectKeys(state.node);
+                            }
+                            
+                            state.isLeaf = state.keys.length == 0;
+                            
+                            for (var i = 0; i < parents.length; i++) {
+                                if (parents[i].node_ === node_) {
+                                    state.circular = parents[i];
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            state.isLeaf = true;
+                            state.keys = null;
+                        }
+                        
+                        state.notLeaf = !state.isLeaf;
+                        state.notRoot = !state.isRoot;
+                    }
+                    
+                    updateState();
+                    
+                    // use return values to update if defined
+                    var ret = cb.call(state, state.node);
+                    if (ret !== undefined && state.update) state.update(ret);
+                    
+                    if (modifiers.before) modifiers.before.call(state, state.node);
+                    
+                    if (!keepGoing) return state;
+                    
+                    if (typeof state.node == 'object'
+                    && state.node !== null && !state.circular) {
+                        parents.push(state);
+                        
+                        updateState();
+                        
+                        forEach(state.keys, function (key, i) {
+                            path.push(key);
+                            
+                            if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
+                            
+                            var child = walker(state.node[key]);
+                            if (immutable && hasOwnProperty.call(state.node, key)) {
+                                state.node[key] = child.node;
+                            }
+                            
+                            child.isLast = i == state.keys.length - 1;
+                            child.isFirst = i == 0;
+                            
+                            if (modifiers.post) modifiers.post.call(state, child);
+                            
+                            path.pop();
+                        });
+                        parents.pop();
+                    }
+                    
+                    if (modifiers.after) modifiers.after.call(state, state.node);
+                    
+                    return state;
+                })(root).node;
+            }
+
+            function copy (src) {
+                if (typeof src === 'object' && src !== null) {
+                    var dst;
+                    
+                    if (isArray(src)) {
+                        dst = [];
+                    }
+                    else if (isDate(src)) {
+                        dst = new Date(src.getTime ? src.getTime() : src);
+                    }
+                    else if (isRegExp(src)) {
+                        dst = new RegExp(src);
+                    }
+                    else if (isError(src)) {
+                        dst = { message: src.message };
+                    }
+                    else if (isBoolean(src)) {
+                        dst = new Boolean(src);
+                    }
+                    else if (isNumber(src)) {
+                        dst = new Number(src);
+                    }
+                    else if (isString(src)) {
+                        dst = new String(src);
+                    }
+                    else if (Object.create && Object.getPrototypeOf) {
+                        dst = Object.create(Object.getPrototypeOf(src));
+                    }
+                    else if (src.constructor === Object) {
+                        dst = {};
+                    }
+                    else {
+                        var proto =
+                            (src.constructor && src.constructor.prototype)
+                            || src.__proto__
+                            || {}
+                        ;
+                        var T = function () {};
+                        T.prototype = proto;
+                        dst = new T;
+                    }
+                    
+                    forEach(objectKeys(src), function (key) {
+                        dst[key] = src[key];
+                    });
+                    return dst;
+                }
+                else return src;
+            }
+
+            var objectKeys = Object.keys || function keys (obj) {
+                var res = [];
+                for (var key in obj) res.push(key);
+                return res;
+            };
+
+            function toS (obj) { return Object.prototype.toString.call(obj) }
+            function isDate (obj) { return toS(obj) === '[object Date]' }
+            function isRegExp (obj) { return toS(obj) === '[object RegExp]' }
+            function isError (obj) { return toS(obj) === '[object Error]' }
+            function isBoolean (obj) { return toS(obj) === '[object Boolean]' }
+            function isNumber (obj) { return toS(obj) === '[object Number]' }
+            function isString (obj) { return toS(obj) === '[object String]' }
+
+            var isArray = Array.isArray || function isArray (xs) {
+                return Object.prototype.toString.call(xs) === '[object Array]';
+            };
+
+            var forEach = function (xs, fn) {
+                if (xs.forEach) return xs.forEach(fn)
+                else for (var i = 0; i < xs.length; i++) {
+                    fn(xs[i], i, xs);
+                }
+            };
+
+            forEach(objectKeys(Traverse.prototype), function (key) {
+                traverse[key] = function (obj) {
+                    var args = [].slice.call(arguments, 1);
+                    var t = new Traverse(obj);
+                    return t[key].apply(t, args);
+                };
             });
-            parents.pop();
-        }
-        
-        if (modifiers.after) modifiers.after.call(state, state.node);
-        
-        return state;
-    })(root).node;
-}
 
-function copy (src) {
-    if (typeof src === 'object' && src !== null) {
-        var dst;
-        
-        if (isArray(src)) {
-            dst = [];
-        }
-        else if (isDate(src)) {
-            dst = new Date(src.getTime ? src.getTime() : src);
-        }
-        else if (isRegExp(src)) {
-            dst = new RegExp(src);
-        }
-        else if (isError(src)) {
-            dst = { message: src.message };
-        }
-        else if (isBoolean(src)) {
-            dst = new Boolean(src);
-        }
-        else if (isNumber(src)) {
-            dst = new Number(src);
-        }
-        else if (isString(src)) {
-            dst = new String(src);
-        }
-        else if (Object.create && Object.getPrototypeOf) {
-            dst = Object.create(Object.getPrototypeOf(src));
-        }
-        else if (src.constructor === Object) {
-            dst = {};
-        }
-        else {
-            var proto =
-                (src.constructor && src.constructor.prototype)
-                || src.__proto__
-                || {};
-            var T = function () {};
-            T.prototype = proto;
-            dst = new T;
-        }
-        
-        forEach(objectKeys(src), function (key) {
-            dst[key] = src[key];
-        });
-        return dst;
-    }
-    else return src;
-}
+            var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
+                return key in obj;
+            };
+            });
 
-var objectKeys = Object.keys || function keys (obj) {
-    var res = [];
-    for (var key in obj) res.push(key);
-    return res;
-};
+            var classCallCheck = function (instance, Constructor) {
+              if (!(instance instanceof Constructor)) {
+                throw new TypeError("Cannot call a class as a function");
+              }
+            };
 
-function toS (obj) { return Object.prototype.toString.call(obj) }
-function isDate (obj) { return toS(obj) === '[object Date]' }
-function isRegExp (obj) { return toS(obj) === '[object RegExp]' }
-function isError (obj) { return toS(obj) === '[object Error]' }
-function isBoolean (obj) { return toS(obj) === '[object Boolean]' }
-function isNumber (obj) { return toS(obj) === '[object Number]' }
-function isString (obj) { return toS(obj) === '[object String]' }
+            var createClass = function () {
+              function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                  var descriptor = props[i];
+                  descriptor.enumerable = descriptor.enumerable || false;
+                  descriptor.configurable = true;
+                  if ("value" in descriptor) descriptor.writable = true;
+                  Object.defineProperty(target, descriptor.key, descriptor);
+                }
+              }
 
-var isArray = Array.isArray || function isArray (xs) {
-    return Object.prototype.toString.call(xs) === '[object Array]';
-};
+              return function (Constructor, protoProps, staticProps) {
+                if (protoProps) defineProperties(Constructor.prototype, protoProps);
+                if (staticProps) defineProperties(Constructor, staticProps);
+                return Constructor;
+              };
+            }();
 
-var forEach = function (xs, fn) {
-    if (xs.forEach) return xs.forEach(fn)
-    else for (var i = 0; i < xs.length; i++) {
-        fn(xs[i], i, xs);
-    }
-};
+            /**
+            * The CodecUtils class gather some static methods that can be useful while
+            * encodeing/decoding data.
+            * CodecUtils does not have a constructor, don't try to instanciate it.
+            */
 
-forEach(objectKeys(Traverse.prototype), function (key) {
-    traverse[key] = function (obj) {
-        var args = [].slice.call(arguments, 1);
-        var t = new Traverse(obj);
-        return t[key].apply(t, args);
-    };
+            var CodecUtils = function () {
+              function CodecUtils() {
+                classCallCheck(this, CodecUtils);
+              }
+
+              createClass(CodecUtils, null, [{
+                key: "isPlatformLittleEndian",
+
+
+                /**
+                * Get whether or not the platform is using little endian.
+                * @return {Boolen } true if the platform is little endian, false if big endian
+                */
+                value: function isPlatformLittleEndian() {
+                  var a = new Uint32Array([0x12345678]);
+                  var b = new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
+                  return b[0] != 0x12;
+                }
+
+                /**
+                * convert an ArrayBuffer into a unicode string (2 bytes for each char)
+                * Note: this method was kindly borrowed from Google Closure Compiler:
+                * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+                * @param {ArrayBuffer} buf - input ArrayBuffer
+                * @return {String} a string compatible with Unicode characters
+                */
+
+              }, {
+                key: "arrayBufferToUnicode",
+                value: function arrayBufferToUnicode(buff) {
+                  var buffUint8 = new Uint8Array(buff);
+                  var out = [],
+                      pos = 0,
+                      c = 0;
+
+                  while (pos < buffUint8.length) {
+                    var c1 = buffUint8[pos++];
+                    if (c1 < 128) {
+                      if (c1 < 32 && c1 != 10 && c1 != 13 && c1 != 9 || c1 == 127) {
+                        console.warn("Invalid string: non-printable characters");
+                        return null;
+                      }
+                      out[c++] = String.fromCharCode(c1);
+                    } else if (c1 > 191 && c1 < 224) {
+                      var c2 = buffUint8[pos++];
+                      out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
+                    } else if (c1 > 239 && c1 < 365) {
+                      // Surrogate Pair
+                      var c2 = buffUint8[pos++];
+                      var c3 = buffUint8[pos++];
+                      var c4 = buffUint8[pos++];
+                      var u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 0x10000;
+                      out[c++] = String.fromCharCode(0xD800 + (u >> 10));
+                      out[c++] = String.fromCharCode(0xDC00 + (u & 1023));
+                    } else {
+                      var c2 = buffUint8[pos++];
+                      var c3 = buffUint8[pos++];
+                      var code = (c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63;
+                      if (code === 0xFFFD) {
+                        console.warn("Invalid string: a REPLACEMENT CHARACTER was spotted");
+                        return null;
+                      }
+                      out[c++] = String.fromCharCode(code);
+                    }
+                  }
+                  return out.join('');
+                }
+              }, {
+                key: "unicodeToArrayBuffer",
+
+
+                /**
+                * convert a unicode string into an ArrayBuffer
+                * Note that the str is a regular string but it will be encoded with
+                * 2 bytes per char instead of 1 ( ASCII uses 1 byte/char ).
+                * Note: this method was kindly borrowed from Google Closure Compiler:
+                * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+                * @param {String} str - string to encode
+                * @return {ArrayBuffer} the output ArrayBuffer
+                */
+                value: function unicodeToArrayBuffer(str) {
+                  var out = [],
+                      p = 0;
+                  for (var i = 0; i < str.length; i++) {
+                    var c = str.charCodeAt(i);
+                    if (c < 128) {
+                      out[p++] = c;
+                    } else if (c < 2048) {
+                      out[p++] = c >> 6 | 192;
+                      out[p++] = c & 63 | 128;
+                    } else if ((c & 0xFC00) == 0xD800 && i + 1 < str.length && (str.charCodeAt(i + 1) & 0xFC00) == 0xDC00) {
+                      // Surrogate Pair
+                      c = 0x10000 + ((c & 0x03FF) << 10) + (str.charCodeAt(++i) & 0x03FF);
+                      out[p++] = c >> 18 | 240;
+                      out[p++] = c >> 12 & 63 | 128;
+                      out[p++] = c >> 6 & 63 | 128;
+                      out[p++] = c & 63 | 128;
+                    } else {
+                      out[p++] = c >> 12 | 224;
+                      out[p++] = c >> 6 & 63 | 128;
+                      out[p++] = c & 63 | 128;
+                    }
+                  }
+
+                  // make a buffer out of the array
+                  return new Uint8Array(out).buffer;
+                }
+              }, {
+                key: "arrayBufferToString8",
+
+
+                /**
+                * Convert an ArrayBuffer into a ASCII string (1 byte for each char)
+                * @param {ArrayBuffer} buf - buffer to convert into ASCII string
+                * @return {String} the output string
+                */
+                value: function arrayBufferToString8(buf) {
+                  return String.fromCharCode.apply(null, new Uint8Array(buf));
+                }
+
+                /**
+                * Convert a ASCII string into an ArrayBuffer.
+                * Note that the str is a regular string, it will be encoded with 1 byte per char
+                * @param {String} str - string to encode
+                * @return {ArrayBuffer}
+                */
+
+              }, {
+                key: "string8ToArrayBuffer",
+                value: function string8ToArrayBuffer(str) {
+                  var buf = new ArrayBuffer(str.length);
+                  var bufView = new Uint8Array(buf);
+                  for (var i = 0; i < str.length; i++) {
+                    bufView[i] = str.charCodeAt(i);
+                  }
+                  return buf;
+                }
+
+                /**
+                * Write a ASCII string into a buffer
+                * @param {String} str - a string that contains only ASCII characters
+                * @param {ArrayBuffer} buffer - the buffer where to write the string
+                * @param {Number} byteOffset - the offset to apply, in number of bytes
+                */
+
+              }, {
+                key: "setString8InBuffer",
+                value: function setString8InBuffer(str, buffer) {
+                  var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+                  if (byteOffset < 0) {
+                    console.warn("The byte offset cannot be negative.");
+                    return;
+                  }
+
+                  if (!buffer || !(buffer instanceof ArrayBuffer)) {
+                    console.warn("The buffer must be a valid ArrayBuffer.");
+                    return;
+                  }
+
+                  if (str.length + byteOffset > buffer.byteLength) {
+                    console.warn("The string is too long to be writen in this buffer.");
+                    return;
+                  }
+
+                  var bufView = new Uint8Array(buffer);
+
+                  for (var i = 0; i < str.length; i++) {
+                    bufView[i + byteOffset] = str.charCodeAt(i);
+                  }
+                }
+
+                /**
+                * Extract an ASCII string from an ArrayBuffer
+                * @param {ArrayBuffer} buffer - the buffer
+                * @param {Number} strLength - number of chars in the string we want
+                * @param {Number} byteOffset - the offset in number of bytes
+                * @return {String} the string, or null in case of error
+                */
+
+              }, {
+                key: "getString8FromBuffer",
+                value: function getString8FromBuffer(buffer, strLength) {
+                  var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+                  if (byteOffset < 0) {
+                    console.warn("The byte offset cannot be negative.");
+                    return null;
+                  }
+
+                  if (!buffer || !(buffer instanceof ArrayBuffer)) {
+                    console.warn("The buffer must be a valid ArrayBuffer.");
+                    return null;
+                  }
+
+                  if (strLength + byteOffset > buffer.byteLength) {
+                    console.warn("The string is too long to be writen in this buffer.");
+                    return null;
+                  }
+
+                  return String.fromCharCode.apply(null, new Uint8Array(buffer, byteOffset, strLength));
+                }
+
+                /**
+                * Serializes a JS object into an ArrayBuffer.
+                * This is using a unicode JSON intermediate step.
+                * @param {Object} obj - an object that does not have cyclic structure
+                * @return {ArrayBuffer} the serialized output
+                */
+
+              }, {
+                key: "objectToArrayBuffer",
+                value: function objectToArrayBuffer(obj) {
+                  var buff = null;
+                  var objCleanClone = CodecUtils.makeSerializeFriendly(obj);
+
+                  try {
+                    var strObj = JSON.stringify(objCleanClone);
+                    buff = CodecUtils.unicodeToArrayBuffer(strObj);
+                  } catch (e) {
+                    console.warn(e);
+                  }
+
+                  return buff;
+                }
+
+                /**
+                * Convert an ArrayBuffer into a JS Object. This uses an intermediate unicode JSON string.
+                * Of course, this buffer has to come from a serialized object.
+                * @param {ArrayBuffer} buff - the ArrayBuffer that hides some object
+                * @return {Object} the deserialized object
+                */
+
+              }, {
+                key: "ArrayBufferToObject",
+                value: function ArrayBufferToObject(buff) {
+                  var obj = null;
+
+                  try {
+                    var strObj = CodecUtils.arrayBufferToUnicode(buff);
+                    obj = JSON.parse(strObj);
+                  } catch (e) {
+                    console.warn(e);
+                  }
+
+                  return obj;
+                }
+
+                /**
+                * Get if wether of not the arg is a typed array
+                * @param {Object} obj - possibly a typed array, or maybe not
+                * @return {Boolean} true if obj is a typed array
+                */
+
+              }, {
+                key: "isTypedArray",
+                value: function isTypedArray(obj) {
+                  return obj instanceof Int8Array || obj instanceof Uint8Array || obj instanceof Uint8ClampedArray || obj instanceof Int16Array || obj instanceof Uint16Array || obj instanceof Int32Array || obj instanceof Uint32Array || obj instanceof Float32Array || obj instanceof Float64Array;
+                }
+
+                /**
+                * Merge some ArrayBuffes in a single one
+                * @param {Array} arrayOfBuffers - some ArrayBuffers
+                * @return {ArrayBuffer} the larger merged buffer
+                */
+
+              }, {
+                key: "mergeBuffers",
+                value: function mergeBuffers(arrayOfBuffers) {
+                  var totalByteSize = 0;
+
+                  for (var i = 0; i < arrayOfBuffers.length; i++) {
+                    totalByteSize += arrayOfBuffers[i].byteLength;
+                  }
+
+                  var concatArray = new Uint8Array(totalByteSize);
+
+                  var offset = 0;
+                  for (var i = 0; i < arrayOfBuffers.length; i++) {
+                    concatArray.set(new Uint8Array(arrayOfBuffers[i]), offset);
+                    offset += arrayOfBuffers[i].byteLength;
+                  }
+
+                  return concatArray.buffer;
+                }
+
+                /**
+                * In a browser, the global object is `window` while in Node, it's `GLOBAL`.
+                * This method return the one that is relevant to the execution context.
+                * @return {Object} the global object
+                */
+
+              }, {
+                key: "getGlobalObject",
+                value: function getGlobalObject() {
+                  var constructorHost = null;
+
+                  try {
+                    constructorHost = window; // in a web browser
+                  } catch (e) {
+                    try {
+                      constructorHost = global$1; // in node
+                    } catch (e) {
+                      console.warn("You are not in a Javascript environment?? Weird.");
+                      return null;
+                    }
+                  }
+                  return constructorHost;
+                }
+
+                /**
+                * Extract a typed array from an arbitrary buffer, with an arbitrary offset
+                * @param {ArrayBuffer} buffer - the buffer from which we extract data
+                * @param {Number} byteOffset - offset from the begining of buffer
+                * @param {Function} arrayType - function object, actually the constructor of the output array
+                * @param {Number} numberOfElements - nb of elem we want to fetch from the buffer
+                * @return {TypedArray} output of type given by arg arrayType - this is a copy, not a view
+                */
+
+              }, {
+                key: "extractTypedArray",
+                value: function extractTypedArray(buffer, byteOffset, arrayType, numberOfElements) {
+                  if (!buffer) {
+                    console.warn("Input Buffer is null.");
+                    return null;
+                  }
+
+                  if (!(buffer instanceof ArrayBuffer)) {
+                    console.warn("Buffer must be of type ArrayBuffer");
+                    return null;
+                  }
+
+                  if (numberOfElements <= 0) {
+                    console.warn("The number of elements to fetch must be greater than 0");
+                    return null;
+                  }
+
+                  if (byteOffset < 0) {
+                    console.warn("The byte offset must be possitive or 0");
+                    return null;
+                  }
+
+                  if (byteOffset >= buffer.byteLength) {
+                    console.warn("The offset cannot be larger than the size of the buffer.");
+                    return null;
+                  }
+
+                  if (arrayType instanceof Function && !("BYTES_PER_ELEMENT" in arrayType)) {
+                    console.warn("ArrayType must be a typed array constructor function.");
+                    return null;
+                  }
+
+                  if (arrayType.BYTES_PER_ELEMENT * numberOfElements + byteOffset > buffer.byteLength) {
+                    console.warn("The requested number of elements is too large for this buffer");
+                    return;
+                  }
+
+                  var slicedBuff = buffer.slice(byteOffset, byteOffset + numberOfElements * arrayType.BYTES_PER_ELEMENT);
+                  return new arrayType(slicedBuff);
+                }
+
+                /**
+                * Get some info about the given TypedArray
+                * @param {TypedArray} typedArray - one of the typed array
+                * @return {Object} in form of {type: String, signed: Boolean, bytesPerElements: Number, byteLength: Number, length: Number}
+                */
+
+              }, {
+                key: "getTypedArrayInfo",
+                value: function getTypedArrayInfo(typedArray) {
+                  var type = null;
+                  var signed = false;
+
+                  if (typedArray instanceof Int8Array) {
+                    type = "int";
+                    signed = false;
+                  } else if (typedArray instanceof Uint8Array) {
+                    type = "int";
+                    signed = true;
+                  } else if (typedArray instanceof Uint8ClampedArray) {
+                    type = "int";
+                    signed = true;
+                  } else if (typedArray instanceof Int16Array) {
+                    type = "int";
+                    signed = false;
+                  } else if (typedArray instanceof Uint16Array) {
+                    type = "int";
+                    signed = true;
+                  } else if (typedArray instanceof Int32Array) {
+                    type = "int";
+                    signed = false;
+                  } else if (typedArray instanceof Uint32Array) {
+                    type = "int";
+                    signed = true;
+                  } else if (typedArray instanceof Float32Array) {
+                    type = "float";
+                    signed = false;
+                  } else if (typedArray instanceof Float64Array) {
+                    type = "float";
+                    signed = false;
+                  }
+
+                  return {
+                    type: type,
+                    signed: signed,
+                    bytesPerElements: typedArray.BYTES_PER_ELEMENT,
+                    byteLength: typedArray.byteLength,
+                    length: typedArray.length
+                  };
+                }
+
+                /**
+                * Counts the number of typed array obj has as attributes
+                * @param {Object} obj - an Object
+                * @return {Number} the number of typed array
+                */
+
+              }, {
+                key: "howManyTypedArrayAttributes",
+                value: function howManyTypedArrayAttributes(obj) {
+                  var typArrCounter = 0;
+                  traverse_1(obj).forEach(function (x) {
+                    typArrCounter += CodecUtils.isTypedArray(x);
+                  });
+                  return typArrCounter;
+                }
+
+                /**
+                * Check if the given object contains any circular reference.
+                * (Circular ref are non serilizable easily, we want to spot them)
+                * @param {Object} obj - An object to check
+                * @return {Boolean} true if obj contains circular refm false if not
+                */
+
+              }, {
+                key: "hasCircularReference",
+                value: function hasCircularReference(obj) {
+                  var hasCircular = false;
+                  traverse_1(obj).forEach(function (x) {
+                    if (this.circular) {
+                      hasCircular = true;
+                    }
+                  });
+                  return hasCircular;
+                }
+
+                /**
+                * Remove circular dependencies from an object and return a circularRef-free version
+                * of the object (does not change the original obj), of null if no circular ref was found
+                * @param {Object} obj - An object to check
+                * @return {Object} a circular-ref free object copy if any was found, or null if no circ was found
+                */
+
+              }, {
+                key: "removeCircularReference",
+                value: function removeCircularReference(obj) {
+                  var hasCircular = false;
+                  var noCircRefObj = traverse_1(obj).map(function (x) {
+                    if (this.circular) {
+                      this.remove();
+                      hasCircular = true;
+                    }
+                  });
+                  return hasCircular ? noCircRefObj : null;
+                }
+
+                /**
+                * Clone the object and replace the typed array attributes by regular Arrays.
+                * @param {Object} obj - an object to alter
+                * @return {Object} the clone if ant typed array were changed, or null if was obj didnt contain any typed array.
+                */
+
+              }, {
+                key: "replaceTypedArrayAttributesByArrays",
+                value: function replaceTypedArrayAttributesByArrays(obj) {
+                  var hasTypedArray = false;
+
+                  var noTypedArrClone = traverse_1(obj).map(function (x) {
+                    if (CodecUtils.isTypedArray(x)) {
+                      // here, we cannot call .length directly because traverse.map already serialized
+                      // typed arrays into regular objects
+                      var origSize = Object.keys(x).length;
+                      var untypedArray = new Array(origSize);
+
+                      for (var i = 0; i < origSize; i++) {
+                        untypedArray[i] = x[i];
+                      }
+                      this.update(untypedArray);
+                      hasTypedArray = true;
+                    }
+                  });
+                  return hasTypedArray ? noTypedArrClone : null;
+                }
+
+                /**
+                * Creates a clone, does not alter the original object.
+                * Remove circular dependencies and replace typed arrays by regular arrays.
+                * Both will make the serialization possible and more reliable.
+                * @param {Object} obj - the object to make serialization friendly
+                * @return {Object} a clean clone, or null if nothing was done
+                */
+
+              }, {
+                key: "makeSerializeFriendly",
+                value: function makeSerializeFriendly(obj) {
+                  var newObj = obj;
+                  var noCircular = CodecUtils.removeCircularReference(newObj);
+
+                  if (noCircular) newObj = noCircular;
+
+                  var noTypedArr = CodecUtils.replaceTypedArrayAttributesByArrays(newObj);
+
+                  if (noTypedArr) newObj = noTypedArr;
+
+                  return newObj;
+                }
+
+                /**
+                * Check if a string is valid or not. A string is considered as invalid if it has
+                * unicode "REPLACEMENT CHARACTER" or non-printable ASCII characters.
+                * @param {String} str - string to test
+                * @param {Boolean} forceAll - test the whole string instead of a sample of 1000 charaters
+                * @return {Boolean} true is the string is valid, false if invalid.
+                */
+
+              }, {
+                key: "isValidString",
+                value: function isValidString(str) {
+                  var forceAll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+                  var strLen = str.length;
+                  var nbSamples = forceAll ? strLen : Math.min(1000, strLen); //  a sample of 1000 should be enough
+                  var flagChar = 0xFFFD;
+                  var redFlags = 0;
+                  for (var i = 0; i < nbSamples; i++) {
+                    var code = str.charCodeAt(Math.floor(Math.random() * nbSamples));
+                    if (code === flagChar || code < 32 && code != 10 && code != 13 && code != 9 || code == 127) {
+                      redFlags++;
+                    }
+                  }
+                  return !(redFlags > 0);
+                }
+              }]);
+              return CodecUtils;
+            }(); /* END of class CodecUtils */
+
+            exports.CodecUtils = CodecUtils;
+
+            Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
 });
 
-var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
-    return key in obj;
-};
-});
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-
-
-
+var codecutils = unwrapExports(codecutils_umd);
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -7302,699 +7732,6 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-/**
-* The CodecUtils class gather some static methods that can be useful while
-* encodeing/decoding data.
-* CodecUtils does not have a constructor, don't try to instanciate it.
-*/
-
-var CodecUtils = function () {
-  function CodecUtils() {
-    classCallCheck(this, CodecUtils);
-  }
-
-  createClass(CodecUtils, null, [{
-    key: "isPlatformLittleEndian",
-
-
-    /**
-    * Get whether or not the platform is using little endian.
-    * @return {Boolen } true if the platform is little endian, false if big endian
-    */
-    value: function isPlatformLittleEndian() {
-      var a = new Uint32Array([0x12345678]);
-      var b = new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
-      return b[0] != 0x12;
-    }
-
-    /**
-    * convert an ArrayBuffer into a unicode string (2 bytes for each char)
-    * Note: this method was kindly borrowed from Google Closure Compiler:
-    * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
-    * @param {ArrayBuffer} buf - input ArrayBuffer
-    * @return {String} a string compatible with Unicode characters
-    */
-
-  }, {
-    key: "arrayBufferToUnicode",
-    value: function arrayBufferToUnicode(buff) {
-      var buffUint8 = new Uint8Array(buff);
-      var out = [],
-          pos = 0,
-          c = 0;
-
-      while (pos < buffUint8.length) {
-        var c1 = buffUint8[pos++];
-        if (c1 < 128) {
-          if (c1 < 32 && c1 != 10 && c1 != 13 && c1 != 9 || c1 == 127) {
-            console.warn("Invalid string: non-printable characters");
-            return null;
-          }
-          out[c++] = String.fromCharCode(c1);
-        } else if (c1 > 191 && c1 < 224) {
-          var c2 = buffUint8[pos++];
-          out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
-        } else if (c1 > 239 && c1 < 365) {
-          // Surrogate Pair
-          var c2 = buffUint8[pos++];
-          var c3 = buffUint8[pos++];
-          var c4 = buffUint8[pos++];
-          var u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 0x10000;
-          out[c++] = String.fromCharCode(0xD800 + (u >> 10));
-          out[c++] = String.fromCharCode(0xDC00 + (u & 1023));
-        } else {
-          var c2 = buffUint8[pos++];
-          var c3 = buffUint8[pos++];
-          var code = (c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63;
-          if (code === 0xFFFD) {
-            console.warn("Invalid string: a REPLACEMENT CHARACTER was spotted");
-            return null;
-          }
-          out[c++] = String.fromCharCode(code);
-        }
-      }
-      return out.join('');
-    }
-  }, {
-    key: "unicodeToArrayBuffer",
-
-
-    /**
-    * convert a unicode string into an ArrayBuffer
-    * Note that the str is a regular string but it will be encoded with
-    * 2 bytes per char instead of 1 ( ASCII uses 1 byte/char ).
-    * Note: this method was kindly borrowed from Google Closure Compiler:
-    * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
-    * @param {String} str - string to encode
-    * @return {ArrayBuffer} the output ArrayBuffer
-    */
-    value: function unicodeToArrayBuffer(str) {
-      var out = [],
-          p = 0;
-      for (var i = 0; i < str.length; i++) {
-        var c = str.charCodeAt(i);
-        if (c < 128) {
-          out[p++] = c;
-        } else if (c < 2048) {
-          out[p++] = c >> 6 | 192;
-          out[p++] = c & 63 | 128;
-        } else if ((c & 0xFC00) == 0xD800 && i + 1 < str.length && (str.charCodeAt(i + 1) & 0xFC00) == 0xDC00) {
-          // Surrogate Pair
-          c = 0x10000 + ((c & 0x03FF) << 10) + (str.charCodeAt(++i) & 0x03FF);
-          out[p++] = c >> 18 | 240;
-          out[p++] = c >> 12 & 63 | 128;
-          out[p++] = c >> 6 & 63 | 128;
-          out[p++] = c & 63 | 128;
-        } else {
-          out[p++] = c >> 12 | 224;
-          out[p++] = c >> 6 & 63 | 128;
-          out[p++] = c & 63 | 128;
-        }
-      }
-
-      // make a buffer out of the array
-      return new Uint8Array(out).buffer;
-    }
-  }, {
-    key: "arrayBufferToString8",
-
-
-    /**
-    * Convert an ArrayBuffer into a ASCII string (1 byte for each char)
-    * @param {ArrayBuffer} buf - buffer to convert into ASCII string
-    * @return {String} the output string
-    */
-    value: function arrayBufferToString8(buf) {
-      return String.fromCharCode.apply(null, new Uint8Array(buf));
-    }
-
-    /**
-    * Convert a ASCII string into an ArrayBuffer.
-    * Note that the str is a regular string, it will be encoded with 1 byte per char
-    * @param {String} str - string to encode
-    * @return {ArrayBuffer}
-    */
-
-  }, {
-    key: "string8ToArrayBuffer",
-    value: function string8ToArrayBuffer(str) {
-      var buf = new ArrayBuffer(str.length);
-      var bufView = new Uint8Array(buf);
-      for (var i = 0; i < str.length; i++) {
-        bufView[i] = str.charCodeAt(i);
-      }
-      return buf;
-    }
-
-    /**
-    * Write a ASCII string into a buffer
-    * @param {String} str - a string that contains only ASCII characters
-    * @param {ArrayBuffer} buffer - the buffer where to write the string
-    * @param {Number} byteOffset - the offset to apply, in number of bytes
-    */
-
-  }, {
-    key: "setString8InBuffer",
-    value: function setString8InBuffer(str, buffer) {
-      var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-      if (byteOffset < 0) {
-        console.warn("The byte offset cannot be negative.");
-        return;
-      }
-
-      if (!buffer || !(buffer instanceof ArrayBuffer)) {
-        console.warn("The buffer must be a valid ArrayBuffer.");
-        return;
-      }
-
-      if (str.length + byteOffset > buffer.byteLength) {
-        console.warn("The string is too long to be writen in this buffer.");
-        return;
-      }
-
-      var bufView = new Uint8Array(buffer);
-
-      for (var i = 0; i < str.length; i++) {
-        bufView[i + byteOffset] = str.charCodeAt(i);
-      }
-    }
-
-    /**
-    * Extract an ASCII string from an ArrayBuffer
-    * @param {ArrayBuffer} buffer - the buffer
-    * @param {Number} strLength - number of chars in the string we want
-    * @param {Number} byteOffset - the offset in number of bytes
-    * @return {String} the string, or null in case of error
-    */
-
-  }, {
-    key: "getString8FromBuffer",
-    value: function getString8FromBuffer(buffer, strLength) {
-      var byteOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-      if (byteOffset < 0) {
-        console.warn("The byte offset cannot be negative.");
-        return null;
-      }
-
-      if (!buffer || !(buffer instanceof ArrayBuffer)) {
-        console.warn("The buffer must be a valid ArrayBuffer.");
-        return null;
-      }
-
-      if (strLength + byteOffset > buffer.byteLength) {
-        console.warn("The string is too long to be writen in this buffer.");
-        return null;
-      }
-
-      return String.fromCharCode.apply(null, new Uint8Array(buffer, byteOffset, strLength));
-    }
-
-    /**
-    * Serializes a JS object into an ArrayBuffer.
-    * This is using a unicode JSON intermediate step.
-    * @param {Object} obj - an object that does not have cyclic structure
-    * @return {ArrayBuffer} the serialized output
-    */
-
-  }, {
-    key: "objectToArrayBuffer",
-    value: function objectToArrayBuffer(obj) {
-      var buff = null;
-      var objCleanClone = CodecUtils.makeSerializeFriendly(obj);
-
-      try {
-        var strObj = JSON.stringify(objCleanClone);
-        buff = CodecUtils.unicodeToArrayBuffer(strObj);
-      } catch (e) {
-        console.warn(e);
-      }
-
-      return buff;
-    }
-
-    /**
-    * Convert an ArrayBuffer into a JS Object. This uses an intermediate unicode JSON string.
-    * Of course, this buffer has to come from a serialized object.
-    * @param {ArrayBuffer} buff - the ArrayBuffer that hides some object
-    * @return {Object} the deserialized object
-    */
-
-  }, {
-    key: "ArrayBufferToObject",
-    value: function ArrayBufferToObject(buff) {
-      var obj = null;
-
-      try {
-        var strObj = CodecUtils.arrayBufferToUnicode(buff);
-        obj = JSON.parse(strObj);
-      } catch (e) {
-        console.warn(e);
-      }
-
-      return obj;
-    }
-
-    /**
-    * Get if wether of not the arg is a typed array
-    * @param {Object} obj - possibly a typed array, or maybe not
-    * @return {Boolean} true if obj is a typed array
-    */
-
-  }, {
-    key: "isTypedArray",
-    value: function isTypedArray(obj) {
-      return obj instanceof Int8Array || obj instanceof Uint8Array || obj instanceof Uint8ClampedArray || obj instanceof Int16Array || obj instanceof Uint16Array || obj instanceof Int32Array || obj instanceof Uint32Array || obj instanceof Float32Array || obj instanceof Float64Array;
-    }
-
-    /**
-    * Merge some ArrayBuffes in a single one
-    * @param {Array} arrayOfBuffers - some ArrayBuffers
-    * @return {ArrayBuffer} the larger merged buffer
-    */
-
-  }, {
-    key: "mergeBuffers",
-    value: function mergeBuffers(arrayOfBuffers) {
-      var totalByteSize = 0;
-
-      for (var i = 0; i < arrayOfBuffers.length; i++) {
-        totalByteSize += arrayOfBuffers[i].byteLength;
-      }
-
-      var concatArray = new Uint8Array(totalByteSize);
-
-      var offset = 0;
-      for (var i = 0; i < arrayOfBuffers.length; i++) {
-        concatArray.set(new Uint8Array(arrayOfBuffers[i]), offset);
-        offset += arrayOfBuffers[i].byteLength;
-      }
-
-      return concatArray.buffer;
-    }
-
-    /**
-    * In a browser, the global object is `window` while in Node, it's `GLOBAL`.
-    * This method return the one that is relevant to the execution context.
-    * @return {Object} the global object
-    */
-
-  }, {
-    key: "getGlobalObject",
-    value: function getGlobalObject() {
-      var constructorHost = null;
-
-      try {
-        constructorHost = window; // in a web browser
-      } catch (e) {
-        try {
-          constructorHost = GLOBAL; // in node
-        } catch (e) {
-          console.warn("You are not in a Javascript environment?? Weird.");
-          return null;
-        }
-      }
-      return constructorHost;
-    }
-
-    /**
-    * Extract a typed array from an arbitrary buffer, with an arbitrary offset
-    * @param {ArrayBuffer} buffer - the buffer from which we extract data
-    * @param {Number} byteOffset - offset from the begining of buffer
-    * @param {Function} arrayType - function object, actually the constructor of the output array
-    * @param {Number} numberOfElements - nb of elem we want to fetch from the buffer
-    * @return {TypedArray} output of type given by arg arrayType - this is a copy, not a view
-    */
-
-  }, {
-    key: "extractTypedArray",
-    value: function extractTypedArray(buffer, byteOffset, arrayType, numberOfElements) {
-      if (!buffer) {
-        console.warn("Input Buffer is null.");
-        return null;
-      }
-
-      if (!(buffer instanceof ArrayBuffer)) {
-        console.warn("Buffer must be of type ArrayBuffer");
-        return null;
-      }
-
-      if (numberOfElements <= 0) {
-        console.warn("The number of elements to fetch must be greater than 0");
-        return null;
-      }
-
-      if (byteOffset < 0) {
-        console.warn("The byte offset must be possitive or 0");
-        return null;
-      }
-
-      if (byteOffset >= buffer.byteLength) {
-        console.warn("The offset cannot be larger than the size of the buffer.");
-        return null;
-      }
-
-      if (arrayType instanceof Function && !("BYTES_PER_ELEMENT" in arrayType)) {
-        console.warn("ArrayType must be a typed array constructor function.");
-        return null;
-      }
-
-      if (arrayType.BYTES_PER_ELEMENT * numberOfElements + byteOffset > buffer.byteLength) {
-        console.warn("The requested number of elements is too large for this buffer");
-        return;
-      }
-
-      var slicedBuff = buffer.slice(byteOffset, byteOffset + numberOfElements * arrayType.BYTES_PER_ELEMENT);
-      return new arrayType(slicedBuff);
-    }
-
-    /**
-    * Get some info about the given TypedArray
-    * @param {TypedArray} typedArray - one of the typed array
-    * @return {Object} in form of {type: String, signed: Boolean, bytesPerElements: Number, byteLength: Number, length: Number}
-    */
-
-  }, {
-    key: "getTypedArrayInfo",
-    value: function getTypedArrayInfo(typedArray) {
-      var type = null;
-      var signed = false;
-
-      if (typedArray instanceof Int8Array) {
-        type = "int";
-        signed = false;
-      } else if (typedArray instanceof Uint8Array) {
-        type = "int";
-        signed = true;
-      } else if (typedArray instanceof Uint8ClampedArray) {
-        type = "int";
-        signed = true;
-      } else if (typedArray instanceof Int16Array) {
-        type = "int";
-        signed = false;
-      } else if (typedArray instanceof Uint16Array) {
-        type = "int";
-        signed = true;
-      } else if (typedArray instanceof Int32Array) {
-        type = "int";
-        signed = false;
-      } else if (typedArray instanceof Uint32Array) {
-        type = "int";
-        signed = true;
-      } else if (typedArray instanceof Float32Array) {
-        type = "float";
-        signed = false;
-      } else if (typedArray instanceof Float64Array) {
-        type = "float";
-        signed = false;
-      }
-
-      return {
-        type: type,
-        signed: signed,
-        bytesPerElements: typedArray.BYTES_PER_ELEMENT,
-        byteLength: typedArray.byteLength,
-        length: typedArray.length
-      };
-    }
-
-    /**
-    * Counts the number of typed array obj has as attributes
-    * @param {Object} obj - an Object
-    * @return {Number} the number of typed array
-    */
-
-  }, {
-    key: "howManyTypedArrayAttributes",
-    value: function howManyTypedArrayAttributes(obj) {
-      var typArrCounter = 0;
-      traverse_1(obj).forEach(function (x) {
-        typArrCounter += CodecUtils.isTypedArray(x);
-      });
-      return typArrCounter;
-    }
-
-    /**
-    * Check if the given object contains any circular reference.
-    * (Circular ref are non serilizable easily, we want to spot them)
-    * @param {Object} obj - An object to check
-    * @return {Boolean} true if obj contains circular refm false if not
-    */
-
-  }, {
-    key: "hasCircularReference",
-    value: function hasCircularReference(obj) {
-      var hasCircular = false;
-      traverse_1(obj).forEach(function (x) {
-        if (this.circular) {
-          hasCircular = true;
-        }
-      });
-      return hasCircular;
-    }
-
-    /**
-    * Remove circular dependencies from an object and return a circularRef-free version
-    * of the object (does not change the original obj), of null if no circular ref was found
-    * @param {Object} obj - An object to check
-    * @return {Object} a circular-ref free object copy if any was found, or null if no circ was found
-    */
-
-  }, {
-    key: "removeCircularReference",
-    value: function removeCircularReference(obj) {
-      var hasCircular = false;
-      var noCircRefObj = traverse_1(obj).map(function (x) {
-        if (this.circular) {
-          this.remove();
-          hasCircular = true;
-        }
-      });
-      return hasCircular ? noCircRefObj : null;
-    }
-
-    /**
-    * Clone the object and replace the typed array attributes by regular Arrays.
-    * @param {Object} obj - an object to alter
-    * @return {Object} the clone if ant typed array were changed, or null if was obj didnt contain any typed array.
-    */
-
-  }, {
-    key: "replaceTypedArrayAttributesByArrays",
-    value: function replaceTypedArrayAttributesByArrays(obj) {
-      var hasTypedArray = false;
-
-      var noTypedArrClone = traverse_1(obj).map(function (x) {
-        if (CodecUtils.isTypedArray(x)) {
-          // here, we cannot call .length directly because traverse.map already serialized
-          // typed arrays into regular objects
-          var origSize = Object.keys(x).length;
-          var untypedArray = new Array(origSize);
-
-          for (var i = 0; i < origSize; i++) {
-            untypedArray[i] = x[i];
-          }
-          this.update(untypedArray);
-          hasTypedArray = true;
-        }
-      });
-      return hasTypedArray ? noTypedArrClone : null;
-    }
-
-    /**
-    * Creates a clone, does not alter the original object.
-    * Remove circular dependencies and replace typed arrays by regular arrays.
-    * Both will make the serialization possible and more reliable.
-    * @param {Object} obj - the object to make serialization friendly
-    * @return {Object} a clean clone, or null if nothing was done
-    */
-
-  }, {
-    key: "makeSerializeFriendly",
-    value: function makeSerializeFriendly(obj) {
-      var newObj = obj;
-      var noCircular = CodecUtils.removeCircularReference(newObj);
-
-      if (noCircular) newObj = noCircular;
-
-      var noTypedArr = CodecUtils.replaceTypedArrayAttributesByArrays(newObj);
-
-      if (noTypedArr) newObj = noTypedArr;
-
-      return newObj;
-    }
-
-    /**
-    * Check if a string is valid or not. A string is considered as invalid if it has
-    * unicode "REPLACEMENT CHARACTER" or non-printable ASCII characters.
-    * @param {String} str - string to test
-    * @param {Boolean} forceAll - test the whole string instead of a sample of 1000 charaters
-    * @return {Boolean} true is the string is valid, false if invalid.
-    */
-
-  }, {
-    key: "isValidString",
-    value: function isValidString(str) {
-      var forceAll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      var strLen = str.length;
-      var nbSamples = forceAll ? strLen : Math.min(1000, strLen); //  a sample of 1000 should be enough
-      var flagChar = 0xFFFD;
-      var redFlags = 0;
-      for (var i = 0; i < nbSamples; i++) {
-        var code = str.charCodeAt(Math.floor(Math.random() * nbSamples));
-        if (code === flagChar || code < 32 && code != 10 && code != 13 && code != 9 || code == 127) {
-          redFlags++;
-        }
-      }
-      return !(redFlags > 0);
-    }
-  }]);
-  return CodecUtils;
-}(); /* END of class CodecUtils */
-
-var asyncGenerator$1 = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-
-
-
-
-var classCallCheck$1 = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass$1 = function () {
   function defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
@@ -8030,7 +7767,7 @@ var dataCases = {
 
 var PixBlockEncoder = function () {
   function PixBlockEncoder() {
-    classCallCheck$1(this, PixBlockEncoder);
+    classCallCheck(this, PixBlockEncoder);
 
     this._compress = false;
     this.reset();
@@ -8041,7 +7778,7 @@ var PixBlockEncoder = function () {
   */
 
 
-  createClass$1(PixBlockEncoder, [{
+  createClass(PixBlockEncoder, [{
     key: 'reset',
     value: function reset() {
       this._input = null;
@@ -8106,6 +7843,7 @@ var PixBlockEncoder = function () {
         return;
       }
 
+      var compress = this._compress;
       var data = input._data;
       var encodedData = null;
       var compressedData = null;
@@ -8126,7 +7864,7 @@ var PixBlockEncoder = function () {
             byteStreamInfoSubset.compressedByteLength = null;
 
             if (this._compress) {
-              encodedData = index.deflate(encodedData.buffer);
+              encodedData = pako_1.deflate(encodedData.buffer);
               byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
             }
 
@@ -8149,12 +7887,12 @@ var PixBlockEncoder = function () {
 
               // if not a typed array, this subset needs further modifications
               if (!byteStreamInfoSubset.isTypedArray) {
-                currentDataStream = new Uint8Array(CodecUtils.objectToArrayBuffer(currentDataStream));
+                currentDataStream = new Uint8Array(codecutils.CodecUtils.objectToArrayBuffer(currentDataStream));
                 byteStreamInfoSubset.byteLength = currentDataStream.byteLength;
               }
 
               if (this._compress) {
-                var compressedDataSubset = index.deflate(currentDataStream.buffer);
+                var compressedDataSubset = pako_1.deflate(currentDataStream.buffer);
                 byteStreamInfoSubset.compressedByteLength = compressedDataSubset.byteLength;
                 compressedData.push(compressedDataSubset);
               }
@@ -8177,11 +7915,11 @@ var PixBlockEncoder = function () {
 
             // replace the original data object with this uncompressed serialized version.
             // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
-            encodedData = new Uint8Array(CodecUtils.objectToArrayBuffer(data));
+            encodedData = new Uint8Array(codecutils.CodecUtils.objectToArrayBuffer(data));
             byteStreamInfoSubset.byteLength = encodedData.byteLength;
 
             if (this._compress) {
-              encodedData = index.deflate(encodedData);
+              encodedData = pako_1.deflate(encodedData);
               byteStreamInfoSubset.compressedByteLength = encodedData.byteLength;
             }
 
@@ -8195,7 +7933,7 @@ var PixBlockEncoder = function () {
       }
 
       // the metadata are converted into a buffer
-      var metadataBuffer = CodecUtils.objectToArrayBuffer(input._metadata);
+      var metadataBuffer = codecutils.CodecUtils.objectToArrayBuffer(input._metadata);
 
       var pixBlockHeader = {
         byteStreamInfo: byteStreamInfo,
@@ -8204,12 +7942,12 @@ var PixBlockEncoder = function () {
         metadataByteLength: metadataBuffer.byteLength
 
         // converting the pixBlockHeader obj into a buffer
-      };var pixBlockHeaderBuff = CodecUtils.objectToArrayBuffer(pixBlockHeader);
+      };var pixBlockHeaderBuff = codecutils.CodecUtils.objectToArrayBuffer(pixBlockHeader);
 
       // this list will then be transformed into a single buffer
       var allBuffers = [
       // primer, part 1: endianess
-      new Uint8Array([+CodecUtils.isPlatformLittleEndian()]).buffer,
+      new Uint8Array([+codecutils.CodecUtils.isPlatformLittleEndian()]).buffer,
       // primer, part 2: size of the header buff
       new Uint32Array([pixBlockHeaderBuff.byteLength]).buffer,
 
@@ -8228,7 +7966,7 @@ var PixBlockEncoder = function () {
         allBuffers.push(encodedData.buffer);
       }
 
-      this._output = CodecUtils.mergeBuffers(allBuffers);
+      this._output = codecutils.CodecUtils.mergeBuffers(allBuffers);
     }
 
     /**
@@ -8252,8 +7990,8 @@ var PixBlockEncoder = function () {
     value: function _getDataSubsetInfo(subset) {
       var infoObj = null;
 
-      if (CodecUtils.isTypedArray(subset)) {
-        infoObj = CodecUtils.getTypedArrayInfo(subset);
+      if (codecutils.CodecUtils.isTypedArray(subset)) {
+        infoObj = codecutils.CodecUtils.getTypedArrayInfo(subset);
         infoObj.isTypedArray = true;
         infoObj.compressedByteLength = null;
       } else {
@@ -8286,11 +8024,12 @@ var PixBlockEncoder = function () {
         return false;
       }
 
+      var metadata = obj._metadata;
       var data = obj._data;
 
       // check: metadata should not contain cyclic structures
       try {
-        
+        JSON.stringify(metadata);
       } catch (e) {
         console.warn("The metadata object contains cyclic structures. Cannot be used.");
         return false;
@@ -8309,11 +8048,11 @@ var PixBlockEncoder = function () {
     key: 'determineDataCase',
     value: function determineDataCase(data) {
       if (data instanceof Object) {
-        if (CodecUtils.isTypedArray(data)) return dataCases.typedArray;
+        if (codecutils.CodecUtils.isTypedArray(data)) return dataCases.typedArray;
 
         /*
         if( data instanceof Array )
-          if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
+          if(data.every( function(element){ return codecutils.CodecUtils.isTypedArray(element) }))
             return dataCases.mixedArrays;
         */
 
@@ -8339,7 +8078,7 @@ var PixBlockEncoder = function () {
 
 var PixBlockDecoder = function () {
   function PixBlockDecoder() {
-    classCallCheck$1(this, PixBlockDecoder);
+    classCallCheck(this, PixBlockDecoder);
 
     this.reset();
   }
@@ -8349,7 +8088,7 @@ var PixBlockDecoder = function () {
   */
 
 
-  createClass$1(PixBlockDecoder, [{
+  createClass(PixBlockDecoder, [{
     key: 'reset',
     value: function reset() {
       this._input = null;
@@ -8408,12 +8147,12 @@ var PixBlockDecoder = function () {
 
       // get the string buffer
       var pixBlockHeaderBuffer = input.slice(readingByteOffset, readingByteOffset + pixBlockHeaderBufferByteLength);
-      var pixBlockHeader = CodecUtils.ArrayBufferToObject(pixBlockHeaderBuffer);
+      var pixBlockHeader = codecutils.CodecUtils.ArrayBufferToObject(pixBlockHeaderBuffer);
       readingByteOffset += pixBlockHeaderBufferByteLength;
 
       // fetching the metadata
       var metadataBuffer = input.slice(readingByteOffset, readingByteOffset + pixBlockHeader.metadataByteLength);
-      var metadataObject = CodecUtils.ArrayBufferToObject(metadataBuffer);
+      var metadataObject = codecutils.CodecUtils.ArrayBufferToObject(metadataBuffer);
       readingByteOffset += pixBlockHeader.metadataByteLength;
 
       // the data streams are the byte streams when they are converted back to actual typedArrays/Objects
@@ -8435,12 +8174,12 @@ var PixBlockDecoder = function () {
           var compressedByteStream = new Uint8Array(input, readingByteOffset, compressedByteLength);
 
           // inflate the dataStream
-          var inflatedByteStream = index.inflate(compressedByteStream);
+          var inflatedByteStream = pako_1.inflate(compressedByteStream);
 
           var dataStream = null;
           /*
           if( dataStreamConstructor === Object){
-            dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
+            dataStream = codecutils.CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
           }else{
             dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
           }
@@ -8449,7 +8188,7 @@ var PixBlockDecoder = function () {
           if (isTypedArray) {
             dataStream = new dataStreamConstructor(inflatedByteStream.buffer);
           } else {
-            dataStream = CodecUtils.ArrayBufferToObject(inflatedByteStream.buffer);
+            dataStream = codecutils.CodecUtils.ArrayBufferToObject(inflatedByteStream.buffer);
           }
 
           dataStreams.push(dataStream);
@@ -8459,10 +8198,10 @@ var PixBlockDecoder = function () {
         else {
             var dataStream = null;
             if (isTypedArray) {
-              dataStream = CodecUtils.extractTypedArray(input, readingByteOffset, this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]), pixBlockHeader.byteStreamInfo[i].length);
+              dataStream = codecutils.CodecUtils.extractTypedArray(input, readingByteOffset, this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]), pixBlockHeader.byteStreamInfo[i].length);
             } else {
-              var objectBuffer = CodecUtils.extractTypedArray(input, readingByteOffset, Uint8Array, pixBlockHeader.byteStreamInfo[i].byteLength);
-              dataStream = CodecUtils.ArrayBufferToObject(objectBuffer.buffer);
+              var objectBuffer = codecutils.CodecUtils.extractTypedArray(input, readingByteOffset, Uint8Array, pixBlockHeader.byteStreamInfo[i].byteLength);
+              dataStream = codecutils.CodecUtils.ArrayBufferToObject(objectBuffer.buffer);
             }
 
             dataStreams.push(dataStream);
@@ -8493,7 +8232,7 @@ var PixBlockDecoder = function () {
     key: '_getDataTypeFromByteStreamInfo',
     value: function _getDataTypeFromByteStreamInfo(bsi) {
       var dataType = "Object";
-      var globalObject = CodecUtils.getGlobalObject();
+      var globalObject = codecutils.CodecUtils.getGlobalObject();
 
       if (bsi.type === "int") {
         dataType = bsi.signed ? "Uint" : "Int";
@@ -8501,7 +8240,7 @@ var PixBlockDecoder = function () {
       } else if (bsi.type === "float") {
         dataType = "Float";
         dataType += bsi.bytesPerElements * 8 + "Array";
-        var globalObject = CodecUtils.getGlobalObject();
+        var globalObject = codecutils.CodecUtils.getGlobalObject();
       }
 
       return globalObject[dataType];
@@ -8512,7 +8251,7 @@ var PixBlockDecoder = function () {
 
 var global$1 = typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
-            typeof window !== "undefined" ? window : {};
+            typeof window !== "undefined" ? window : {}
 
 // shim for using process in browser
 // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
@@ -8674,8 +8413,7 @@ function binding(name) {
 function cwd () { return '/' }
 function chdir (dir) {
     throw new Error('process.chdir is not supported');
-}
-function umask() { return 0; }
+}function umask() { return 0; }
 
 // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
 var performance = global$1.performance || {};
@@ -8748,7 +8486,6 @@ var md5 = createCommonjsModule(function (module) {
  * @license MIT
  */
 (function () {
-  'use strict';
 
   var ERROR = 'input is invalid type';
   var WINDOW = typeof window === 'object';
@@ -9433,7 +9170,7 @@ var md5 = createCommonjsModule(function (module) {
 
 var PixBinEncoder = function () {
   function PixBinEncoder() {
-    classCallCheck$1(this, PixBinEncoder);
+    classCallCheck(this, PixBinEncoder);
 
     this._compress = true;
     this.reset();
@@ -9445,7 +9182,7 @@ var PixBinEncoder = function () {
   */
 
 
-  createClass$1(PixBinEncoder, [{
+  createClass(PixBinEncoder, [{
     key: 'reset',
 
 
@@ -9525,7 +9262,7 @@ var PixBinEncoder = function () {
 
       var that = this;
       var today = new Date();
-      var isLittleEndian = CodecUtils.isPlatformLittleEndian();
+      var isLittleEndian = codecutils.CodecUtils.isPlatformLittleEndian();
       var blockEncoder = new PixBlockEncoder();
 
       // this object is the JSON description at the begining of a PixBin
@@ -9542,7 +9279,7 @@ var PixBinEncoder = function () {
       // just a convenient shortcut
       var pixblocksInfo = pixBinIndex.pixblocksInfo;
 
-      this._inputs.forEach(function (input, index$$1) {
+      this._inputs.forEach(function (input, index) {
         blockEncoder.setInput(input);
         blockEncoder.enableDataCompression(that._compress);
         blockEncoder.run();
@@ -9550,7 +9287,7 @@ var PixBinEncoder = function () {
         var encodedBlock = blockEncoder.getOutput();
 
         if (!encodedBlock) {
-          console.warn("The input of index " + index$$1 + " could not be encoded as a PixBlock.");
+          console.warn("The input of index " + index + " could not be encoded as a PixBlock.");
           return;
         }
 
@@ -9576,19 +9313,19 @@ var PixBinEncoder = function () {
       // - The byte length of the PixBin meta binary object. 1 x Uint32 (4 bytes)
 
       // encoding the meta object into an ArrayBuffer
-      var pixBinIndexBinaryString = CodecUtils.objectToArrayBuffer(pixBinIndex);
+      var pixBinIndexBinaryString = codecutils.CodecUtils.objectToArrayBuffer(pixBinIndex);
       var magicNumber = PixBinEncoder.MAGIC_NUMBER();
 
       // the +5 stands for 1 endiannes byte (Uint8) + 4 bytes (1xUint32) of header length
       var binPrimer = new ArrayBuffer(magicNumber.length + 5);
       var binPrimerView = new DataView(binPrimer);
 
-      CodecUtils.setString8InBuffer(magicNumber, binPrimer);
+      codecutils.CodecUtils.setString8InBuffer(magicNumber, binPrimer);
       binPrimerView.setUint8(magicNumber.length, +isLittleEndian);
       binPrimerView.setUint32(magicNumber.length + 1, pixBinIndexBinaryString.byteLength, isLittleEndian);
 
       var allBuffers = [binPrimer, pixBinIndexBinaryString].concat(pixBlocks);
-      this._output = CodecUtils.mergeBuffers(allBuffers);
+      this._output = codecutils.CodecUtils.mergeBuffers(allBuffers);
     }
   }], [{
     key: 'MAGIC_NUMBER',
@@ -9618,7 +9355,7 @@ var PixBinEncoder = function () {
 
 var PixBinDecoder = function () {
   function PixBinDecoder() {
-    classCallCheck$1(this, PixBinDecoder);
+    classCallCheck(this, PixBinDecoder);
 
     this._verifyChecksum = false;
     this._input = null;
@@ -9640,7 +9377,7 @@ var PixBinDecoder = function () {
   */
 
 
-  createClass$1(PixBinDecoder, [{
+  createClass(PixBinDecoder, [{
     key: 'setInput',
     value: function setInput(buff) {
       this.reset();
@@ -9752,7 +9489,7 @@ var PixBinDecoder = function () {
     }
 
     /**
-    * reset I/O and data to query 
+    * reset I/O and data to query
     */
 
   }, {
@@ -9783,7 +9520,7 @@ var PixBinDecoder = function () {
 
     /**
     * [PRIVATE]
-    * 
+    *
     */
 
   }, {
@@ -9807,7 +9544,7 @@ var PixBinDecoder = function () {
 
       var view = new DataView(input);
       var movingByteOffset = 0;
-      var magicNumber = CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length);
+      var magicNumber = codecutils.CodecUtils.getString8FromBuffer(input, magicNumberToExpect.length);
 
       // control 2: the magic number
       if (magicNumber !== magicNumberToExpect) {
@@ -9827,7 +9564,7 @@ var PixBinDecoder = function () {
       movingByteOffset += 1;
       var pixBinIndexBinaryStringByteLength = view.getUint32(movingByteOffset, isLittleEndian);
       movingByteOffset += 4;
-      var pixBinIndexObj = CodecUtils.ArrayBufferToObject(input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
+      var pixBinIndexObj = codecutils.CodecUtils.ArrayBufferToObject(input.slice(movingByteOffset, movingByteOffset + pixBinIndexBinaryStringByteLength));
       movingByteOffset += pixBinIndexBinaryStringByteLength;
 
       this._parsingInfo.offsetToReachFirstBlock = movingByteOffset;
@@ -9905,3 +9642,4 @@ exports.PixBlockEncoder = PixBlockEncoder;
 exports.PixBlockDecoder = PixBlockDecoder;
 exports.PixBinEncoder = PixBinEncoder;
 exports.PixBinDecoder = PixBinDecoder;
+//# sourceMappingURL=pixbincodec.cjs.js.map

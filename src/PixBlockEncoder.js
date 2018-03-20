@@ -8,7 +8,7 @@
 
 
 import pako from 'pako';
-import { CodecUtils } from 'codecutils';
+import codecutils from 'codecutils';
 
 // list of different kinds of data we accept as input
 const dataCases = {
@@ -166,7 +166,7 @@ class PixBlockEncoder {
 
             // if not a typed array, this subset needs further modifications
             if( !byteStreamInfoSubset.isTypedArray ){
-              currentDataStream = new Uint8Array( CodecUtils.objectToArrayBuffer( currentDataStream ) );
+              currentDataStream = new Uint8Array( codecutils.CodecUtils.objectToArrayBuffer( currentDataStream ) );
               byteStreamInfoSubset.byteLength = currentDataStream.byteLength;
             }
 
@@ -177,10 +177,10 @@ class PixBlockEncoder {
             }
 
             byteStreamInfo.push( byteStreamInfoSubset )
-            
+
             encodedData[i] = currentDataStream;
           }
-          
+
           if(this._compress){
             encodedData = compressedData
           }
@@ -194,7 +194,7 @@ class PixBlockEncoder {
 
           // replace the original data object with this uncompressed serialized version.
           // We wrap it into a Uint8Array so that we can call .buffer on it, just like all the others
-          encodedData = new Uint8Array( CodecUtils.objectToArrayBuffer( data ) );
+          encodedData = new Uint8Array( codecutils.CodecUtils.objectToArrayBuffer( data ) );
           byteStreamInfoSubset.byteLength = encodedData.byteLength;
 
           if(this._compress){
@@ -212,7 +212,7 @@ class PixBlockEncoder {
     }
 
     // the metadata are converted into a buffer
-    var metadataBuffer = CodecUtils.objectToArrayBuffer( input._metadata );
+    var metadataBuffer = codecutils.CodecUtils.objectToArrayBuffer( input._metadata );
 
     var pixBlockHeader = {
       byteStreamInfo         : byteStreamInfo,
@@ -222,12 +222,12 @@ class PixBlockEncoder {
     }
 
     // converting the pixBlockHeader obj into a buffer
-    var pixBlockHeaderBuff = CodecUtils.objectToArrayBuffer( pixBlockHeader );
+    var pixBlockHeaderBuff = codecutils.CodecUtils.objectToArrayBuffer( pixBlockHeader );
 
     // this list will then be transformed into a single buffer
     var allBuffers = [
       // primer, part 1: endianess
-      new Uint8Array( [ + CodecUtils.isPlatformLittleEndian() ] ).buffer,
+      new Uint8Array( [ + codecutils.CodecUtils.isPlatformLittleEndian() ] ).buffer,
       // primer, part 2: size of the header buff
       new Uint32Array( [pixBlockHeaderBuff.byteLength] ).buffer,
 
@@ -247,7 +247,7 @@ class PixBlockEncoder {
       allBuffers.push( encodedData.buffer )
     }
 
-    this._output = CodecUtils.mergeBuffers( allBuffers );
+    this._output = codecutils.CodecUtils.mergeBuffers( allBuffers );
   }
 
 
@@ -260,12 +260,12 @@ class PixBlockEncoder {
   */
   static determineDataCase( data ){
     if( data instanceof Object ){
-      if( CodecUtils.isTypedArray( data ) )
+      if( codecutils.CodecUtils.isTypedArray( data ) )
         return dataCases.typedArray;
 
       /*
       if( data instanceof Array )
-        if(data.every( function(element){ return CodecUtils.isTypedArray(element) }))
+        if(data.every( function(element){ return codecutils.CodecUtils.isTypedArray(element) }))
           return dataCases.mixedArrays;
       */
 
@@ -289,8 +289,8 @@ class PixBlockEncoder {
   _getDataSubsetInfo( subset ){
     var infoObj = null;
 
-    if( CodecUtils.isTypedArray(subset) ){
-      infoObj = CodecUtils.getTypedArrayInfo( subset );
+    if( codecutils.CodecUtils.isTypedArray(subset) ){
+      infoObj = codecutils.CodecUtils.getTypedArrayInfo( subset );
       infoObj.isTypedArray = true;
       infoObj.compressedByteLength = null;
     }else{

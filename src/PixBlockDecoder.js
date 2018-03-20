@@ -7,7 +7,7 @@
 */
 
 import pako from 'pako';
-import { CodecUtils } from 'codecutils';
+import codecutils from 'codecutils';
 
 
 class PixBlockDecoder {
@@ -70,12 +70,12 @@ class PixBlockDecoder {
 
     // get the string buffer
     var pixBlockHeaderBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeaderBufferByteLength )
-    var pixBlockHeader = CodecUtils.ArrayBufferToObject( pixBlockHeaderBuffer );
+    var pixBlockHeader = codecutils.CodecUtils.ArrayBufferToObject( pixBlockHeaderBuffer );
     readingByteOffset += pixBlockHeaderBufferByteLength;
 
     // fetching the metadata
     var metadataBuffer = input.slice( readingByteOffset, readingByteOffset + pixBlockHeader.metadataByteLength );
-    var metadataObject = CodecUtils.ArrayBufferToObject( metadataBuffer );
+    var metadataObject = codecutils.CodecUtils.ArrayBufferToObject( metadataBuffer );
     readingByteOffset += pixBlockHeader.metadataByteLength;
 
     // the data streams are the byte streams when they are converted back to actual typedArrays/Objects
@@ -102,7 +102,7 @@ class PixBlockDecoder {
         var dataStream = null;
         /*
         if( dataStreamConstructor === Object){
-          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
+          dataStream = codecutils.CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }else{
           dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
         }
@@ -111,7 +111,7 @@ class PixBlockDecoder {
         if( isTypedArray ){
           dataStream = new dataStreamConstructor( inflatedByteStream.buffer );
         }else{
-          dataStream = CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
+          dataStream = codecutils.CodecUtils.ArrayBufferToObject( inflatedByteStream.buffer  );
         }
 
         dataStreams.push( dataStream )
@@ -122,20 +122,20 @@ class PixBlockDecoder {
       else{
         var dataStream = null;
         if( isTypedArray ){
-         dataStream = CodecUtils.extractTypedArray(
+         dataStream = codecutils.CodecUtils.extractTypedArray(
            input,
            readingByteOffset,
            this._getDataTypeFromByteStreamInfo(pixBlockHeader.byteStreamInfo[i]),
            pixBlockHeader.byteStreamInfo[i].length
          )
         }else{
-          var objectBuffer = CodecUtils.extractTypedArray(
+          var objectBuffer = codecutils.CodecUtils.extractTypedArray(
            input,
            readingByteOffset,
            Uint8Array,
            pixBlockHeader.byteStreamInfo[i].byteLength
           )
-          dataStream = CodecUtils.ArrayBufferToObject( objectBuffer.buffer );
+          dataStream = codecutils.CodecUtils.ArrayBufferToObject( objectBuffer.buffer );
         }
 
 
@@ -165,7 +165,7 @@ class PixBlockDecoder {
   */
   _getDataTypeFromByteStreamInfo( bsi ){
     var dataType = "Object";
-    var globalObject = CodecUtils.getGlobalObject()
+    var globalObject = codecutils.CodecUtils.getGlobalObject()
 
     if( bsi.type === "int" ){
       dataType = bsi.signed ? "Uint" : "Int";
@@ -174,7 +174,7 @@ class PixBlockDecoder {
     }else if( bsi.type === "float" ){
       dataType = "Float";
       dataType += bsi.bytesPerElements*8 + "Array";
-      var globalObject = CodecUtils.getGlobalObject()
+      var globalObject = codecutils.CodecUtils.getGlobalObject()
 
     }
 

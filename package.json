@@ -2,13 +2,11 @@
   "name": "pixbincodec",
   "version": "0.1.0",
   "description": "An encoder-decoder for PixBin format",
-  "main": "dist/pixbincodec.cjs.js",
+  "main": "dist/pixbincodec.umd.js",
   "entry": "src/main.js",
-  "commonjs": "dist/pixbincodec.cjs.js",
-  "module": "dist/pixbincodec.module.js",
-  "browser": "dist/pixbincodec.umd.js",
-  "repository": "jonathanlurie/pixbincodec",
-  "moduleName": "pixbincodec",
+  "cjs": "dist/pixbincodec.cjs.js",
+  "umd": "dist/pixbincodec.umd.js",
+  "repository": "Pixpipe/pixbincodec",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
@@ -19,19 +17,20 @@
   "author": "Jonathan Lurie",
   "license": "MIT",
   "devDependencies": {
+    "google-closure-compiler-js": "^20180204.0.0",
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-es2015-rollup": "^3.0.0",
     "documentation": "^3.0.4",
-    "rollup": "^0.50.0",
-    "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup": "^0.57.1",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.1.0",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-node-globals": "^1.2.0",
+    "rollup-plugin-node-resolve": "^3.3.0"
   },
   "dependencies": {
-    "codecutils": "github:pixpipe/codecutils",
+    "codecutils": "^0.1.3",
     "js-md5": "^0.6.0",
     "pako": "^1.0.5"
   }
