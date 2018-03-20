@@ -1,6 +1,6 @@
 {
   "name": "pixbincodec",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An encoder-decoder for PixBin format",
   "main": "dist/pixbincodec.umd.js",
   "entry": "src/main.js",
