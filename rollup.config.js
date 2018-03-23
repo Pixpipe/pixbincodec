@@ -28,30 +28,5 @@ export default [
         presets: [ 'es2015-rollup' ]
       })
     ]
-  },
-
-
-  // CommonJS bundle has to be ES5 because it's the 'main' entry point so it has
-  // to be 'required' and 'imported'
-  {
-    input: pkg.entry,
-    output: {
-      file: pkg.cjs,
-      sourcemap: true,
-      format: 'cjs',
-    },
-
-    plugins: [
-      resolve(),
-      commonjs({ include: 'node_modules/**' }), // so Rollup can convert other modules to ES module
-      globals(),
-      builtins(),
-      babel({
-        exclude: 'node_modules/**',
-        babelrc: false,
-        presets: [ 'es2015-rollup' ]
-      })
-    ]
   }
-
 ];

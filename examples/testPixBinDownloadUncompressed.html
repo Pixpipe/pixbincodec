@@ -2,23 +2,23 @@
 <head>
   <meta charset="utf-8">
   <title>Test</title>
-  
+
   <style>
-  
+
   body {
     font-family: "Lucida Console", Monaco, monospace;
     margin: 10px 20% 10px 20%;
   }
-  
+
   h1, h3 {
     width: 100%;
     text-align: center;
   }
-  
+
   ul {
     margin-top: 50px;
   }
-  
+
   #logArea {
     width: 100%;
     height: 300px;
@@ -28,7 +28,7 @@
 </head>
 <body>
   <!-- importing the automatically build module -->
-  <script src="../dist/pixbincodec.umd.js"></script>
+  <script src="../dist/pixbincodec.js"></script>
   <h1>PixBin Files</h1>
   <h3>the easy  way</h3>
 
@@ -38,16 +38,16 @@
     <li>Download the Blob as a PixBin file <a id="downloadLink">here</a></li>
     <li>Load this file to decode it <input type="file" id="fileInput"></li>
   </ul>
-  
+
   <textarea id="logArea"></textarea>
   Open you Javascript console for a better reading experience.
-  
+
   <script>
   var fileInput = document.getElementById('fileInput');
   createPixBin();
-  
-  
-  
+
+
+
   function createPixBin(){
     // declaring some datasets to be encoded
 
@@ -60,7 +60,7 @@
         description: "this is the description of the John Foo block."
       }
     }
-    
+
     var paul = {
       _data: new Float32Array([512, 514, 516, 52000, 52010, 52011]),
       _metadata: {
@@ -70,7 +70,7 @@
         description: "this is the description of the Paul Bar block."
       }
     }
-    
+
     var jack = {
       _data: [new Float32Array([512, 514, 516, 52000, 52010, 52011]), new Float32Array([12, 14, 16, 2000, 2010, 2011, 23])],
       _metadata: {
@@ -80,7 +80,7 @@
         description: "this is the description of the Jack Foo block."
       }
     }
-    
+
     var james = {
       _data: {sample_A: [1, 2, 3, 4], sample_B: [5, 6.5, 7]},
       _metadata: {
@@ -98,27 +98,27 @@
     pixBinEncoder.enableDataCompression( false ); // default: false
 
     // defining some options. The options available are...
-    
+
     // "description" takes a String
     // (default: null)
     pixBinEncoder.setOption(
       "description",
       "This is an experimental PixBin creation! It's supposed to be compatible with unicode like 🍔 and 🌭."
     );
-    
+
     // the "userObject" is an object with no strict format
     // (default: null)
-    pixBinEncoder.setOption( 
+    pixBinEncoder.setOption(
       "userObject",
       {
         aHelloField: "hello 👋",
         aMonkeyField: "this one 🐵"
       }
     )
-    
+
     // "madeWith" takes a String and is mostly so that you can keep track of what program made this file
     // (default: "pixbincodec_js" )
-    pixBinEncoder.setOption( 
+    pixBinEncoder.setOption(
       "madeWith",
       "The PixBin example page"
     )
@@ -128,7 +128,7 @@
     pixBinEncoder.addInput( paul );
     pixBinEncoder.addInput( jack );
     pixBinEncoder.addInput( james );
-    
+
     // perfom the encoding
     pixBinEncoder.run();
 
@@ -144,8 +144,8 @@
     link.href = url;
     link.download = "testFile.pixb";
   }
-    
-    
+
+
   // event listener of the file dialog, it then triggers the file decoding
   fileInput.addEventListener('change', function(e) {
     var files = e.target.files;
@@ -153,22 +153,22 @@
     if( !files.length ){
       return;
     }
-    
+
     var reader = new FileReader();
 
     reader.onloadend = function(event) {
       var buffer = event.target.result;
-      readPixBinFile(buffer);  
+      readPixBinFile(buffer);
     }
 
     reader.readAsArrayBuffer( files[0] );
 	});
-    
-  
+
+
   // read a PixBin buffer
   function readPixBinFile( buffer ){
     log("The loaded file is " + buffer.byteLength + " bytes.");
-    
+
     // the decoder
     var pixBinDecoder = new pixbincodec.PixBinDecoder();
     // do we wish the decoder tp perform a checksum verif for each block?
@@ -189,33 +189,33 @@
     log( "PixBin userObject: ");
     log( pixBinDecoder.getBinUserObject() );
     log("Number of blocks: " + numberOfBlocks);
-    
+
     for(var i=0; i<numberOfBlocks; i++){
       var blockType = pixBinDecoder.getBlockType( i );
       var block = pixBinDecoder.fetchBlock( i )
-      
+
       log( "#" + i + " ***************************" );
       log( "Block type: " + blockType );
       log( "block:" );
       log( block );
     }
-    
+
   }
-  
-  
+
+
   function log( msg ){
     var logArea = document.getElementById("logArea");
     console.log(msg);
-    
+
     if( msg instanceof Object ){
       msg = "[Object]:\n" + JSON.stringify(msg)
     }
-    
-    
+
+
     logArea.innerHTML += msg;
     logArea.innerHTML += "\n\n";
   }
-    
+
   </script>
 
 </body>

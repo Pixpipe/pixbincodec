@@ -5,12 +5,12 @@
 </head>
 <body>
   <!-- importing the automatically build module -->
-  <script src="../dist/pixbincodec.umd.js"></script>
+  <script src="../dist/pixbincodec.js"></script>
 
   <p>Open Javascript console.</p>
 
   <script>
-  
+
     // declaring some datasets to be encoded
 
     var john = {
@@ -22,7 +22,7 @@
         description: "this is the description of the John Foo block."
       }
     }
-    
+
     var paul = {
       _data: new Float32Array([512, 514, 516, 52000, 52010, 52011]),
       _metadata: {
@@ -32,7 +32,7 @@
         description: "this is the description of the Paul Bar block."
       }
     }
-    
+
     var jack = {
       _data: [new Float32Array([512, 514, 516, 52000, 52010, 52011]), new Float32Array([12, 14, 16, 2000, 2010, 2011, 23]), {arg1: "hello", arg2: "bonjour"}],
       _metadata: {
@@ -42,7 +42,7 @@
         description: "this is the description of the Jack Foo block."
       }
     }
-    
+
     var james = {
       _data: {sample_A: [1, 2, 3, 4], sample_B: [5, 6.5, 7]},
       _metadata: {
@@ -52,8 +52,8 @@
         description: "this is the description of the James Foobar block."
       }
     }
-    
-    
+
+
 
     // ************** ENCODING *************************************************
 
@@ -62,27 +62,27 @@
     pixBinEncoder.enableDataCompression( true ); // default: false
 
     // defining some options. The only availble are...
-    
+
     // "description" takes a String
     // (default: null)
     pixBinEncoder.setOption(
       "description",
       "This is an experimental PixBin creation! It's supposed to be compatible with unicode like 🍔 and 🌭."
     );
-    
+
     // the "userObject" is an object with no strict format
     // (default: null)
-    pixBinEncoder.setOption( 
+    pixBinEncoder.setOption(
       "userObject",
       {
         aHelloField: "hello 👋",
         aMonkeyField: "this one 🐵"
       }
     )
-    
+
     // "madeWith" takes a String and is mostly so that you can keep track of what program made this file
     // (default: "pixbincodec_js" )
-    pixBinEncoder.setOption( 
+    pixBinEncoder.setOption(
       "madeWith",
       "The PixBin example page"
     )
@@ -92,7 +92,7 @@
     pixBinEncoder.addInput( paul );
     pixBinEncoder.addInput( jack );
     pixBinEncoder.addInput( james );
-    
+
     // perfom the encoding
     pixBinEncoder.run();
 
@@ -117,17 +117,17 @@
     console.log( "PixBin userObject: ");
     console.log( pixBinDecoder.getBinUserObject() );
     console.log("Number of blocks: " + numberOfBlocks);
-    
+
     for(var i=0; i<numberOfBlocks; i++){
       var blockType = pixBinDecoder.getBlockType( i );
       var block = pixBinDecoder.fetchBlock( i )
-      
+
       console.log( "#" + i + " ***************************" );
       console.log( "Block type: " + blockType );
       console.log( "block:" );
       console.log( block );
     }
-    
+
 
   </script>
 

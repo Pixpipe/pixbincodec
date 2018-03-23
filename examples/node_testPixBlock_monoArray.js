@@ -1,4 +1,4 @@
-const pixbincodec = require("../dist/pixbincodec.cjs.js");
+const pixbincodec = require("..");
 
 var simpleObject = {
   _data: getlargeTypedArray(100000),
@@ -37,6 +37,6 @@ function getlargeTypedArray( size ){
     //arr[i] = Math.random() * 100;
     arr[i] = Math.sin( i/100 ) * 100;
   }
-  
+
   return arr;
 }

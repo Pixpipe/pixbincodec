@@ -4,7 +4,7 @@
 </head>
 <body>
   <!-- importing the automatically build module -->
-  <script src="../dist/pixbincodec.umd.js"></script>
+  <script src="../dist/pixbincodec.js"></script>
 
   <p>Open Javascript console.</p>
 
@@ -12,21 +12,21 @@
 
     // instead of encoding a typed array or an Array of Typed array, we are serializing this object as _data
     var data = [
-      { 
+      {
         name: "the sample a",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus maximus laoreet lorem quis porttitor. Fusce vel dui vitae neque facilisis commodo sit amet in diam. Phasellus tincidunt ante sed eros feugiat iaculis. Sed fringilla turpis consequat dolor tincidunt, eu eleifend lacus tristique. Vivamus libero velit, hendrerit nec orci volutpat, feugiat bibendum nisi. Vestibulum nec nisl ornare, tincidunt odio vitae, eleifend elit. Vestibulum convallis dolor lorem, id dignissim tortor sodales in. Curabitur molestie nibh scelerisque lectus bibendum, vel vestibulum ex consectetur. Maecenas blandit nulla felis, id porttitor justo dapibus vel. Integer fermentum sapien at lacus lobortis fermentum. Curabitur ultrices ullamcorper tellus, ac consequat ligula viverra quis. Donec ex leo, fringilla at eleifend et, mollis in felis.",
         date: new Date(),
         record: getlargeTypedArray(10, false)
       },
-      
-      { 
+
+      {
         name: "the sample b",
         description: "Quisque sollicitudin sit amet urna non hendrerit. Nam sit amet est eget mauris rhoncus venenatis. Praesent consectetur ante quis erat mattis, aliquet posuere nisl maximus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ante massa, vulputate a quam in, egestas accumsan lacus. Cras diam justo, maximus vitae suscipit commodo, imperdiet sed erat. In libero ex, pellentesque ac arcu tincidunt, finibus fermentum enim. Aliquam orci nunc, semper eu luctus vitae, bibendum at sapien. Quisque in lobortis dui, id rhoncus neque. Nullam mattis ut libero at hendrerit. Nulla nec leo arcu. Vestibulum accumsan dolor eu placerat bibendum. Maecenas vel risus sit amet ipsum tempus dignissim et ut velit. Donec lobortis eros id semper pretium.",
         date: new Date(),
         record: getlargeTypedArray(10, true)
       },
-      
-      { 
+
+      {
         name: "the sample c",
         description: " egestas accumsan lacus. Cras diam justo, maximus vitae suscipit commodo, imperdiet sed erat. In libero ex, pellentesque ac arcu tincidunt, finibus fermentum enim. Aliquam orci nunc, semper eu luctus vitae, bibendum at sapien. Quisque in lobortis dui, id rhoncus neque. Nullam mattis ut libero at hendrerit. Quisque sollicitudin sit amet urna non hendrerit.  Donec lobortis eros id semper pretium. Nam sit amet est eget mauris rhoncus venenatis. Praesent consectetur ante quis erat mattis, aliquet posuere nisl maximus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ante massa, vulputate a quam in,Nulla nec leo arcu. Vestibulum accumsan dolor eu placerat bibendum. Maecenas vel risus sit amet ipsum tempus dignissim et ut velit.",
         date: new Date(),
@@ -73,7 +73,7 @@
         //arr[i] = Math.random() * 100;
         arr[i] = Math.sin( i/100 ) * 100;
       }
-      
+
       return arr;
     }
 
